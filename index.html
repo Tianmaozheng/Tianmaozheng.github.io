@@ -16,10 +16,10 @@
         }
 
         #container_central {
-            background-color: #fff;
+            background: linear-gradient(135deg, #ff99cc, #6699ff);
             padding: 40px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
             text-align: center;
             width: 600px;
             margin: 20px;
@@ -46,16 +46,15 @@
 		margin: 20px;
 		}
         #profile-image {
-		width: 150px;
-		height: 150px;
-		border-radius: 50%;
-		overflow: hidden;
-		margin: 0 auto 20px;
-		border-top:1px solid  #ff6ec4;
-		border-bottom: 1px solid #2980b9;
-		border-right:2px solid #ff6ec4; 
-		border-left:2px solid #2980b9;
-
+			width: 150px;
+			height: 150px;
+			border-radius: 50%;
+			overflow: hidden;
+			margin: 0 auto 20px;
+			border-top:1px solid  #ff6ec4;
+			border-bottom: 1px solid #2980b9;
+			border-right:2px solid #ff6ec4; 
+			border-left:2px solid #2980b9;
         }
 		
         #profile-image img {
@@ -65,21 +64,30 @@
         }
 		
         h1 {
-            color: #333;
+			font-family: "仿宋", serif;
+            color: wheat;
         }
 
         p {
-            color: #666;
+            color: wheat;
         }
 
         a {
-            color: #007bff;
+            color: white;
             text-decoration: none;
         }
 
-        a:hover {
-            text-decoration: underline;
-        }
+		a:hover {
+		text-decoration: underline; /* 当鼠标悬停在超链接上时显示下划线 */
+		color: pink; /* 当鼠标悬停在超链接上时改变颜色为橙色 */
+}
+		footer {
+		    position: fixed;
+		    bottom: 0;
+		    width: 100%;
+		    text-align: center;
+		    padding: 10px 0;
+		}
     </style>
     <title>我的个人网页</title>
 </head>
@@ -91,15 +99,18 @@
         <div id="profile-image">
             <img src="./signal.jpg" alt="Profile Image">
         </div>
-		<h1>欢迎来到小田的个人网页</h1>
-        <p>这是我的个人网页，欢迎访问！</p>
-        <p></p>
+		<h1> 访 问 成 功 </h1>
+        <p>这是小田的个人网页</p>
+        <p>相关介绍正在维护中，尽请期待</p>
         <p>Email:2151447128@qq.com</p>
         <p>电话: 13429906347</p>
-        <p>你还可以访问我的<a href="https://github.com/Tianmaozheng?tab=repositories">github主页</a>页面。</p>
+        <p>你还可以访问我的-><a href="https://github.com/Tianmaozheng?tab=repositories">github主页</a><-页面。</p>
     </div>
 	<div id="container_right">
 		
 	</div>
+	<footer>
+	    <p>&copy; 20-23 解释权最终归小田所有. Tianmaozheng123@gmail.com</p>
+	</footer>
 </body>
 </html>
