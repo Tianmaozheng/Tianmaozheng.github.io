@@ -3,32 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website Page</title>
+    <title>小田的博客 | 个人技术博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <div id="container_left">
-    </div>
-    
-    <div id="container_central">
-        <div id="profile-image">
-            <img src="../img/sign.jpg" alt="Profile Image">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="#"></a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active">首页</a></li>
+                <li><a href="#">技术文章</a></li>
+                <li><a href="#">项目作品</a></li>
+                <li><a href="#">关于我</a></li>
+                <li><a href="#">留言板</a></li>
+            </ul>
+            <div class="search-box">
+                <input type="text" placeholder="搜索文章...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
         </div>
-        <h1>访 问 成 功</h1>
-        <p>这是小田的个人网页</p>
-        <p>相关介绍正在维护中，尽请期待</p>
-        <p>Email: 2151447128@qq.com</p>
-        <p>电话: 13429906347</p>
-        <p>你还可以访问我的-><a href="https://github.com/Tianmaozheng/Tianmaozheng.github.io">github主页</a><-页面。</p>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <div class="main-container">
+        <!-- 左侧个人资料区 -->
+        <aside class="profile-sidebar">
+            <div class="profile-card">
+                <div class="profile-image">
+                    <img src="../img/sign.jpg" alt="小田">
+                </div>
+                <h2>小田</h2>
+                <p class="profile-title">全栈开发者 & 技术博主</p>
+                <p class="profile-bio">热爱编程，喜欢分享技术经验，专注于Web开发和人工智能领域。</p>
+                
+                <div class="skills-section">
+                    <h3>技术栈</h3>
+                    <ul class="skills-list">
+                        <li><i class="fas fa-server"></i> Python 后端开发</li>
+                        <li><i class="fas fa-database"></i> 数据分析与可视化</li>
+                        <li><i class="fas fa-spider"></i> 网络爬虫开发</li>
+                        <li><i class="fas fa-laptop-code"></i> 前端开发</li>
+                        <li><i class="fas fa-brain"></i> 机器学习/深度学习</li>
+                        <li><i class="fas fa-server"></i> 服务器运维</li>
+                        <li><i class="fab fa-linux"></i> Linux 系统管理</li>
+                    </ul>
+                </div>
+                
+                <div class="social-links">
+                    <a href="#" class="social-icon" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-icon" title="知乎"><i class="fab fa-zhihu"></i></a>
+                    <a href="#" class="social-icon" title="微信"><i class="fab fa-weixin"></i></a>
+                    <a href="#" class="social-icon" title="邮箱"><i class="fas fa-envelope"></i></a>
+                </div>
+                
+                <!-- 分类 -->
+                <div class="skills-section">
+                    <h3>分类</h3>
+                    <ul class="skills-list">
+                        <li><i class="fas fa-code"></i> <a href="#">编程语言</a></li>
+                        <li><i class="fas fa-globe"></i> <a href="#">Web开发</a></li>
+                        <li><i class="fas fa-robot"></i> <a href="#">人工智能</a></li>
+                        <li><i class="fas fa-project-diagram"></i> <a href="#">数据结构与算法</a></li>
+                        <li><i class="fas fa-database"></i> <a href="#">数据库</a></li>
+                        <li><i class="fas fa-server"></i> <a href="#">DevOps</a></li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 内容区 -->
+        <main class="content">
+            <!-- 文章列表 -->
+            <section class="recent-posts">
+                <h2 class="section-title">最新文章</h2>
+                
+                <article class="post-card">
+                    <div class="post-image">
+                        <img src="" alt="文章图片">
+                    </div>
+                    <div class="post-info">
+                        <div class="post-category">编程</div>
+                        <h3><a href="#">Python异步编程完全指南</a></h3>
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar"></i> 2025-10-08</span>
+                            <span><i class="far fa-eye"></i> 856 浏览</span>
+                        </div>
+                        <p>深入浅出地介绍Python中的异步编程，从基础概念到实际应用，帮助你掌握asyncio等核心库的使用...</p>
+                        <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="post-card">
+                    <div class="post-image">
+                        <img src="" alt="文章图片">
+                    </div>
+                    <div class="post-info">
+                        <div class="post-category">人工智能</div>
+                        <h3><a href="#">机器学习实战：从零开始构建推荐系统</a></h3>
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar"></i> 2025-10-05</span>
+                            <span><i class="far fa-eye"></i> 1.2k 浏览</span>
+                        </div>
+                        <p>本教程将带你从零开始，使用Python和TensorFlow构建一个完整的推荐系统，包含数据预处理、模型训练和部署...</p>
+                        <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+                
+                <article class="post-card">
+                    <div class="post-image">
+                        <img src="" alt="文章图片">
+                    </div>
+                    <div class="post-info">
+                        <div class="post-category">数据分析</div>
+                        <h3><a href="#">使用Pandas进行高效数据分析</a></h3>
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar"></i> 2025-10-01</span>
+                            <span><i class="far fa-eye"></i> 1.5k 浏览</span>
+                        </div>
+                        <p>掌握Pandas库的核心功能，学习如何进行数据清洗、转换和分析，提升你的数据处理效率...</p>
+                        <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+            </section>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <a href="#" class="active">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#"><i class="fas fa-chevron-right"></i></a>
+            </div>
+        </main>
     </div>
-    
-    <div id="container_right">
-    </div>
-    
-    <footer>
-        <p>&copy; 20-23 解释权最终归小田所有. Tianmaozheng666@gmail.com</p>
+
+    <!-- 页脚 -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-widgets">
+                <div class="footer-widget">
+                    <h3>关于博客</h3>
+                    <p>分享编程经验、技术文章和学习笔记，记录个人成长历程。</p>
+                </div>
+                <div class="footer-widget">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="#">关于我</a></li>
+                        <li><a href="#">项目作品</a></li>
+                        <li><a href="#">技术文章</a></li>
+                        <li><a href="#">留言板</a></li>
+                    </ul>
+                </div>
+                <div class="footer-widget">
+                    <h3>联系我</h3>
+                    <p><i class="fas fa-envelope"></i> Tianmaozheng666@gmail.com</p>
+                    <p><i class="fas fa-phone"></i> 134-2990-6347</p>
+                    <p><i class="fab fa-github"></i> <a href="https://github.com/Tianmaozheng" target="_blank">GitHub主页</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 小田的博客. 保留所有权利. 京ICP备XXXXXXXX号</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-weixin"></i></a>
+                </div>
+            </div>
+        </div>
     </footer>
-    
+
+    <!-- 返回顶部按钮 -->
+    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
     <script src="../js/script.js"></script>
 </body>
 </html>
