@@ -1,0 +1,103 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #67f9D4, #ff9554);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#container_central {
+    background: linear-gradient(135deg, #67f9D4, #ff9554);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    width: 600px;
+    margin: 20px;
+}
+
+/* 左边盒子 */
+#container_left {
+    background-color: rgba(255, 255, 255, 0.1); 
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    float: left;
+    text-align: center;
+    width: 200px;
+    margin: 20px;
+}
+
+/* 右边盒子 */
+#container_right {
+    background-color: rgba(255, 255, 255, 0.1); 
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    float: right;
+    text-align: center;
+    width: 200px;
+    margin: 20px;
+}
+
+#profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 20px;
+    border-top:1px solid  #67f9D4;
+    border-bottom: 1px solid #ff9554;
+    border-right:1px solid #67f9D4; 
+    border-left:1px solid #ff9554;
+}
+
+#profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+h1 {
+    font-family: "仿宋", serif;
+    color: wheat;
+}
+
+p {
+    color: wheat;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: pink;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.loader {
+    width: 120px;
+    height: 20px;
+    transform: skewX(-45deg);
+    background: 
+        linear-gradient(#f03355 0 0) left -30px top 0/30px 20px no-repeat 
+        #ccc;
+    animation: l3 1s infinite linear;
+}
+
+@keyframes l3 {
+    100% {background-position: right -30px top 0}
+}
