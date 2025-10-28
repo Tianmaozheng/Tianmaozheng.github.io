@@ -119,4 +119,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     console.log('博客交互功能已加载');
+
+    // 动态注入公共页脚
+    const footerMount = document.getElementById('footer-mount');
+    if (footerMount) {
+        fetch('/partials/footer.html', { cache: 'no-cache' })
+            .then(function(resp) { return resp.text(); })
+            .then(function(html) { footerMount.innerHTML = html; })
+            .catch(function(err) { console.warn('加载页脚失败', err); });
+    }
 });
