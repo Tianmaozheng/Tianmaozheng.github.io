@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目作品 | 小田的博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../personal_blog/css/style.css">
+    <style>
+        body.projects-page .post-category {
+            position: static;
+            display: inline-block;
+            background: transparent;
+            color: var(--primary-color);
+            padding: 0;
+            border-radius: 0;
+            margin: 10px 0 6px;
+        }
+        body.projects-page .post-info { position: static; }
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .project-card { background: #fff; border-radius: var(--border-radius); box-shadow: var(--box-shadow); padding: 18px; }
+        .project-card h3 { margin: 10px 0; }
+        .project-tags { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+        .project-tags span { background:#f0f3f7; color:#506174; padding:2px 8px; border-radius:12px; font-size:.8rem; }
+    </style>
+</head>
+<body class="projects-page">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><a href="/"></a></div>
+            <ul class="nav-links">
+                <li><a href="/">首页</a></li>
+                <li><a href="articles.html">技术文章</a></li>
+                <li><a href="#" class="active">项目作品</a></li>
+                <li><a href="about.html">关于我</a></li>
+                <li><a href="guestbook.html">留言板</a></li>
+            </ul>
+            <div class="search-box">
+                <input type="text" placeholder="搜索项目...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="profile-sidebar">
+            <div class="profile-card">
+                <div class="profile-image">
+                    <img src="../personal_blog/img/sign.jpg" alt="小田">
+                </div>
+                <h2>小田</h2>
+                <p class="profile-title">全栈开发者 & 技术博主</p>
+                <p class="profile-bio">精选个人项目，涵盖 Web、数据与 AI。</p>
+            </div>
+        </aside>
+
+        <main class="content">
+            <section class="recent-posts">
+                <h2 class="section-title">项目作品</h2>
+                <div class="project-grid">
+                    <div class="project-card">
+                        <div class="post-category">Web</div>
+                        <h3>个人博客系统</h3>
+                        <p>基于静态站点与自动化部署，实现内容发布与主题化配置。</p>
+                        <div class="project-tags"><span>HTML</span><span>CSS</span><span>GitHub Pages</span></div>
+                    </div>
+                    <div class="project-card">
+                        <div class="post-category">AI</div>
+                        <h3>文本分类服务</h3>
+                        <p>利用轻量模型提供在线预测 API，含日志与监控。</p>
+                        <div class="project-tags"><span>Python</span><span>FastAPI</span><span>ML</span></div>
+                    </div>
+                    <div class="project-card">
+                        <div class="post-category">Data</div>
+                        <h3>数据可视化面板</h3>
+                        <p>支持多维度筛选与动态图表，直观展示业务指标。</p>
+                        <div class="project-tags"><span>ECharts</span><span>Dashboard</span></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-bottom">
+                <p>&copy; 2025 小田的博客.</p>
+            </div>
+        </div>
+    </footer>
+
+    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+    <script src="../personal_blog/js/script.js"></script>
+</body>
+</html>
+
