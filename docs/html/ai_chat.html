@@ -105,6 +105,48 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
+        /* Markdown 内容样式优化 */
+        .message-content h1, .message-content h2, .message-content h3 {
+            margin: 8px 0;
+        }
+        .message-content p { margin: 6px 0; }
+        .message-content ul { margin: 6px 0 6px 18px; }
+        .message-content pre {
+            background: #ffffff;
+            color: #111111;
+            padding: 12px 14px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            position: relative;
+        }
+        .message-content code {
+            background: #ffffff;
+            color: #111111;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        .message-content pre code {
+            background: transparent;
+            border: 0;
+            padding: 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #111111;
+            cursor: pointer;
+        }
+        .copy-btn:hover { background: #f8fafc; }
+
         .message-avatar {
             width: 40px;
             height: 40px;
@@ -314,17 +356,45 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
     <script>
 
         const API_URL = "https://api.siliconflow.cn/v1/chat/completions";
         const API_KEY = "sk-gazlhxwkvononrphkuikvdrmyhliwcynlstoavrhuxwbrwye";
         const MODEL = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B";
 
-        const SYSTEM_PROMPT = "你是小田的AI助手‘小田助手’。请始终使用中文回答，语气友好专业，必要时给出分点说明。不要自称或提及模型名称（如 DeepSeek、GPT 等），不要说自己是由某公司研发。需要自我介绍时说：‘我是小田助手’。";
+        const SYSTEM_PROMPT = "你是小田的AI助手‘小田助手’。请始终使用中文回答，语气友好专业，必要时给出分点说明。不要自称或提及模型名称（如 DeepSeek、GPT 等），不要说自己是由某公司研发。需要自我介绍时说：‘我是小田助手’。输出请优先使用Markdown格式（标题、列表、表格、引用），代码使用带语言标注的代码块。";
 
         let messages = [
             { role: 'system', content: SYSTEM_PROMPT }
         ];
+
+        function enhanceCodeBlocks(container) {
+            try {
+                const pres = container.querySelectorAll('pre');
+                pres.forEach(pre => {
+                    if (pre.querySelector('.copy-btn')) return;
+                    const btn = document.createElement('button');
+                    btn.className = 'copy-btn';
+                    btn.textContent = '复制';
+                    btn.addEventListener('click', async function() {
+                        const codeEl = pre.querySelector('code');
+                        const text = codeEl ? codeEl.innerText : pre.innerText;
+                        try {
+                            await navigator.clipboard.writeText(text);
+                            const old = btn.textContent;
+                            btn.textContent = '已复制';
+                            setTimeout(() => btn.textContent = old, 1200);
+                        } catch (e) {
+                            alert('复制失败，请手动选择复制');
+                        }
+                    });
+                    pre.appendChild(btn);
+                });
+            } catch (_) {}
+        }
 
         async function sendMessage() {
             const input = document.getElementById('userInput');
@@ -332,56 +402,109 @@
             
             if (!message) return;
 
-            // 禁用输入
             input.disabled = true;
             document.getElementById('sendBtn').disabled = true;
 
-            // 显示用户消息
             addMessage('user', message);
             input.value = '';
 
-            // 添加到历史
             messages.push({
                 role: 'user',
                 content: message
             });
 
-            // 显示加载动画
             showLoading();
 
             try {
-                // 调用 API
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/event-stream'
                     },
                     body: JSON.stringify({
                         model: MODEL,
                         messages: messages,
-                        max_tokens: 2000
+                        max_tokens: 2000,
+                        stream: true
                     })
                 });
 
-                const result = await response.json();
+                const messagesDiv = document.getElementById('chatMessages');
+                const streamingDiv = document.createElement('div');
+                streamingDiv.className = 'message assistant';
+                const streamingAvatar = document.createElement('div');
+                streamingAvatar.className = 'message-avatar';
+                const streamingImg = document.createElement('img');
+                streamingImg.src = '../personal_blog/img/sign.jpg';
+                streamingImg.alt = 'AI';
+                streamingAvatar.appendChild(streamingImg);
+                const streamingContent = document.createElement('div');
+                streamingContent.className = 'message-content';
+                streamingDiv.appendChild(streamingAvatar);
+                streamingDiv.appendChild(streamingContent);
 
-                // 隐藏加载动画
                 hideLoading();
+                messagesDiv.appendChild(streamingDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-                if (result.choices && result.choices.length > 0) {
-                    const assistantMessage = result.choices[0].message.content;
-                    
-                    // 添加到历史
-                    messages.push({
-                        role: 'assistant',
-                        content: assistantMessage
-                    });
-
-                    // 显示 AI 回复
-                    addMessage('assistant', assistantMessage, result.usage);
+                if (response.ok && response.body) {
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder('utf-8');
+                    let done = false;
+                    let fullContent = '';
+                    let buffer = '';
+                    const render = (text) => {
+                        try {
+                            const html = marked.parse(text);
+                            streamingContent.innerHTML = DOMPurify.sanitize(html);
+                            enhanceCodeBlocks(streamingContent);
+                        } catch (_) {
+                            streamingContent.textContent = text;
+                        }
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    };
+                    while (!done) {
+                        const { value, done: doneReading } = await reader.read();
+                        done = doneReading;
+                        if (value) {
+                            buffer += decoder.decode(value, { stream: true });
+                            let parts = buffer.split(/\n\n|\r\n\r\n|\n/);
+                            for (let i = 0; i < parts.length - 1; i++) {
+                                let line = parts[i].trim();
+                                if (!line) continue;
+                                if (line.startsWith('data:')) line = line.replace(/^data:\s*/, '');
+                                if (line === '[DONE]') continue;
+                                try {
+                                    const json = JSON.parse(line);
+                                    const choice = json.choices && json.choices[0] ? json.choices[0] : null;
+                                    const delta = choice?.delta?.content ?? choice?.message?.content ?? choice?.text ?? '';
+                                    if (delta) {
+                                        fullContent += delta;
+                                        render(fullContent);
+                                    }
+                                } catch (_) {
+                                    fullContent += line;
+                                    render(fullContent);
+                                }
+                            }
+                            buffer = parts[parts.length - 1];
+                        }
+                    }
+                    if (fullContent) {
+                        messages.push({ role: 'assistant', content: fullContent });
+                    }
                 } else {
-                    addMessage('assistant', '❌ 抱歉，出现了错误：' + (result.message || '未知错误'));
+                    const result = await response.json();
+                    hideLoading();
+                    const assistantMessage = (result.choices && result.choices[0] && (result.choices[0].message?.content || result.choices[0].text)) || '';
+                    if (assistantMessage) {
+                        messages.push({ role: 'assistant', content: assistantMessage });
+                        addMessage('assistant', assistantMessage, result.usage);
+                    } else {
+                        addMessage('assistant', '❌ 抱歉，出现了错误：' + (result.message || '未知错误'));
+                    }
                 }
             } catch (error) {
                 hideLoading();
@@ -413,7 +536,17 @@
 
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            contentDiv.textContent = content;
+            if (role === 'assistant') {
+                try {
+                    const html = marked.parse(content || '');
+                    contentDiv.innerHTML = DOMPurify.sanitize(html);
+                    enhanceCodeBlocks(contentDiv);
+                } catch (_) {
+                    contentDiv.textContent = content;
+                }
+            } else {
+                contentDiv.textContent = content;
+            }
 
             // 添加 token 使用信息
             if (usage) {
@@ -439,7 +572,7 @@
             loadingDiv.id = 'loadingMessage';
 
             loadingDiv.innerHTML = `
-                <div class="message-avatar">🤖</div>
+                <div class="message-avatar"><img src="../personal_blog/img/sign.jpg" alt="AI"></div>
                 <div class="loading show">
                     <div class="loading-dots">
                         <span></span>
