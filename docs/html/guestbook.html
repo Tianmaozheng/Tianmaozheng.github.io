@@ -60,10 +60,15 @@
                 <div class="guestbook-card">
                     <div class="post-category">交流</div>
                     <h3>给我留言</h3>
-                    <form class="guestbook-form" onsubmit="event.preventDefault(); alert('感谢你的留言！'); this.reset();">
-                        <input type="text" placeholder="您的称呼" required>
-                        <input type="email" placeholder="邮箱（选填）">
-                        <textarea rows="4" placeholder="留言内容" required></textarea>
+                    <form class="guestbook-form" action="https://formsubmit.co/2151447128@qq.com" method="POST">
+                        <input type="hidden" name="_subject" value="博客留言板新留言">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_next" value="/html/guestbook.html?success=1">
+
+                        <input type="text" name="name" placeholder="您的称呼" required>
+                        <input type="email" name="email" placeholder="邮箱（选填）">
+                        <textarea rows="4" name="message" placeholder="留言内容" required></textarea>
                         <button type="submit">提交</button>
                     </form>
                 </div>
@@ -75,6 +80,19 @@
 
     <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
     <script src="../personal_blog/js/script.js"></script>
+    <script>
+    (function() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('success') === '1') {
+                alert('感谢你的留言！我已收到邮件通知，会尽快查看回复。');
+                const url = new URL(window.location);
+                url.searchParams.delete('success');
+                window.history.replaceState({}, '', url);
+            }
+        } catch (e) {}
+    })();
+    </script>
 </body>
 </html>
 
