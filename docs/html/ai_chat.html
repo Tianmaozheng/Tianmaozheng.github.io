@@ -315,15 +315,17 @@
     </div>
 
     <script>
-        // API 配置
+
         const API_URL = "https://api.siliconflow.cn/v1/chat/completions";
         const API_KEY = "sk-gazlhxwkvononrphkuikvdrmyhliwcynlstoavrhuxwbrwye";
         const MODEL = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B";
 
-        // 对话历史
-        let messages = [];
+        const SYSTEM_PROMPT = "你是小田的AI助手‘小田助手’。请始终使用中文回答，语气友好专业，必要时给出分点说明。不要自称或提及模型名称（如 DeepSeek、GPT 等），不要说自己是由某公司研发。需要自我介绍时说：‘我是小田助手’。";
 
-        // 发送消息
+        let messages = [
+            { role: 'system', content: SYSTEM_PROMPT }
+        ];
+
         async function sendMessage() {
             const input = document.getElementById('userInput');
             const message = input.value.trim();
@@ -462,7 +464,7 @@
         // 清空对话
         function clearChat() {
             if (confirm('确定要清空所有对话吗？')) {
-                messages = [];
+                messages = [ { role: 'system', content: SYSTEM_PROMPT } ];
                 const messagesDiv = document.getElementById('chatMessages');
                 messagesDiv.innerHTML = `
                     <div class="message assistant">
