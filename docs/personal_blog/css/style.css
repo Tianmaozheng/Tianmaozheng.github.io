@@ -9,6 +9,8 @@
     --border-radius: 8px;
     --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
+    /* 避免页面间切换时滚动条出现/消失引起的布局抖动 */
+    scrollbar-gutter: stable;
 }
 
 * {
@@ -24,6 +26,9 @@ body {
     background-color: #f5f7fa;
     overflow-x: hidden;
 }
+
+/* 始终保留垂直滚动条空间，避免不同页面切换时导航抖动 */
+html { overflow-y: scroll; }
 
 a {
     text-decoration: none;
