@@ -64,7 +64,7 @@
                         <input type="hidden" name="_subject" value="博客留言板新留言">
                         <input type="hidden" name="_template" value="table">
                         <input type="hidden" name="_captcha" value="false">
-                        <input type="hidden" name="_next" value="/html/guestbook.html?success=1">
+                        <!-- _next 将在提交时动态设置为当前站点的绝对地址，避免跳到 formsubmit 域名下 -->
 
                         <input type="text" name="name" placeholder="您的称呼" required>
                         <input type="email" name="email" placeholder="邮箱（选填）">
@@ -90,6 +90,20 @@
                 url.searchParams.delete('success');
                 window.history.replaceState({}, '', url);
             }
+        } catch (e) {}
+        try {
+            const form = document.querySelector('.guestbook-form');
+            form.addEventListener('submit', function() {
+                let next = form.querySelector('input[name="_next"]');
+                if (!next) {
+                    next = document.createElement('input');
+                    next.type = 'hidden';
+                    next.name = '_next';
+                    form.appendChild(next);
+                }
+                // 跳回本站的留言页，并带 success=1
+                next.value = window.location.origin + '/html/guestbook.html?success=1';
+            });
         } catch (e) {}
     })();
     </script>
