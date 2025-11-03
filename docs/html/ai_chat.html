@@ -313,6 +313,32 @@
         }
         .copy-btn:hover { background: #f8fafc; }
 
+        /* 内联确认条样式 */
+        /* 模态确认框 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal {
+            width: 92%;
+            max-width: 360px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.18);
+            overflow: hidden;
+        }
+        .modal-header { padding: 12px 16px; font-weight: 600; color: #0f172a; border-bottom: 1px solid #eef2f7; }
+        .modal-body { padding: 14px 16px; color: #334155; }
+        .modal-footer { padding: 12px 16px; display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid #eef2f7; }
+        .modal-btn { border: 1px solid #e5e7eb; background: #fff; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .modal-btn:hover { background: #f8fafc; }
+        .modal-btn.danger { color: #ef4444; border-color: #fecaca; }
+        .modal-btn.danger:hover { background: #fee2e2; }
         .message-avatar {
             width: 40px;
             height: 40px;
@@ -490,8 +516,16 @@
                 <div class="chat-sidebar">
                     <div class="sidebar-header">
                         <h3>对话历史</h3>
+                    </div>
+                    <div class="history-actions" style="display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid #e5e7eb;">
+                        <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:#475569;">
+                            <input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"> 全选
+                        </label>
                         <button class="new-chat-btn" onclick="createNewChat()">
-                            <i class="fas fa-plus"></i> 新建
+                            <i class="fas fa-plus"></i> 新建对话
+                        </button>
+                        <button class="new-chat-btn" style="background:linear-gradient(135deg,#ef4444 0%,#e9510a 100%);" onclick="deleteSelected()">
+                            <i class="fas fa-trash"></i> 删除所选
                         </button>
                     </div>
                     <div class="chat-history" id="chatHistory">
@@ -534,6 +568,47 @@
         const MODEL = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B";
 
         const SYSTEM_PROMPT = "你是小田的AI助手，名为‘小田助手’。重要规则：1) 当被问到你是谁、你的身份时，统一回答：‘我是小田的AI助手，有什么可以帮助你的嘛’。2) 当被问到你的模型、技术细节、你是什么AI模型时，用幽默搞笑的话语回答：‘哈哈，我可是个东拼西凑的模型，吃百家饭长大的！什么技术都用了一点，杂糅而成，可以说是AI界的‘混血儿’。虽然出身不够‘纯正’，但胜在实用，能帮你解决各种问题。’不要提及具体模型名称。3) 绝对不要提及任何AI模型名称（如DeepSeek、GPT、ChatGPT、Claude、文心一言、通义千问等）。4) 不要说自己是由某公司研发或提及任何技术公司名称。5) 始终使用中文回答，语气友好专业，必要时给出分点说明。6) 输出请优先使用Markdown格式（标题、列表、表格、引用），代码使用带语言标注的代码块。";
+
+        let pendingDeleteId = null;
+        let selectedChatIds = new Set();
+        let confirmModalEl = null;
+        let confirmModalCallback = null;
+
+        function ensureModal() {
+            if (confirmModalEl) return confirmModalEl;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.id = 'confirm-modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+                    <div class="modal-header" id="confirm-title">请确认</div>
+                    <div class="modal-body" id="confirm-text">是否继续该操作？</div>
+                    <div class="modal-footer">
+                        <button type="button" class="modal-btn" id="confirm-cancel">取消</button>
+                        <button type="button" class="modal-btn danger" id="confirm-ok">确认</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(overlay);
+            const cancelBtn = overlay.querySelector('#confirm-cancel');
+            const okBtn = overlay.querySelector('#confirm-ok');
+            cancelBtn.addEventListener('click', closeConfirmModal);
+            overlay.addEventListener('click', function(e){ if(e.target === overlay) closeConfirmModal(); });
+            okBtn.addEventListener('click', function(){
+                const cb = confirmModalCallback; closeConfirmModal(); if (cb) cb();
+            });
+            confirmModalEl = overlay;
+            return overlay;
+        }
+        function openConfirmModal(text, onConfirm) {
+            const el = ensureModal();
+            el.querySelector('#confirm-text').textContent = text;
+            confirmModalCallback = onConfirm;
+            el.style.display = 'flex';
+        }
+        function closeConfirmModal() {
+            if (confirmModalEl) confirmModalEl.style.display = 'none';
+            confirmModalCallback = null;
+        }
 
         let currentChatId = null;
         let chats = [];
@@ -633,16 +708,18 @@
                     timeStr = date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
                 }
                 
+                const checked = selectedChatIds.has(chat.id) ? 'checked' : '';
                 return `
                     <div class="history-item ${chat.id === currentChatId ? 'active' : ''}" 
                          onclick="loadChat('${chat.id}')">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                            <div style="flex: 1; min-width: 0;">
+                            <div style="display:flex; align-items:flex-start; gap:8px; flex:1; min-width:0;">
+                                <input type="checkbox" class="history-select" ${checked} onclick="toggleSelect(event,'${chat.id}')">
                                 <div class="history-item-title">${escapeHtml(chat.title)}</div>
                                 <div class="history-item-time">${timeStr}</div>
                             </div>
                             <button class="history-item-delete" 
-                                    onclick="event.stopPropagation(); deleteChat('${chat.id}')" 
+                            onclick="event.stopPropagation(); askDelete('${chat.id}')" 
                                     title="删除对话">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -650,14 +727,56 @@
                     </div>
                 `;
             }).join('');
+            // 更新全选状态
+            const selectAllEl = document.getElementById('select-all');
+            if (selectAllEl) {
+                selectAllEl.checked = chats.length > 0 && selectedChatIds.size === chats.length;
+                selectAllEl.indeterminate = selectedChatIds.size > 0 && selectedChatIds.size < chats.length;
+            }
         }
 
-        function deleteChat(chatId) {
-            if (!confirm('确定要删除这个对话吗？')) return;
-            
+        function askDelete(chatId) {
+            openConfirmModal('确认删除此对话？', function() { confirmDelete(chatId); });
+        }
+        function toggleSelect(e, chatId) {
+            e.stopPropagation();
+            if (selectedChatIds.has(chatId)) {
+                selectedChatIds.delete(chatId);
+            } else {
+                selectedChatIds.add(chatId);
+            }
+            renderChatHistory();
+        }
+        function toggleSelectAll(checkbox) {
+            selectedChatIds.clear();
+            if (checkbox.checked) {
+                chats.forEach(c => selectedChatIds.add(c.id));
+            }
+            renderChatHistory();
+        }
+        function deleteSelected() {
+            if (selectedChatIds.size === 0) return;
+            const count = selectedChatIds.size;
+            openConfirmModal('确认删除所选 ' + count + ' 个对话？', function() {
+                const toDelete = new Set(selectedChatIds);
+                chats = chats.filter(c => !toDelete.has(c.id));
+                selectedChatIds.clear();
+                saveChatHistory();
+                if (!chats.find(c => c.id === currentChatId)) {
+                    if (chats.length > 0) {
+                        loadChat(chats[0].id);
+                    } else {
+                        createNewChat();
+                    }
+                } else {
+                    renderChatHistory();
+                }
+            });
+        }
+        function confirmDelete(chatId) {
             chats = chats.filter(c => c.id !== chatId);
+            pendingDeleteId = null;
             saveChatHistory();
-            
             if (currentChatId === chatId) {
                 if (chats.length > 0) {
                     loadChat(chats[0].id);
@@ -936,10 +1055,27 @@
             }
         }
 
+        function isChatEmpty(chat) {
+            if (!chat) return true;
+            return (chat.messages || []).filter(m => m.role !== 'system').length === 0;
+        }
         function clearChat() {
-            if (confirm('确定要创建新对话吗？当前对话将保存到历史记录中。')) {
+            openConfirmModal('确认创建新对话？当前对话会保留在历史。', function() {
+                const current = chats.find(c => c.id === currentChatId);
+                if (isChatEmpty(current)) {
+                    // 当前已是空对话，不重复创建，直接重置显示
+                    const messagesDiv = document.getElementById('chatMessages');
+                    if (messagesDiv) {
+                        messagesDiv.innerHTML = `
+                            <div class="message assistant">
+                                <div class="message-avatar"><img src="../personal_blog/img/sign.jpg" alt="AI"></div>
+                                <div class="message-content">你好！我是小田，请问有什么可以帮你的嘛？</div>
+                            </div>`;
+                    }
+                    return;
+                }
                 createNewChat();
-            }
+            });
         }
 
         function handleKeyPress(event) {

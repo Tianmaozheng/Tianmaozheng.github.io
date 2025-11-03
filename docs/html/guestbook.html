@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -19,10 +19,18 @@
             margin: 10px 0 6px;
         }
         body.guestbook-page .post-info { position: static; }
-        .guestbook-card { background:#fff; border-radius:var(--border-radius); box-shadow:var(--box-shadow); padding:20px; }
-        .guestbook-form { display:flex; flex-direction:column; gap:12px; margin-top:10px; }
-        .guestbook-form input, .guestbook-form textarea { padding:10px 12px; border:1px solid #ddd; border-radius:8px; }
-        .guestbook-form button { align-self:flex-start; background:var(--primary-color); color:#fff; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; }
+        .guestbook-card { background:#fff; border-radius:16px; box-shadow:var(--box-shadow); padding:28px 28px 24px; max-width:680px; margin:0 auto; }
+        .guestbook-header { display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:16px; }
+        .gb-title { display:inline-block; padding:8px 16px; border:1px solid #e5e7eb; border-radius:999px; background:#fff; font-weight:700; font-size:18px; color:#111827; letter-spacing:.5px; }
+        .gb-subtitle { color:#6b7280; font-size:14px; }
+        .guestbook-form { display:flex; flex-direction:column; gap:14px; margin-top:6px; }
+        .guestbook-form input, .guestbook-form textarea { width:100%; padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px; background:#fff; }
+        .guestbook-form textarea { resize: vertical; }
+        .guestbook-actions { display:flex; justify-content:center; margin-top:2px; }
+        .guestbook-form button { background:var(--primary-color); color:#fff; border:none; padding:10px 18px; border-radius:999px; cursor:pointer; min-width:120px; }
+        .guestbook-form button:hover { filter:brightness(.95); }
+        .main-container { justify-content:center; }
+        .guestbook-divider { height:1px; background:#f1f5f9; margin:10px 0 4px; border-radius:1px; }
     </style>
 </head>
 <body class="guestbook-page">
@@ -41,23 +49,16 @@
     </nav>
 
     <div class="main-container">
-        <aside class="profile-sidebar">
-            <div class="profile-card">
-                <div class="profile-image">
-                    <img src="../personal_blog/img/sign.jpg" alt="小田">
-                </div>
-                <h2>小田</h2>
-                <p class="profile-title">全栈开发者 & 技术博主</p>
-                <p class="profile-bio">欢迎留言交流建议或问题。</p>
-            </div>
-        </aside>
+        
 
         <main class="content">
             <section class="recent-posts">
-                <h2 class="section-title">留言板</h2>
                 <div class="guestbook-card">
-                    <div class="post-category">交流</div>
-                    <h3>给我留言</h3>
+                    <div class="guestbook-header">
+                        <div class="gb-title">留言板</div>
+                        <div class="gb-subtitle">欢迎留下你的建议与想法</div>
+                    </div>
+                    <div class="guestbook-divider"></div>
                     <form class="guestbook-form" action="https://formsubmit.co/2151447128@qq.com" method="POST">
                         <input type="hidden" name="_subject" value="留言板留言">
                         <input type="hidden" name="_template" value="table">
@@ -66,7 +67,9 @@
                         <input type="text" name="name" placeholder="您的称呼" required>
                         <input type="email" name="email" placeholder="邮箱（选填）">
                         <textarea rows="4" name="message" placeholder="留言内容" required></textarea>
-                        <button type="submit">提交</button>
+                        <div class="guestbook-actions">
+                            <button type="submit">提交</button>
+                        </div>
                     </form>
                 </div>
             </section>
@@ -106,4 +109,4 @@
     </script>
 </body>
 </html>
-
+ -->
