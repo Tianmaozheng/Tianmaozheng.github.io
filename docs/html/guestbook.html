@@ -35,10 +35,6 @@
                 <li><a href="guestbook.html" class="active">留言板</a></li>
                 <li><a href="ai_chat.html">AI问答</a></li>
             </ul>
-            <div class="search-box">
-                <input type="text" placeholder="搜索...">
-                <button><i class="fas fa-search"></i></button>
-            </div>
         </div>
     </nav>
 
@@ -61,10 +57,9 @@
                     <div class="post-category">交流</div>
                     <h3>给我留言</h3>
                     <form class="guestbook-form" action="https://formsubmit.co/2151447128@qq.com" method="POST">
-                        <input type="hidden" name="_subject" value="博客留言板新留言">
+                        <input type="hidden" name="_subject" value="留言板留言">
                         <input type="hidden" name="_template" value="table">
                         <input type="hidden" name="_captcha" value="false">
-                        <!-- _next 将在提交时动态设置为当前站点的绝对地址，避免跳到 formsubmit 域名下 -->
 
                         <input type="text" name="name" placeholder="您的称呼" required>
                         <input type="email" name="email" placeholder="邮箱（选填）">
@@ -101,7 +96,7 @@
                     next.name = '_next';
                     form.appendChild(next);
                 }
-                // 跳回本站的留言页，并带 success=1
+
                 next.value = window.location.origin + '/html/guestbook.html?success=1';
             });
         } catch (e) {}

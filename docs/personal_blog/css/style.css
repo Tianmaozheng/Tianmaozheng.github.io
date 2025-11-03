@@ -71,6 +71,7 @@ ul {
     justify-content: space-between;
     align-items: center;
     padding: 15px 0;
+    position: relative;
 }
 
 .logo a {
@@ -691,15 +692,101 @@ ul {
     transform: translateY(-5px);
 }
 
+/* 移动端菜单切换按钮 */
+.menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--dark-color);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+    z-index: 1001;
+    transition: transform 0.3s;
+}
+
+.menu-toggle:hover {
+    color: var(--primary-color);
+}
+
+.menu-toggle.active {
+    transform: rotate(90deg);
+}
+
 /* 响应式设计 */
 @media (max-width: 992px) {
+    .menu-toggle {
+        display: block;
+    }
+    
     .nav-links {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        gap: 0;
+        z-index: 999;
+    }
+    
+    .nav-links.active {
+        display: flex;
+    }
+    
+    .nav-links li {
+        width: 100%;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .nav-links li:last-child {
+        border-bottom: none;
+    }
+    
+    .nav-links a {
+        display: block;
+        padding: 15px 10px;
+        font-size: 16px;
+        width: 100%;
+    }
+    
+    .nav-links a::after {
+        display: none;
+    }
+    
+    .nav-links a.active {
+        color: var(--primary-color);
+        background: #f8f9fa;
+        border-left: 3px solid var(--primary-color);
+        padding-left: 7px;
+    }
+    
+    .nav-container {
+        position: relative;
+        flex-wrap: wrap;
+        padding: 12px 15px;
+    }
+    
+    .navbar {
+        position: sticky;
+        top: 0;
+    }
+    
+    .logo {
+        flex: 1;
+    }
+    
+    .logo a {
+        font-size: 1.5rem;
     }
     
     .main-container {
         flex-direction: column;
         gap: 30px;
+        padding: 0 15px;
     }
     
     .profile-sidebar {

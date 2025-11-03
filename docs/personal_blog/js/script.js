@@ -41,29 +41,82 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 移动端菜单切换
-    const menuToggle = document.createElement('div');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    document.querySelector('.nav-container').appendChild(menuToggle);
-    
-    menuToggle.addEventListener('click', function() {
+    const navContainer = document.querySelector('.nav-container');
+    if (navContainer) {
+        const menuToggle = document.createElement('button');
+        menuToggle.className = 'menu-toggle';
+        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        menuToggle.setAttribute('aria-label', '切换菜单');
+        navContainer.appendChild(menuToggle);
+        
         const navLinks = document.querySelector('.nav-links');
-        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-    });
-    
-    // 调整窗口大小时重新计算样式
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            const navLinks = document.querySelector('.nav-links');
-            if (window.innerWidth > 992) {
-                navLinks.style.display = 'flex';
-            } else {
-                navLinks.style.display = 'none';
-            }
-        }, 250);
-    });
+        if (navLinks) {
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                navLinks.classList.toggle('active');
+                menuToggle.classList.toggle('active');
+                // 切换图标
+                const icon = menuToggle.querySelector('i');
+                if (icon) {
+                    if (navLinks.classList.contains('active')) {
+                        icon.className = 'fas fa-times';
+                    } else {
+                        icon.className = 'fas fa-bars';
+                    }
+                }
+            });
+            
+            // 点击菜单项后关闭移动端菜单
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) {
+                        navLinks.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                        const icon = menuToggle.querySelector('i');
+                        if (icon) {
+                            icon.className = 'fas fa-bars';
+                        }
+                    }
+                });
+            });
+            
+            // 点击外部关闭菜单
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 992) {
+                    if (!navContainer.contains(e.target)) {
+                        navLinks.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                        const icon = menuToggle.querySelector('i');
+                        if (icon) {
+                            icon.className = 'fas fa-bars';
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 调整窗口大小时重新计算样式
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                const navLinks = document.querySelector('.nav-links');
+                if (navLinks) {
+                    if (window.innerWidth > 992) {
+                        navLinks.classList.remove('active');
+                        navLinks.style.display = 'flex';
+                        menuToggle.classList.remove('active');
+                        const icon = menuToggle.querySelector('i');
+                        if (icon) {
+                            icon.className = 'fas fa-bars';
+                        }
+                    } else {
+                        navLinks.style.display = navLinks.classList.contains('active') ? 'flex' : 'none';
+                    }
+                }
+            }, 250);
+        });
+    }
     
     // 文章卡片动画
     const animateOnScroll = function() {
