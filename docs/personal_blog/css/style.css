@@ -68,10 +68,14 @@ ul {
 
 .nav-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 15px 0;
     position: relative;
+}
+
+.logo {
+    display: none;
 }
 
 .logo a {
@@ -84,6 +88,7 @@ ul {
 .nav-links {
     display: flex;
     gap: 25px;
+    justify-content: center;
 }
 
 .nav-links a {
@@ -766,8 +771,10 @@ ul {
     
     .nav-container {
         position: relative;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         padding: 12px 15px;
+        justify-content: center;
+        align-items: center;
     }
     
     .navbar {
@@ -776,11 +783,22 @@ ul {
     }
     
     .logo {
-        flex: 1;
+        display: none;
     }
     
     .logo a {
         font-size: 1.5rem;
+    }
+    
+    .menu-toggle {
+        position: absolute;
+        right: 15px;
+        flex: 0 0 auto;
+    }
+    
+    .nav-links {
+        width: 100%;
+        order: 1;
     }
     
     .main-container {

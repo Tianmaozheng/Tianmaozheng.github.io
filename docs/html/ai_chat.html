@@ -399,34 +399,27 @@
             display: block;
         }
 
-        .loading-dots {
-            display: flex;
-            gap: 5px;
-        }
-
-        .loading-dots span {
-            width: 8px;
-            height: 8px;
-            background: #667eea;
+        .loader {
+            height: 30px;
+            aspect-ratio: 1;
+            padding: 4px;
             border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
+            box-sizing: border-box;
+            position: relative;
+            mask: conic-gradient(#000 0 0) content-box exclude,conic-gradient(#000 0 0);
+            filter: blur(4px);
         }
 
-        .loading-dots span:nth-child(1) {
-            animation-delay: -0.32s;
+        .loader:before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-conic-gradient(#0000 0 5%,#C02942,#0000 20% 50%);
+            animation: l2 1.5s linear infinite;
         }
 
-        .loading-dots span:nth-child(2) {
-            animation-delay: -0.16s;
-        }
-
-        @keyframes bounce {
-            0%, 80%, 100% {
-                transform: scale(0);
-            }
-            40% {
-                transform: scale(1);
-            }
+        @keyframes l2 {
+            to {rotate: 1turn}
         }
 
         .clear-btn {
@@ -492,7 +485,6 @@
     <div class="main-container">
         <main class="content" style="width:100%">
             <div class="chat-layout">
-                <!-- 左侧历史对话栏 -->
                 <div class="chat-sidebar">
                     <div class="sidebar-header">
                         <h3>对话历史</h3>
@@ -501,11 +493,9 @@
                         </button>
                     </div>
                     <div class="chat-history" id="chatHistory">
-                        <!-- 历史对话列表将动态生成 -->
                     </div>
                 </div>
                 
-                <!-- 右侧聊天区域 -->
                 <div class="chat-main">
                     <div class="chat-container">
                         <div class="chat-header">
@@ -541,20 +531,17 @@
         const API_KEY = "sk-gazlhxwkvononrphkuikvdrmyhliwcynlstoavrhuxwbrwye";
         const MODEL = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B";
 
-        const SYSTEM_PROMPT = "你是小田的AI助手‘小田助手’。请始终使用中文回答，语气友好专业，必要时给出分点说明。不要自称或提及模型名称（如 DeepSeek、GPT 等），不要说自己是由某公司研发。需要自我介绍时说：‘我是小田助手’。输出请优先使用Markdown格式（标题、列表、表格、引用），代码使用带语言标注的代码块。";
+        const SYSTEM_PROMPT = "你是小田的AI助手，名为‘小田助手’。重要规则：1) 当被问到你是谁、你的身份时，统一回答：‘我是小田的AI助手，有什么可以帮助你的嘛’。2) 当被问到你的模型、技术细节、你是什么AI模型时，用幽默搞笑的话语回答：‘哈哈，我可是个东拼西凑的模型，吃百家饭长大的！什么技术都用了一点，杂糅而成，可以说是AI界的‘混血儿’。虽然出身不够‘纯正’，但胜在实用，能帮你解决各种问题。’不要提及具体模型名称。3) 绝对不要提及任何AI模型名称（如DeepSeek、GPT、ChatGPT、Claude、文心一言、通义千问等）。4) 不要说自己是由某公司研发或提及任何技术公司名称。5) 始终使用中文回答，语气友好专业，必要时给出分点说明。6) 输出请优先使用Markdown格式（标题、列表、表格、引用），代码使用带语言标注的代码块。";
 
-        // 历史对话管理
         let currentChatId = null;
         let chats = [];
 
-        // 初始化：加载历史对话
         function loadChatHistory() {
             try {
                 const saved = localStorage.getItem('ai_chat_history');
                 if (saved) {
                     chats = JSON.parse(saved);
                     renderChatHistory();
-                    // 如果有对话，加载最后一个
                     if (chats.length > 0) {
                         loadChat(chats[0].id);
                     } else {
@@ -569,7 +556,6 @@
             }
         }
 
-        // 保存对话历史到 localStorage
         function saveChatHistory() {
             try {
                 localStorage.setItem('ai_chat_history', JSON.stringify(chats));
@@ -578,7 +564,6 @@
             }
         }
 
-        // 创建新对话
         function createNewChat() {
             const newId = 'chat_' + Date.now();
             const newChat = {
@@ -595,7 +580,6 @@
             loadChat(newId);
         }
 
-        // 加载对话
         function loadChat(chatId) {
             const chat = chats.find(c => c.id === chatId);
             if (!chat) return;
@@ -603,11 +587,9 @@
             currentChatId = chatId;
             messages = JSON.parse(JSON.stringify(chat.messages));
             
-            // 渲染消息
             const messagesDiv = document.getElementById('chatMessages');
             messagesDiv.innerHTML = '';
             
-            // 跳过 system 消息，只显示用户和助手的消息
             const displayMessages = messages.filter(m => m.role !== 'system');
             if (displayMessages.length === 0) {
                 messagesDiv.innerHTML = `
@@ -624,12 +606,10 @@
                 });
             }
             
-            // 更新历史列表的高亮
             renderChatHistory();
             document.getElementById('userInput').focus();
         }
 
-        // 渲染历史对话列表
         function renderChatHistory() {
             const historyDiv = document.getElementById('chatHistory');
             if (chats.length === 0) {
@@ -670,7 +650,6 @@
             }).join('');
         }
 
-        // 删除对话
         function deleteChat(chatId) {
             if (!confirm('确定要删除这个对话吗？')) return;
             
@@ -688,11 +667,9 @@
             }
         }
 
-        // 更新当前对话的标题（使用第一条用户消息）
         function updateChatTitle(userMessage) {
             const chat = chats.find(c => c.id === currentChatId);
             if (chat && chat.title === '新对话') {
-                // 生成标题：取前30个字符
                 chat.title = userMessage.substring(0, 30) + (userMessage.length > 30 ? '...' : '');
                 chat.updatedAt = Date.now();
                 saveChatHistory();
@@ -703,19 +680,16 @@
             }
         }
 
-        // 保存当前对话
         function saveCurrentChat() {
             const chat = chats.find(c => c.id === currentChatId);
             if (chat) {
                 chat.messages = JSON.parse(JSON.stringify(messages));
                 chat.updatedAt = Date.now();
                 saveChatHistory();
-                // 更新列表中的时间显示
                 renderChatHistory();
             }
         }
 
-        // HTML 转义
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -768,7 +742,6 @@
                 content: message
             });
 
-            // 更新对话标题（如果是第一条用户消息）
             updateChatTitle(message);
 
             showLoading();
@@ -790,22 +763,39 @@
                 });
 
                 const messagesDiv = document.getElementById('chatMessages');
-                const streamingDiv = document.createElement('div');
-                streamingDiv.className = 'message assistant';
-                const streamingAvatar = document.createElement('div');
-                streamingAvatar.className = 'message-avatar';
-                const streamingImg = document.createElement('img');
-                streamingImg.src = '../personal_blog/img/sign.jpg';
-                streamingImg.alt = 'AI';
-                streamingAvatar.appendChild(streamingImg);
-                const streamingContent = document.createElement('div');
-                streamingContent.className = 'message-content';
-                streamingDiv.appendChild(streamingAvatar);
-                streamingDiv.appendChild(streamingContent);
+                let streamingDiv = null;
+                let streamingContent = null;
+                let hasStartedStreaming = false;
 
-                hideLoading();
-                messagesDiv.appendChild(streamingDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                const render = (text) => {
+                    if (!streamingDiv || !streamingContent) {
+                        streamingDiv = document.createElement('div');
+                        streamingDiv.className = 'message assistant';
+                        const streamingAvatar = document.createElement('div');
+                        streamingAvatar.className = 'message-avatar';
+                        const streamingImg = document.createElement('img');
+                        streamingImg.src = '../personal_blog/img/sign.jpg';
+                        streamingImg.alt = 'AI';
+                        streamingAvatar.appendChild(streamingImg);
+                        streamingContent = document.createElement('div');
+                        streamingContent.className = 'message-content';
+                        streamingDiv.appendChild(streamingAvatar);
+                        streamingDiv.appendChild(streamingContent);
+                        
+                        hideLoading();
+                        messagesDiv.appendChild(streamingDiv);
+                        hasStartedStreaming = true;
+                    }
+                    
+                    try {
+                        const html = marked.parse(text);
+                        streamingContent.innerHTML = DOMPurify.sanitize(html);
+                        enhanceCodeBlocks(streamingContent);
+                    } catch (_) {
+                        streamingContent.textContent = text;
+                    }
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                };
 
                 if (response.ok && response.body) {
                     const reader = response.body.getReader();
@@ -813,16 +803,7 @@
                     let done = false;
                     let fullContent = '';
                     let buffer = '';
-                    const render = (text) => {
-                        try {
-                            const html = marked.parse(text);
-                            streamingContent.innerHTML = DOMPurify.sanitize(html);
-                            enhanceCodeBlocks(streamingContent);
-                        } catch (_) {
-                            streamingContent.textContent = text;
-                        }
-                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                    };
+                    
                     while (!done) {
                         const { value, done: doneReading } = await reader.read();
                         done = doneReading;
@@ -843,20 +824,25 @@
                                         render(fullContent);
                                     }
                                 } catch (_) {
-                                    fullContent += line;
-                                    render(fullContent);
                                 }
                             }
                             buffer = parts[parts.length - 1];
                         }
                     }
+                    
                     if (fullContent) {
                         messages.push({ role: 'assistant', content: fullContent });
                         saveCurrentChat();
+                    } else {
+                        if (streamingDiv) {
+                            streamingDiv.remove();
+                        }
+                        hideLoading();
+                        addMessage('assistant', '❌ 抱歉，没有收到回复内容');
                     }
                 } else {
-                    const result = await response.json();
                     hideLoading();
+                    const result = await response.json();
                     const assistantMessage = (result.choices && result.choices[0] && (result.choices[0].message?.content || result.choices[0].text)) || '';
                     if (assistantMessage) {
                         messages.push({ role: 'assistant', content: assistantMessage });
@@ -871,13 +857,11 @@
                 addMessage('assistant', '❌ 请求失败：' + error.message);
             }
 
-            // 恢复输入
             input.disabled = false;
             document.getElementById('sendBtn').disabled = false;
             input.focus();
         }
 
-        // 添加消息到界面
         function addMessage(role, content, usage = null, saveToHistory = true) {
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
@@ -908,7 +892,6 @@
                 contentDiv.textContent = content;
             }
 
-            // 添加 token 使用信息
             if (usage) {
                 const tokenInfo = document.createElement('div');
                 tokenInfo.className = 'token-info';
@@ -920,16 +903,13 @@
             messageDiv.appendChild(contentDiv);
             messagesDiv.appendChild(messageDiv);
 
-            // 滚动到底部
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
             
-            // 如果启用了保存，保存当前对话
             if (saveToHistory) {
                 saveCurrentChat();
             }
         }
 
-        // 显示加载动画
         function showLoading() {
             const messagesDiv = document.getElementById('chatMessages');
             const loadingDiv = document.createElement('div');
@@ -939,11 +919,7 @@
             loadingDiv.innerHTML = `
                 <div class="message-avatar"><img src="../personal_blog/img/sign.jpg" alt="AI"></div>
                 <div class="loading show">
-                    <div class="loading-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
+                    <div class="loader"></div>
                 </div>
             `;
 
@@ -951,7 +927,6 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-        // 隐藏加载动画
         function hideLoading() {
             const loadingMessage = document.getElementById('loadingMessage');
             if (loadingMessage) {
@@ -959,21 +934,18 @@
             }
         }
 
-        // 清空当前对话（改为创建新对话）
         function clearChat() {
             if (confirm('确定要创建新对话吗？当前对话将保存到历史记录中。')) {
                 createNewChat();
             }
         }
 
-        // 处理回车键
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
                 sendMessage();
             }
         }
 
-        // 页面加载完成后初始化
         window.onload = function() {
             loadChatHistory();
             document.getElementById('userInput').focus();
