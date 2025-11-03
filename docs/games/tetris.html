@@ -8,7 +8,7 @@
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Microsoft YaHei', Arial, sans-serif; background:#0f172a; color:#e2e8f0; display:flex; min-height:100vh; }
-        .wrap { margin:auto; display:flex; gap:28px; align-items:flex-start; }
+        .wrap { margin:auto; display:flex; gap:28px; align-items:flex-start; padding:16px; }
         .board { background:#0b1220; padding:14px; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.06); display:flex; gap:18px; }
         canvas { background:#0a1326; border-radius:10px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
         .side { min-width:200px; display:flex; flex-direction:column; gap:14px; }
@@ -21,12 +21,25 @@
         .help { font-size:12px; color:#94a3b8; line-height:1.6; }
         .next-wrap { display:flex; align-items:center; gap:10px; }
         .badge { font-size:12px; color:#94a3b8; padding:2px 8px; border:1px solid rgba(255,255,255,.08); border-radius:999px; }
+
+        /* Mobile controls */
+        .mobile-controls { display:none; position:fixed; left:0; right:0; bottom:14px; padding:0 16px; z-index:10; }
+        .mc-row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+        .mc-group { display:flex; gap:10px; }
+        .mc-btn { width:64px; height:64px; border-radius:12px; background:#172033; border:1px solid rgba(255,255,255,.08); color:#e2e8f0; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 22px rgba(0,0,0,.25); user-select:none; }
+        .mc-btn:active { background:#1f2a44; }
+        .mc-wide { width:120px; }
+
+        @media (max-width: 900px) {
+            .wrap { flex-direction:column; align-items:center; gap:16px; padding-bottom:120px; }
+            .side { flex-direction:row; flex-wrap:wrap; gap:10px; justify-content:center; }
+            .panel { flex:1 1 160px; }
+            .mobile-controls { display:block; }
+        }
     </style>
     <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../personal_blog/css/style.css">
 </head>
 <body>
-    <div id="navbar-mount"></div>
     <div class="wrap">
         <div class="board">
             <canvas id="game" width="240" height="480"></canvas>
@@ -51,6 +64,32 @@
                     操作：
                     <div>← → 移动，↑ 旋转，↓ 加速</div>
                     <div>空格 快速下落，P 暂停/继续，R 重开</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile on-screen controls -->
+    <div class="mobile-controls" aria-hidden="true">
+        <div class="mc-row">
+            <div class="mc-group">
+                <div class="mc-btn" data-action="left" title="左">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                <div class="mc-btn" data-action="right" title="右">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="mc-btn" data-action="rotate" title="旋转">
+                    <i class="fas fa-undo"></i>
+                </div>
+            </div>
+            <div class="mc-group">
+                <div class="mc-btn mc-wide" data-action="hard" title="快速下落">下落</div>
+                <div class="mc-btn" data-action="soft" title="加速">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="mc-btn" data-action="pause" title="暂停/继续">
+                    <i class="fas fa-pause"></i>
                 </div>
             </div>
         </div>
@@ -242,6 +281,41 @@
             }
             draw();
         });
+        // Touch controls with press-to-repeat for left/right/soft
+        (function initTouch(){
+            const map = {
+                left: ()=>move(-1),
+                right: ()=>move(1),
+                rotate: ()=>rotatePiece(),
+                soft: ()=>{ piece.y++; if(collide()) piece.y--; dropCounter=0; },
+                hard: ()=>hardDrop(),
+                pause: ()=>{ if(gameOver) restart(); else paused = !paused; }
+            };
+            let interval = null;
+            let repeatAction = null;
+            function startRepeat(fn){
+                fn();
+                repeatAction = fn;
+                interval = setInterval(()=>{ fn(); draw(); }, 120);
+            }
+            function stopRepeat(){ if(interval){ clearInterval(interval); interval=null; } repeatAction=null; }
+            document.querySelectorAll('.mc-btn').forEach(btn=>{
+                const act = btn.getAttribute('data-action');
+                const fn = map[act];
+                if(!fn) return;
+                if(act==='left'||act==='right'||act==='soft'){
+                    btn.addEventListener('touchstart', e=>{ e.preventDefault(); if(gameOver) return; startRepeat(fn); });
+                    btn.addEventListener('touchend', ()=>stopRepeat());
+                    btn.addEventListener('touchcancel', ()=>stopRepeat());
+                    btn.addEventListener('mousedown', e=>{ e.preventDefault(); if(gameOver) return; startRepeat(fn); });
+                    btn.addEventListener('mouseup', ()=>stopRepeat());
+                    btn.addEventListener('mouseleave', ()=>stopRepeat());
+                } else {
+                    btn.addEventListener('touchstart', e=>{ e.preventDefault(); if(gameOver && act!=='pause') return; fn(); draw(); });
+                    btn.addEventListener('mousedown', e=>{ e.preventDefault(); if(gameOver && act!=='pause') return; fn(); draw(); });
+                }
+            });
+        })();
         document.getElementById('start').onclick = ()=>{ if(gameOver) restart(); else paused = !paused; };
         document.getElementById('restart').onclick = ()=>restart();
         document.getElementById('drop').onclick = ()=>hardDrop();
@@ -257,9 +331,7 @@
         newPiece(); drawNext(); update();
     })();
     </script>
-    <div id="footer-mount"></div>
-    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-    <script src="../personal_blog/js/script.js"></script>
+    
 </body>
 </html>
 

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小游戏合集 | 小田的小游戏</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../personal_blog/css/style.css">
+    <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
+    <style>
+        .games-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap:18px; }
+        .game-card { background:#fff; border-radius: var(--border-radius); box-shadow: var(--box-shadow); padding:18px; display:flex; flex-direction:column; gap:10px; }
+        .game-card h3 { margin:0; color:#0f172a; }
+        .game-meta { color:#64748b; font-size: 13px; }
+        .game-actions { margin-top:auto; display:flex; gap:10px; }
+        .btn { display:inline-flex; align-items:center; gap:6px; background: var(--primary-color); color:#fff; border:none; border-radius:8px; padding:8px 12px; text-decoration:none; }
+        .btn.secondary { background:#e2e8f0; color:#0f172a; }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+
+    <div class="main-container">
+        <main class="content" style="max-width:100%">
+            <section class="recent-posts">
+                <h2 class="section-title">小游戏合集</h2>
+                <div class="games-grid">
+                    <div class="game-card">
+                        <h3>俄罗斯方块</h3>
+                        <div class="game-meta">键盘方向键操作，空格快速下落</div>
+                        <div class="game-actions">
+                            <a class="btn" href="/games/tetris.html"><i class="fas fa-play"></i> 开始游戏</a>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>更多游戏（敬请期待）</h3>
+                        <div class="game-meta">将陆续上线新玩法</div>
+                        <div class="game-actions">
+                            <a class="btn secondary" href="#"><i class="fas fa-info-circle"></i> 预告</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="footer-mount"></div>
+    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+    <script src="../personal_blog/js/script.js"></script>
+</body>
+</html>
+
+
