@@ -40,82 +40,75 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // 移动端菜单切换
-    const navContainer = document.querySelector('.nav-container');
-    if (navContainer) {
+    function setupMobileMenu() {
+        const navContainer = document.querySelector('.nav-container');
+        if (!navContainer) return;
+        if (navContainer.querySelector('.menu-toggle')) return; // 已初始化
         const menuToggle = document.createElement('button');
         menuToggle.className = 'menu-toggle';
         menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
         menuToggle.setAttribute('aria-label', '切换菜单');
         navContainer.appendChild(menuToggle);
-        
         const navLinks = document.querySelector('.nav-links');
-        if (navLinks) {
-            menuToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                navLinks.classList.toggle('active');
-                menuToggle.classList.toggle('active');
-                // 切换图标
-                const icon = menuToggle.querySelector('i');
-                if (icon) {
-                    if (navLinks.classList.contains('active')) {
-                        icon.className = 'fas fa-times';
-                    } else {
-                        icon.className = 'fas fa-bars';
-                    }
-                }
-            });
-            
-            // 点击菜单项后关闭移动端菜单
-            navLinks.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', function() {
-                    if (window.innerWidth <= 992) {
-                        navLinks.classList.remove('active');
-                        menuToggle.classList.remove('active');
-                        const icon = menuToggle.querySelector('i');
-                        if (icon) {
-                            icon.className = 'fas fa-bars';
-                        }
-                    }
-                });
-            });
-            
-            // 点击外部关闭菜单
-            document.addEventListener('click', function(e) {
+        if (!navLinks) return;
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navLinks.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            if (icon) icon.className = navLinks.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
+        });
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
                 if (window.innerWidth <= 992) {
-                    if (!navContainer.contains(e.target)) {
-                        navLinks.classList.remove('active');
-                        menuToggle.classList.remove('active');
-                        const icon = menuToggle.querySelector('i');
-                        if (icon) {
-                            icon.className = 'fas fa-bars';
-                        }
-                    }
+                    navLinks.classList.remove('active');
+                    menuToggle.classList.remove('active');
+                    const icon = menuToggle.querySelector('i');
+                    if (icon) icon.className = 'fas fa-bars';
                 }
             });
-        }
-        
-        // 调整窗口大小时重新计算样式
+        });
         let resizeTimer;
         window.addEventListener('resize', function() {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function() {
                 const navLinks = document.querySelector('.nav-links');
-                if (navLinks) {
-                    if (window.innerWidth > 992) {
-                        navLinks.classList.remove('active');
-                        navLinks.style.display = 'flex';
-                        menuToggle.classList.remove('active');
-                        const icon = menuToggle.querySelector('i');
-                        if (icon) {
-                            icon.className = 'fas fa-bars';
-                        }
-                    } else {
-                        navLinks.style.display = navLinks.classList.contains('active') ? 'flex' : 'none';
-                    }
+                if (!navLinks) return;
+                if (window.innerWidth > 992) {
+                    navLinks.classList.remove('active');
+                    navLinks.style.display = 'flex';
+                    menuToggle.classList.remove('active');
+                    const icon = menuToggle.querySelector('i');
+                    if (icon) icon.className = 'fas fa-bars';
+                } else {
+                    navLinks.style.display = navLinks.classList.contains('active') ? 'flex' : 'none';
                 }
             }, 250);
         });
+    }
+
+    function markActiveNav() {
+        const path = window.location.pathname.replace(/\\/g,'/');
+        const links = document.querySelectorAll('.nav-links a');
+        links.forEach(a => a.classList.remove('active'));
+        links.forEach(a => {
+            const href = a.getAttribute('href');
+            if (!href) return;
+            if (href === '/' && (path === '/' || path.endsWith('/index.html'))) a.classList.add('active');
+            else if (href !== '/' && path.indexOf(href) !== -1) a.classList.add('active');
+        });
+    }
+
+    // 动态注入公共导航
+    const navbarMount = document.getElementById('navbar-mount');
+    if (navbarMount) {
+        fetch('/partials/navbar.html', { cache: 'no-cache' })
+            .then(resp => resp.text())
+            .then(html => { navbarMount.innerHTML = html; setupMobileMenu(); markActiveNav(); })
+            .catch(err => console.warn('加载导航失败', err));
+    } else {
+        // 静态存在时初始化
+        setupMobileMenu(); markActiveNav();
     }
     
     // 文章卡片动画

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄罗斯方块 | 小田的小游戏</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Microsoft YaHei', Arial, sans-serif; background:#0f172a; color:#e2e8f0; display:flex; min-height:100vh; }
+        .wrap { margin:auto; display:flex; gap:28px; align-items:flex-start; }
+        .board { background:#0b1220; padding:14px; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.06); display:flex; gap:18px; }
+        canvas { background:#0a1326; border-radius:10px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+        .side { min-width:200px; display:flex; flex-direction:column; gap:14px; }
+        .panel { background:#0b1220; border-radius:12px; padding:12px 14px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+        .panel h3 { margin:0 0 8px; font-size:14px; color:#94a3b8; font-weight:600; letter-spacing:.3px; }
+        .stat { font-size:22px; font-weight:700; color:#e2e8f0; }
+        .btns { display:flex; flex-wrap:wrap; gap:8px; }
+        button { background:#1e293b; color:#e2e8f0; border:1px solid rgba(255,255,255,.08); padding:8px 12px; border-radius:8px; cursor:pointer; }
+        button:hover { background:#223147; }
+        .help { font-size:12px; color:#94a3b8; line-height:1.6; }
+        .next-wrap { display:flex; align-items:center; gap:10px; }
+        .badge { font-size:12px; color:#94a3b8; padding:2px 8px; border:1px solid rgba(255,255,255,.08); border-radius:999px; }
+    </style>
+    <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../personal_blog/css/style.css">
+</head>
+<body>
+    <div id="navbar-mount"></div>
+    <div class="wrap">
+        <div class="board">
+            <canvas id="game" width="240" height="480"></canvas>
+            <div class="side">
+                <div class="panel">
+                    <h3>分数</h3>
+                    <div class="stat" id="score">0</div>
+                </div>
+                <div class="panel">
+                    <div class="next-wrap">
+                        <h3 style="margin:0">下一个</h3>
+                        <span class="badge" id="level">Lv.1</span>
+                    </div>
+                    <canvas id="next" width="80" height="80" style="margin-top:6px;"></canvas>
+                </div>
+                <div class="panel btns">
+                    <button id="start">开始/暂停 (P)</button>
+                    <button id="restart">重新开始 (R)</button>
+                    <button id="drop">快速下落 (空格)</button>
+                </div>
+                <div class="panel help">
+                    操作：
+                    <div>← → 移动，↑ 旋转，↓ 加速</div>
+                    <div>空格 快速下落，P 暂停/继续，R 重开</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        const COLS = 10, ROWS = 20, SIZE = 24;
+        const canvas = document.getElementById('game');
+        const nextCanvas = document.getElementById('next');
+        const ctx = canvas.getContext('2d');
+        const nctx = nextCanvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const levelEl = document.getElementById('level');
+
+        const COLORS = {
+            0: '#0a1326',
+            1: '#22d3ee', // I
+            2: '#f59e0b', // L
+            3: '#8b5cf6', // J
+            4: '#10b981', // S
+            5: '#ef4444', // Z
+            6: '#eab308', // O
+            7: '#3b82f6'  // T
+        };
+
+        const SHAPES = {
+            I: [[1,1,1,1]],
+            L: [[2,0,0],[2,2,2]],
+            J: [[0,0,3],[3,3,3]],
+            S: [[0,4,4],[4,4,0]],
+            Z: [[5,5,0],[0,5,5]],
+            O: [[6,6],[6,6]],
+            T: [[0,7,0],[7,7,7]]
+        };
+        const TYPES = Object.keys(SHAPES);
+
+        let grid = createMatrix(COLS, ROWS);
+        let piece = null;
+        let nextPiece = randomPiece();
+        let dropCounter = 0, dropInterval = 900;
+        let lastTime = 0;
+        let score = 0;
+        let paused = false;
+        let gameOver = false;
+
+        function createMatrix(w,h){
+            const m = [];
+            for(let y=0;y<h;y++){ m.push(new Array(w).fill(0)); }
+            return m;
+        }
+        function drawCell(x,y,val,context){
+            const c = context||ctx;
+            c.fillStyle = COLORS[val];
+            c.fillRect(x*SIZE, y*SIZE, SIZE-1, SIZE-1);
+        }
+        function draw(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            for(let y=0;y<ROWS;y++){
+                for(let x=0;x<COLS;x++) drawCell(x,y, grid[y][x]);
+            }
+            if(piece) drawPiece(piece, ctx);
+        }
+        function drawPiece(p, context){
+            p.shape.forEach((row, y)=>{
+                row.forEach((val,x)=>{ if(val) drawCell(p.x + x, p.y + y, val, context); });
+            });
+        }
+        function merge(){
+            piece.shape.forEach((row,y)=>{
+                row.forEach((val,x)=>{ if(val) grid[piece.y+y][piece.x+x] = val; });
+            });
+        }
+        function collide(nx=piece.x, ny=piece.y, shape=piece.shape){
+            for(let y=0;y<shape.length;y++){
+                for(let x=0;x<shape[y].length;x++){
+                    if(shape[y][x]){
+                        const gx = nx + x, gy = ny + y;
+                        if(gx<0 || gx>=COLS || gy>=ROWS) return true;
+                        if(gy>=0 && grid[gy][gx]) return true;
+                    }
+                }
+            }
+            return false;
+        }
+        function rotate(shape){
+            const N = shape.length, M = shape[0].length;
+            const res = Array.from({length:M},()=>Array(N).fill(0));
+            for(let y=0;y<N;y++) for(let x=0;x<M;x++) res[x][N-1-y] = shape[y][x];
+            return res;
+        }
+        function newPiece(){
+            piece = nextPiece || randomPiece();
+            nextPiece = randomPiece();
+            drawNext();
+            piece.x = (COLS>>1) - Math.ceil(piece.shape[0].length/2);
+            piece.y = -1;
+            if(collide(piece.x, piece.y, piece.shape)){
+                gameOver = true;
+                paused = true;
+            }
+        }
+        function randomPiece(){
+            const t = TYPES[(Math.random()*TYPES.length)|0];
+            const shape = SHAPES[t].map(r=>r.slice());
+            // normalize to numbers 1..7 already in shape
+            return { shape, x:0, y:0 };
+        }
+        function drawNext(){
+            nctx.clearRect(0,0,nextCanvas.width,nextCanvas.height);
+            if(!nextPiece) return;
+            // center in 4x4 box
+            const offX = ((4 - nextPiece.shape[0].length)/2)|0;
+            const offY = ((4 - nextPiece.shape.length)/2)|0;
+            nextPiece.shape.forEach((row,y)=>{
+                row.forEach((val,x)=>{ if(val){
+                    nctx.fillStyle = COLORS[val];
+                    const s = 18;
+                    nctx.fillRect((offX+x)*s+2, (offY+y)*s+2, s-2, s-2);
+                }});
+            });
+        }
+        function sweep(){
+            let lines = 0;
+            for(let y=ROWS-1;y>=0;y--){
+                if(grid[y].every(v=>v!==0)){
+                    const row = grid.splice(y,1)[0].fill(0);
+                    grid.unshift(row);
+                    y++;
+                    lines++;
+                }
+            }
+            if(lines){
+                const points = [0, 100, 300, 500, 800][lines] || lines*200;
+                score += points;
+                scoreEl.textContent = score;
+                const level = 1 + Math.min(9, (score/1000)|0);
+                levelEl.textContent = 'Lv.'+level;
+                dropInterval = Math.max(120, 900 - (level-1)*80);
+            }
+        }
+        function drop(){
+            piece.y++;
+            if(collide()){
+                piece.y--;
+                merge();
+                sweep();
+                newPiece();
+            }
+            dropCounter = 0;
+        }
+        function move(dir){
+            piece.x += dir;
+            if(collide()) piece.x -= dir;
+        }
+        function rotatePiece(){
+            const r = rotate(piece.shape);
+            const old = piece.shape; piece.shape = r;
+            // wall kick simple
+            if(collide()){
+                piece.x++;
+                if(collide()){ piece.x -= 2; if(collide()){ piece.x++; piece.shape = old; } }
+            }
+        }
+        function hardDrop(){
+            while(!collide()) piece.y++;
+            piece.y--; merge(); sweep(); newPiece(); dropCounter = 0; draw();
+        }
+        function update(time=0){
+            const dt = time - lastTime; lastTime = time;
+            if(!paused){
+                dropCounter += dt;
+                if(dropCounter > dropInterval) drop();
+                draw();
+            }
+            requestAnimationFrame(update);
+        }
+
+        document.addEventListener('keydown', e=>{
+            if(gameOver){ if(e.key.toLowerCase()==='r') restart(); return; }
+            switch(e.key){
+                case 'ArrowLeft': move(-1); break;
+                case 'ArrowRight': move(1); break;
+                case 'ArrowDown': piece.y++; if(collide()) piece.y--; dropCounter=0; break;
+                case 'ArrowUp': rotatePiece(); break;
+                case ' ': e.preventDefault(); hardDrop(); break;
+                case 'p': case 'P': paused = !paused; break;
+                case 'r': case 'R': restart(); break;
+            }
+            draw();
+        });
+        document.getElementById('start').onclick = ()=>{ if(gameOver) restart(); else paused = !paused; };
+        document.getElementById('restart').onclick = ()=>restart();
+        document.getElementById('drop').onclick = ()=>hardDrop();
+
+        function restart(){
+            grid = createMatrix(COLS,ROWS);
+            score = 0; scoreEl.textContent = '0';
+            dropInterval = 900; levelEl.textContent = 'Lv.1';
+            paused = false; gameOver = false; nextPiece = randomPiece(); newPiece(); draw();
+        }
+
+        // init
+        newPiece(); drawNext(); update();
+    })();
+    </script>
+    <div id="footer-mount"></div>
+    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+    <script src="../personal_blog/js/script.js"></script>
+</body>
+</html>
+
+
