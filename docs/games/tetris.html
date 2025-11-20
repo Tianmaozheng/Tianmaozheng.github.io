@@ -31,29 +31,33 @@
         
         .wrap { 
             display: flex; 
-            flex-direction: column; /* 手机模式下主板和侧边信息上下排列 */
-            gap: 12px; 
+            flex-direction: column;
+            gap: 8px; 
             align-items: center; 
-            padding: 8px;
-            max-width: 420px; /* 限制最大宽度，更像手机屏幕 */
+            padding: 6px 6px 0 6px;
+            max-width: 420px;
             width: 100%;
             height: 100vh;
-            justify-content: space-between; /* 游戏板和控制区两端对齐 */
+            height: calc(var(--vh, 1vh) * 100);
+            justify-content: flex-start;
         }
         
         .board-container {
             background: #0f172a; 
-            padding: 10px; 
-            border-radius: 16px; 
+            padding: 8px; 
+            border-radius: 12px; 
             box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.1); 
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            flex-grow: 1; /* 占据剩余空间 */
-            max-height: 65%; /* 限制游戏板大小 */
-            width: 95%;
-            margin-top: calc(env(safe-area-inset-top) + 4px);
+            justify-content: center;
+            flex-shrink: 1;
+            width: calc(100% - 12px);
+            /* 动态计算高度：总高度 - 信息栏(~70px) - 控制区(~145px) - 间距 - 安全区 */
+            max-height: calc(100vh - 230px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+            max-height: calc(var(--vh, 1vh) * 100 - 230px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+            overflow: hidden;
         }
         
         canvas { 
@@ -72,20 +76,20 @@
             display: flex; 
             flex-direction: row; 
             gap: 8px; 
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            padding: 0 4px;
+            padding: 4px 8px;
+            flex-shrink: 0;
         }
         
         .panel { 
-            background: #2d3848; /* 优化信息面板背景 */
-            border-radius: 10px; 
-            padding: 8px 12px; 
+            background: #2d3848;
+            border-radius: 8px; 
+            padding: 6px 10px; 
             box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); 
             flex: 1 1 auto;
-            min-width: 100px;
-            max-width: 180px;
+            min-width: 90px;
+            max-width: 48%;
         }
         
         .panel h3 { 
@@ -126,126 +130,371 @@
             font-weight: 600;
         }
 
-        /* 移除桌面端按钮，改用移动端控制 */
-        .btns, .help, .fullscreen-btn { display: none !important; }
+        /* 移除桌面端按钮 */
+        .btns, .help { display: none !important; }
+        
+        /* 全屏按钮 */
+        .fullscreen-btn {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 10px);
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 185, 129, 0.3);
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            border-radius: 8px;
+            color: #10b981;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .fullscreen-btn:active {
+            background: rgba(16, 185, 129, 0.6);
+            transform: scale(0.95);
+        }
 
-        /* 3. 移动端虚拟控制优化 */
+        /* 3. 移动端虚拟控制 - 游戏手柄风格 */
         .mobile-controls { 
-            display: flex !important; /* 强制显示移动端控制 */
+            display: flex !important;
             position: fixed; 
             left: 0; 
             right: 0; 
             bottom: 0;
-            background: #1e293b;
-            padding: 10px 16px calc(env(safe-area-inset-bottom) + 10px);
+            height: 180px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px calc(env(safe-area-inset-bottom) + 15px);
             z-index: 1000;
             border-top: 2px solid #334155;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .mc-row { 
-            width: 100%;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            gap: 10px;
-        }
-        
-        .mc-group { 
-            display: flex; 
-            gap: 12px; 
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+            justify-content: space-between;
             align-items: center;
         }
         
-        .mc-btn { 
-            width: 60px; /* 增大点击区域 */
-            height: 60px; 
-            border-radius: 50%; /* 圆形按钮，更像手柄 */
-            background: linear-gradient(145deg, #374151, #1f2937);
-            border: 2px solid #475569;
-            color: #cbd5e1; 
-            font-size: 24px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            box-shadow: 0 4px 10px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.1);
+        /* 左侧：十字方向键 */
+        .dpad-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dpad {
+            position: relative;
+            width: 130px;
+            height: 130px;
+        }
+        
+        .dpad-btn {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #475569, #334155);
+            border: 2px solid #64748b;
+            color: #e2e8f0;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             user-select: none;
             cursor: pointer;
             transition: all 0.1s ease;
-            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,.4), inset 0 1px 2px rgba(255,255,255,.1);
         }
         
-        .mc-btn:active { 
-            background: linear-gradient(145deg, #4f46e5, #7c3aed); /* 按下时的深色或强调色 */
-            transform: scale(0.95);
+        .dpad-btn:active {
+            background: linear-gradient(145deg, #4f46e5, #7c3aed);
+            transform: scale(0.9);
             color: white;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,.5);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,.5);
         }
-
-        .mc-left-right .mc-btn {
-            width: 50px;
+        
+        .dpad-up { top: 0; left: 50%; transform: translateX(-50%); border-radius: 8px 8px 4px 4px; }
+        .dpad-down { bottom: 0; left: 50%; transform: translateX(-50%); border-radius: 4px 4px 8px 8px; }
+        .dpad-left { left: 0; top: 50%; transform: translateY(-50%); border-radius: 8px 4px 4px 8px; }
+        .dpad-right { right: 0; top: 50%; transform: translateY(-50%); border-radius: 4px 8px 8px 4px; }
+        
+        /* 中心圆形装饰 */
+        .dpad-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            background: #1e293b;
+            border-radius: 50%;
+            border: 2px solid #475569;
+            pointer-events: none;
+        }
+        
+        /* 右侧：动作按钮组 */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .action-btn {
+            width: 65px;
             height: 50px;
-            font-size: 20px;
-        }
-        
-        .mc-wide { 
-            width: 80px; /* 下落按钮更宽 */
-            height: 60px;
-            border-radius: 30px; /* 椭圆按钮 */
-            font-size: 14px;
-        }
-        
-        /* 旋转按钮使用不同的颜色 */
-        .mc-rotate {
+            border-radius: 25px;
             background: linear-gradient(145deg, #dc2626, #991b1b);
-            border: 2px solid #ef4444;
+            border: 3px solid #ef4444;
             color: white;
-        }
-        .mc-rotate:active {
-            background: linear-gradient(145deg, #b91c1c, #7f1d1d);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4), inset 0 2px 4px rgba(255,255,255,.2);
+            letter-spacing: 0.5px;
         }
         
-        /* 暂停/开始按钮使用不同的颜色 */
-        .mc-pause {
-            background: linear-gradient(145deg, #10b981, #059669);
-            border: 2px solid #34d399;
-            color: white;
+        .action-btn:active {
+            background: linear-gradient(145deg, #b91c1c, #7f1d1d);
+            transform: scale(0.92);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,.5);
         }
-        .mc-pause:active {
-            background: linear-gradient(145deg, #059669, #047857);
+        
+        .action-btn.soft {
+            background: linear-gradient(145deg, #3b82f6, #2563eb);
+            border-color: #60a5fa;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4), inset 0 2px 4px rgba(255,255,255,.2);
+        }
+        
+        .action-btn.soft:active {
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+        }
+        
+        /* 左上角控制按钮组 */
+        .top-controls {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 10px);
+            left: 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 2000;
+        }
+        
+        .top-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid #475569;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0,0,0,.3);
+        }
+        
+        .top-btn:active {
+            transform: scale(0.9);
+            background: rgba(30, 41, 59, 1);
+        }
+        
+        .top-btn.pause {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: #34d399;
+            color: #10b981;
+        }
+        
+        .top-btn.pause:active {
+            background: rgba(16, 185, 129, 0.6);
+        }
+        
+        .top-btn.restart {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #f87171;
+            color: #ef4444;
+        }
+        
+        .top-btn.restart:active {
+            background: rgba(239, 68, 68, 0.6);
         }
 
-        /* 4. 响应式布局优化 */
+        /* 4. 全屏模式 */
+        body.fullscreen-active {
+            overflow: hidden;
+        }
+        
+        .wrap.fullscreen-mode {
+            max-width: 100%;
+            width: 100vw;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            padding: 0;
+            gap: 0;
+        }
+        
+        .wrap.fullscreen-mode .side {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            z-index: 1500;
+            padding: 0;
+            gap: 10px;
+        }
+        
+        .wrap.fullscreen-mode .board-container {
+            max-height: calc(100vh - 200px);
+            max-height: calc(var(--vh, 1vh) * 100 - 200px);
+            width: 100%;
+            max-width: 100%;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .wrap.fullscreen-mode canvas#game {
+            max-height: calc(100vh - 220px);
+            max-height: calc(var(--vh, 1vh) * 100 - 220px);
+        }
+        
+        /* 5. 响应式布局优化 */
         @media (max-width: 900px) {
-             .wrap {
-                height: 100%;
-                justify-content: flex-start;
-                padding-bottom: 0;
-            }
-
             .board-container {
-                max-height: calc(100% - 140px - 90px - env(safe-area-inset-bottom)); /* 减去信息栏和控制区高度 */
-                width: calc(100% - 16px);
-                flex-grow: 0;
+                max-height: calc(var(--vh, 1vh) * 100 - 250px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
             }
-
+            
             canvas#game {
                 width: auto;
                 height: 100%;
-                aspect-ratio: 1/2; /* Tetris 经典比例 */
+                max-width: 100%;
+                object-fit: contain;
             }
-
-            .side {
-                padding-top: 8px;
-                padding-left: 8px;
-                padding-right: 8px;
+        }
+        
+        /* 小屏幕优化 */
+        @media (max-width: 380px) {
+            .board-container {
+                padding: 6px;
+            }
+            
+            .dpad {
+                width: 110px;
+                height: 110px;
+            }
+            
+            .dpad-container {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .dpad-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+            
+            .dpad-center {
+                width: 26px;
+                height: 26px;
+            }
+            
+            .action-btn {
+                width: 58px;
+                height: 45px;
+                font-size: 12px;
+            }
+            
+            .panel {
+                padding: 5px 8px;
+                min-width: 80px;
+            }
+            
+            .panel h3 {
+                font-size: 11px;
+            }
+            
+            .stat {
+                font-size: 18px;
+            }
+            
+            .top-btn, .fullscreen-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+        }
+        
+        /* 极小屏幕 */
+        @media (max-width: 340px) {
+            .mobile-controls {
+                height: 160px;
+                padding: 12px;
+            }
+            
+            .dpad {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .dpad-container {
+                width: 110px;
+                height: 110px;
+            }
+            
+            .dpad-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 16px;
+            }
+            
+            .dpad-center {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .action-btn {
+                width: 52px;
+                height: 40px;
+                font-size: 11px;
+            }
+            
+            .action-buttons {
+                gap: 8px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- 左上角控制按钮 -->
+    <div class="top-controls">
+        <div class="top-btn pause" id="pauseBtn" title="暂停/继续">
+            <i class="fas fa-pause"></i>
+        </div>
+        <div class="top-btn restart" id="restartBtn" title="重新开始">
+            <i class="fas fa-redo"></i>
+        </div>
+    </div>
+    
+    <!-- 右上角全屏按钮 -->
+    <div class="fullscreen-btn" id="fullscreenBtn" title="全屏">
+        <i class="fas fa-expand"></i>
+    </div>
+
     <div class="wrap" id="gameWrap">
         <div class="side">
             <div class="panel">
@@ -271,31 +520,34 @@
         </div>
     </div>
 
-    <div class="mobile-controls" aria-hidden="true">
-        <div class="mc-row">
-            <div class="mc-group mc-left-right">
-                <div class="mc-btn" data-action="left" title="左">
-                    <i class="fas fa-arrow-left"></i>
-                </div>
-                <div class="mc-btn" data-action="right" title="右">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </div>
-            
-            <div class="mc-group">
-                <div class="mc-btn mc-rotate" data-action="rotate" title="旋转">
+    <!-- 移动端虚拟控制 - 游戏手柄风格 -->
+    <div class="mobile-controls">
+        <!-- 左侧：十字方向键 -->
+        <div class="dpad-container">
+            <div class="dpad">
+                <div class="dpad-btn dpad-up" data-action="rotate" title="旋转">
                     <i class="fas fa-undo"></i>
                 </div>
-                <div class="mc-btn mc-pause" data-action="pause" title="暂停/继续">
-                    <i class="fas fa-pause"></i>
-                </div>
-            </div>
-
-            <div class="mc-group">
-                <div class="mc-btn" data-action="soft" title="加速">
+                <div class="dpad-btn dpad-down" data-action="hard" title="快速下落">
                     <i class="fas fa-arrow-down"></i>
                 </div>
-                <div class="mc-btn mc-wide" data-action="hard" title="快速下落">DROP</div>
+                <div class="dpad-btn dpad-left" data-action="left" title="左移">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                <div class="dpad-btn dpad-right" data-action="right" title="右移">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="dpad-center"></div>
+            </div>
+        </div>
+        
+        <!-- 右侧：动作按钮 -->
+        <div class="action-buttons">
+            <div class="action-btn" data-action="hard" title="快速下落">
+                DROP
+            </div>
+            <div class="action-btn soft" data-action="soft" title="加速下落">
+                DOWN
             </div>
         </div>
     </div>
@@ -568,15 +820,83 @@
         }
         
         function updatePauseButton(state) {
-            const pauseBtn = document.querySelector('.mc-pause i');
+            const pauseBtn = document.querySelector('#pauseBtn i');
             if (pauseBtn) {
                 if (state === 'pause') {
                     pauseBtn.className = 'fas fa-pause';
-                } else {
+                } else if (state === 'play') {
                     pauseBtn.className = 'fas fa-play';
+                } else if (state === 'restart') {
+                    pauseBtn.className = 'fas fa-redo';
                 }
             }
         }
+        
+        // 全屏功能
+        function toggleFullscreen() {
+            const wrap = document.getElementById('gameWrap');
+            const btn = document.getElementById('fullscreenBtn');
+            const icon = btn.querySelector('i');
+            
+            if (!document.fullscreenElement) {
+                // 进入全屏
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+                
+                wrap.classList.add('fullscreen-mode');
+                document.body.classList.add('fullscreen-active');
+                icon.className = 'fas fa-compress';
+            } else {
+                // 退出全屏
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                
+                wrap.classList.remove('fullscreen-mode');
+                document.body.classList.remove('fullscreen-active');
+                icon.className = 'fas fa-expand';
+            }
+            
+            // 延迟调整画布大小
+            setTimeout(() => {
+                resizeGameCanvas();
+            }, 100);
+        }
+        
+        // 监听全屏变化事件
+        document.addEventListener('fullscreenchange', function() {
+            const wrap = document.getElementById('gameWrap');
+            const icon = document.querySelector('#fullscreenBtn i');
+            
+            if (!document.fullscreenElement) {
+                wrap.classList.remove('fullscreen-mode');
+                document.body.classList.remove('fullscreen-active');
+                if (icon) icon.className = 'fas fa-expand';
+                resizeGameCanvas();
+            }
+        });
+        
+        document.addEventListener('webkitfullscreenchange', function() {
+            const wrap = document.getElementById('gameWrap');
+            const icon = document.querySelector('#fullscreenBtn i');
+            
+            if (!document.webkitFullscreenElement) {
+                wrap.classList.remove('fullscreen-mode');
+                document.body.classList.remove('fullscreen-active');
+                if (icon) icon.className = 'fas fa-expand';
+                resizeGameCanvas();
+            }
+        });
         
         function restart(){
             grid = createMatrix(COLS,ROWS);
@@ -595,14 +915,14 @@
             const boardContainer = document.querySelector('.board-container');
             if (!boardContainer) return;
 
-            const containerWidth = boardContainer.clientWidth - 20; // 减去padding
-            const containerHeight = boardContainer.clientHeight - 20;
+            const containerWidth = boardContainer.clientWidth - 16;
+            const containerHeight = boardContainer.clientHeight - 16;
 
             const maxCellSizeW = Math.floor(containerWidth / COLS);
             const maxCellSizeH = Math.floor(containerHeight / ROWS);
             const newSize = Math.min(maxCellSizeW, maxCellSizeH);
 
-            if (newSize > 10) { // 防止尺寸过小
+            if (newSize > 8) { // 防止尺寸过小
                 canvas.width = newSize * COLS;
                 canvas.height = newSize * ROWS;
                 // 更新全局 SIZE
@@ -626,14 +946,13 @@
         }
 
         // --- 事件监听 (触摸/鼠标) ---
-        (function initTouchControls(){
+        (function initControls(){
             const map = {
                 left: ()=>move(-1),
                 right: ()=>move(1),
                 rotate: ()=>rotatePiece(),
-                soft: ()=>{ piece.y++; if(collide()) piece.y--; dropCounter=0; },
-                hard: ()=>hardDrop(),
-                pause: ()=>togglePause()
+                soft: ()=>{ if(!gameOver && !paused) { piece.y++; if(collide()) piece.y--; dropCounter=0; } },
+                hard: ()=>hardDrop()
             };
             let interval = null;
             
@@ -659,14 +978,15 @@
                 draw(); // 确保停止后立即重绘一次
             }
 
-            document.querySelectorAll('.mc-btn').forEach(btn=>{
+            // 虚拟控制按钮
+            document.querySelectorAll('[data-action]').forEach(btn=>{
                 const act = btn.getAttribute('data-action');
                 const fn = map[act];
                 if(!fn) return;
                 
                 // 区分按住重复操作和单次操作
                 if(act==='left'||act==='right'||act==='soft'){
-                    const repeatDelay = act === 'soft' ? 80 : 150; // 加速下落可以更快
+                    const repeatDelay = act === 'soft' ? 80 : 120; // 加速下落可以更快
                     const startEvents = ['touchstart', 'mousedown'];
                     const endEvents = ['touchend', 'touchcancel', 'mouseup', 'mouseleave'];
                     
@@ -678,14 +998,32 @@
                         if (e.button === 0 || evt.includes('touch')) stopRepeat();
                     }));
                 } else {
+                    // 单次操作：旋转、快速下落
                     const events = ['touchstart', 'mousedown'];
                     events.forEach(evt => btn.addEventListener(evt, e=>{ 
                         e.preventDefault(); 
-                        if(gameOver && act!=='pause') return; 
+                        if(gameOver || paused) return;
                         fn(); 
                         draw(); 
                     }));
                 }
+            });
+            
+            // 左上角按钮事件
+            document.getElementById('pauseBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                togglePause();
+            });
+            
+            document.getElementById('restartBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                restart();
+            });
+            
+            // 全屏按钮事件
+            document.getElementById('fullscreenBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleFullscreen();
             });
         })();
         
