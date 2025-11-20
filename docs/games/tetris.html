@@ -2,7 +2,10 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>俄罗斯方块 | 小田的小游戏</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -154,6 +157,7 @@
             bottom: 0;
             width: 100vw;
             height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
             margin: 0;
             padding: 0;
             background: #0f172a;
@@ -161,11 +165,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
         
         .wrap.fullscreen .board {
             max-width: 100%;
             max-height: 100vh;
+        }
+        
+        .wrap.fullscreen .mobile-controls {
+            display: flex !important;
+            position: fixed;
+            bottom: 0;
+            z-index: 10000;
         }
 
         /* 移动端控制 */
@@ -226,40 +238,91 @@
 
         /* 移动端适配 */
         @media (max-width: 900px) {
-            body {
+            html, body {
+                height: 100%;
                 overflow: hidden;
+                position: fixed;
+                width: 100%;
             }
             
             .wrap { 
                 flex-direction: column; 
                 align-items: center; 
-                gap: 12px;
-                padding: 12px 12px 180px;
+                gap: 8px;
+                padding: 8px;
+                padding-bottom: 0;
                 width: 100%;
-                overflow-y: auto;
+                height: 100vh;
+                overflow: hidden;
+                justify-content: flex-start;
+            }
+            
+            /* 全屏模式调整 */
+            .wrap.fullscreen {
+                padding-bottom: 0;
+            }
+            
+            .wrap.fullscreen .mobile-controls {
+                display: flex !important;
             }
             
             .board {
                 width: 100%;
-                max-width: 500px;
-                padding: 12px;
+                max-width: 100%;
+                padding: 8px;
+                flex-shrink: 0;
+                margin-bottom: 0;
+            }
+            
+            /* 游戏画布自适应 */
+            canvas#game {
+                width: min(240px, calc(100vw - 40px));
+                height: auto;
+                max-height: calc(100vh - 320px);
+            }
+            
+            canvas#next {
+                width: 60px;
+                height: 60px;
             }
             
             .side { 
                 width: 100%;
                 flex-direction: row; 
                 flex-wrap: wrap; 
-                gap: 10px; 
-                justify-content: center; 
+                gap: 8px; 
+                justify-content: center;
+                padding: 0 4px;
+                margin-bottom: 0;
             }
             
             .panel { 
-                flex: 1 1 140px;
-                min-width: 140px;
+                flex: 1 1 calc(50% - 8px);
+                min-width: 130px;
+                max-width: 200px;
+            }
+            
+            .panel.btns {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+            
+            .panel.btns button {
+                flex: 1;
+                min-width: calc(33.333% - 6px);
             }
             
             .mobile-controls { 
-                display: block; 
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(15, 23, 42, 0.98);
+                backdrop-filter: blur(10px);
+                padding: 10px 12px calc(env(safe-area-inset-bottom) + 10px);
+                border-top: 2px solid rgba(102, 126, 234, 0.3);
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
             }
             
             .help {
@@ -267,43 +330,135 @@
             }
             
             .fullscreen-btn {
-                top: 8px;
-                right: 8px;
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
+                top: 6px;
+                right: 6px;
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
             }
         }
         
         @media (max-width: 480px) {
             .wrap {
-                padding: 8px 8px 170px;
+                padding: 6px;
+                gap: 6px;
+            }
+            
+            .board {
+                padding: 6px;
             }
             
             canvas#game {
-                max-width: 100%;
-                height: auto;
+                width: min(220px, calc(100vw - 30px));
+                max-height: calc(100vh - 300px);
+            }
+            
+            canvas#next {
+                width: 50px;
+                height: 50px;
             }
             
             .mc-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
+                width: 48px;
+                height: 48px;
+                font-size: 16px;
             }
             
             .mc-wide {
-                width: 90px;
-                font-size: 13px;
+                width: 85px;
+                font-size: 12px;
+            }
+            
+            .mc-group {
+                gap: 6px;
             }
             
             .panel {
-                flex: 1 1 120px;
-                min-width: 120px;
-                padding: 10px;
+                flex: 1 1 calc(50% - 6px);
+                min-width: 110px;
+                padding: 8px;
             }
             
             .stat {
-                font-size: 20px;
+                font-size: 18px;
+            }
+            
+            .panel h3 {
+                font-size: 12px;
+            }
+            
+            button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .mobile-controls {
+                padding: 8px 10px calc(env(safe-area-inset-bottom) + 8px);
+            }
+        }
+        
+        @media (max-width: 380px) {
+            canvas#game {
+                width: min(200px, calc(100vw - 24px));
+                max-height: calc(100vh - 280px);
+            }
+            
+            .mc-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 14px;
+            }
+            
+            .mc-wide {
+                width: 75px;
+                font-size: 11px;
+            }
+        }
+        
+        /* 横屏适配 */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .wrap {
+                flex-direction: row;
+                height: 100vh;
+                padding: 8px;
+                padding-bottom: 0;
+            }
+            
+            .board {
+                max-width: 50%;
+                height: 100%;
+            }
+            
+            canvas#game {
+                max-height: calc(100vh - 100px);
+            }
+            
+            .side {
+                flex-direction: column;
+                overflow-y: auto;
+                max-height: calc(100vh - 20px);
+            }
+            
+            .mobile-controls {
+                right: 0;
+                left: auto;
+                width: 48%;
+                height: 100vh;
+                padding: 12px;
+                border-left: 2px solid rgba(102, 126, 234, 0.3);
+                border-top: none;
+                flex-direction: column;
+                justify-content: center;
+            }
+            
+            .mc-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .mc-group {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -371,6 +526,51 @@
 
     <script>
     (function(){
+        // 移动端初始化
+        function initMobile() {
+            const isMobile = window.innerWidth <= 900;
+            if (isMobile) {
+                // 防止下拉刷新
+                document.body.addEventListener('touchmove', function(e) {
+                    if (e.target.closest('.wrap')) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                // 防止双击缩放
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function(e) {
+                    const now = Date.now();
+                    if (now - lastTouchEnd <= 300) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, false);
+                
+                // 确保控制按钮可见
+                const controls = document.querySelector('.mobile-controls');
+                if (controls) {
+                    controls.style.display = 'flex';
+                }
+                
+                // 调整视口高度
+                const setViewportHeight = () => {
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', `${vh}px`);
+                };
+                setViewportHeight();
+                window.addEventListener('resize', setViewportHeight);
+                window.addEventListener('orientationchange', setViewportHeight);
+            }
+        }
+        
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMobile);
+        } else {
+            initMobile();
+        }
+        
         // 全屏功能
         const fullscreenBtn = document.getElementById('fullscreenBtn');
         const gameWrap = document.getElementById('gameWrap');
@@ -391,13 +591,29 @@
             fullscreenIcon.className = 'fas fa-compress';
             isFullscreen = true;
             
-            // 尝试使用原生全屏API（可选）
-            if (gameWrap.requestFullscreen) {
-                gameWrap.requestFullscreen().catch(err => console.log(err));
-            } else if (gameWrap.webkitRequestFullscreen) {
-                gameWrap.webkitRequestFullscreen();
-            } else if (gameWrap.msRequestFullscreen) {
-                gameWrap.msRequestFullscreen();
+            // 移动端使用伪全屏（确保控制按钮可见）
+            const isMobile = window.innerWidth <= 900;
+            
+            if (!isMobile) {
+                // 桌面端使用原生全屏
+                if (gameWrap.requestFullscreen) {
+                    gameWrap.requestFullscreen().catch(err => console.log(err));
+                } else if (gameWrap.webkitRequestFullscreen) {
+                    gameWrap.webkitRequestFullscreen();
+                } else if (gameWrap.msRequestFullscreen) {
+                    gameWrap.msRequestFullscreen();
+                }
+            } else {
+                // 移动端伪全屏：隐藏地址栏
+                window.scrollTo(0, 1);
+                document.body.style.overflow = 'hidden';
+                
+                // 强制显示控制按钮
+                const controls = document.querySelector('.mobile-controls');
+                if (controls) {
+                    controls.style.display = 'flex';
+                    controls.style.zIndex = '10000';
+                }
             }
         }
         
@@ -407,13 +623,18 @@
             isFullscreen = false;
             
             // 退出原生全屏
-            if (document.exitFullscreen) {
-                document.exitFullscreen().catch(err => console.log(err));
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
+            if (document.fullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(err => console.log(err));
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
             }
+            
+            // 恢复移动端滚动
+            document.body.style.overflow = '';
         }
         
         // 监听原生全屏变化
