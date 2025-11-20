@@ -6,42 +6,316 @@
     <title>俄罗斯方块 | 小田的小游戏</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Microsoft YaHei', Arial, sans-serif; background:#0f172a; color:#e2e8f0; display:flex; min-height:100vh; }
-        .wrap { margin:auto; display:flex; gap:28px; align-items:flex-start; padding:16px; }
-        .board { background:#0b1220; padding:14px; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.06); display:flex; gap:18px; }
-        canvas { background:#0a1326; border-radius:10px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
-        .side { min-width:200px; display:flex; flex-direction:column; gap:14px; }
-        .panel { background:#0b1220; border-radius:12px; padding:12px 14px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
-        .panel h3 { margin:0 0 8px; font-size:14px; color:#94a3b8; font-weight:600; letter-spacing:.3px; }
-        .stat { font-size:22px; font-weight:700; color:#e2e8f0; }
-        .btns { display:flex; flex-wrap:wrap; gap:8px; }
-        button { background:#1e293b; color:#e2e8f0; border:1px solid rgba(255,255,255,.08); padding:8px 12px; border-radius:8px; cursor:pointer; }
-        button:hover { background:#223147; }
-        .help { font-size:12px; color:#94a3b8; line-height:1.6; }
-        .next-wrap { display:flex; align-items:center; gap:10px; }
-        .badge { font-size:12px; color:#94a3b8; padding:2px 8px; border:1px solid rgba(255,255,255,.08); border-radius:999px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Microsoft YaHei', Arial, sans-serif; 
+            background: #0f172a; 
+            color: #e2e8f0; 
+            display: flex; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .wrap { 
+            margin: auto; 
+            display: flex; 
+            gap: 28px; 
+            align-items: flex-start; 
+            padding: 16px;
+            max-width: 100%;
+        }
+        
+        .board { 
+            background: #0b1220; 
+            padding: 14px; 
+            border-radius: 16px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.06); 
+            display: flex; 
+            gap: 18px;
+            position: relative;
+        }
+        
+        canvas { 
+            background: #0a1326; 
+            border-radius: 10px; 
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+            display: block;
+        }
+        
+        .side { 
+            min-width: 200px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+        }
+        
+        .panel { 
+            background: #0b1220; 
+            border-radius: 12px; 
+            padding: 12px 14px; 
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); 
+        }
+        
+        .panel h3 { 
+            margin: 0 0 8px; 
+            font-size: 14px; 
+            color: #94a3b8; 
+            font-weight: 600; 
+            letter-spacing: .3px; 
+        }
+        
+        .stat { 
+            font-size: 22px; 
+            font-weight: 700; 
+            color: #e2e8f0; 
+        }
+        
+        .btns { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+        }
+        
+        button { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .help { 
+            font-size: 12px; 
+            color: #94a3b8; 
+            line-height: 1.6; 
+        }
+        
+        .next-wrap { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        
+        .badge { 
+            font-size: 12px; 
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            color: #667eea;
+            padding: 4px 10px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 999px;
+            font-weight: 600;
+        }
 
-        /* Mobile controls */
-        .mobile-controls { display:none; position:fixed; left:0; right:0; bottom:14px; padding:0 16px; z-index:10; }
-        .mc-row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
-        .mc-group { display:flex; gap:10px; }
-        .mc-btn { width:64px; height:64px; border-radius:12px; background:#172033; border:1px solid rgba(255,255,255,.08); color:#e2e8f0; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 22px rgba(0,0,0,.25); user-select:none; }
-        .mc-btn:active { background:#1f2a44; }
-        .mc-wide { width:120px; }
+        /* 全屏按钮 */
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            color: #667eea;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .fullscreen-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.1);
+        }
 
+        /* 全屏模式 */
+        .wrap.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .wrap.fullscreen .board {
+            max-width: 100%;
+            max-height: 100vh;
+        }
+
+        /* 移动端控制 */
+        .mobile-controls { 
+            display: none; 
+            position: fixed; 
+            left: 0; 
+            right: 0; 
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px 16px;
+            z-index: 1000;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .mc-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .mc-group { 
+            display: flex; 
+            gap: 8px; 
+        }
+        
+        .mc-btn { 
+            width: 56px; 
+            height: 56px; 
+            border-radius: 12px; 
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.5);
+            color: #e2e8f0; 
+            font-size: 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 4px 12px rgba(0,0,0,.3);
+            user-select: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .mc-btn:active { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scale(0.95);
+        }
+        
+        .mc-wide { 
+            width: 100px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* 移动端适配 */
         @media (max-width: 900px) {
-            .wrap { flex-direction:column; align-items:center; gap:16px; padding-bottom:120px; }
-            .side { flex-direction:row; flex-wrap:wrap; gap:10px; justify-content:center; }
-            .panel { flex:1 1 160px; }
-            .mobile-controls { display:block; }
+            body {
+                overflow: hidden;
+            }
+            
+            .wrap { 
+                flex-direction: column; 
+                align-items: center; 
+                gap: 12px;
+                padding: 12px 12px 180px;
+                width: 100%;
+                overflow-y: auto;
+            }
+            
+            .board {
+                width: 100%;
+                max-width: 500px;
+                padding: 12px;
+            }
+            
+            .side { 
+                width: 100%;
+                flex-direction: row; 
+                flex-wrap: wrap; 
+                gap: 10px; 
+                justify-content: center; 
+            }
+            
+            .panel { 
+                flex: 1 1 140px;
+                min-width: 140px;
+            }
+            
+            .mobile-controls { 
+                display: block; 
+            }
+            
+            .help {
+                display: none;
+            }
+            
+            .fullscreen-btn {
+                top: 8px;
+                right: 8px;
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .wrap {
+                padding: 8px 8px 170px;
+            }
+            
+            canvas#game {
+                max-width: 100%;
+                height: auto;
+            }
+            
+            .mc-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+            
+            .mc-wide {
+                width: 90px;
+                font-size: 13px;
+            }
+            
+            .panel {
+                flex: 1 1 120px;
+                min-width: 120px;
+                padding: 10px;
+            }
+            
+            .stat {
+                font-size: 20px;
+            }
         }
     </style>
     <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <div class="wrap">
+    <div class="wrap" id="gameWrap">
         <div class="board">
+            <!-- 全屏按钮 -->
+            <button class="fullscreen-btn" id="fullscreenBtn" title="全屏/退出全屏">
+                <i class="fas fa-expand"></i>
+            </button>
             <canvas id="game" width="240" height="480"></canvas>
             <div class="side">
                 <div class="panel">
@@ -56,14 +330,14 @@
                     <canvas id="next" width="80" height="80" style="margin-top:6px;"></canvas>
                 </div>
                 <div class="panel btns">
-                    <button id="start">开始/暂停 (P)</button>
-                    <button id="restart">重新开始 (R)</button>
-                    <button id="drop">快速下落 (空格)</button>
+                    <button id="start"><i class="fas fa-play"></i> 开始/暂停</button>
+                    <button id="restart"><i class="fas fa-redo"></i> 重新开始</button>
+                    <button id="drop"><i class="fas fa-arrow-down"></i> 快速下落</button>
                 </div>
                 <div class="panel help">
-                    操作：
-                    <div>← → 移动，↑ 旋转，↓ 加速</div>
-                    <div>空格 快速下落，P 暂停/继续，R 重开</div>
+                    <strong>💡 操作提示：</strong>
+                    <div>← → 移动  |  ↑ 旋转  |  ↓ 加速</div>
+                    <div>空格 快速下落  |  P 暂停  |  R 重开</div>
                 </div>
             </div>
         </div>
@@ -97,6 +371,67 @@
 
     <script>
     (function(){
+        // 全屏功能
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const gameWrap = document.getElementById('gameWrap');
+        const fullscreenIcon = fullscreenBtn.querySelector('i');
+        
+        let isFullscreen = false;
+        
+        fullscreenBtn.addEventListener('click', function() {
+            if (!isFullscreen) {
+                enterFullscreen();
+            } else {
+                exitFullscreen();
+            }
+        });
+        
+        function enterFullscreen() {
+            gameWrap.classList.add('fullscreen');
+            fullscreenIcon.className = 'fas fa-compress';
+            isFullscreen = true;
+            
+            // 尝试使用原生全屏API（可选）
+            if (gameWrap.requestFullscreen) {
+                gameWrap.requestFullscreen().catch(err => console.log(err));
+            } else if (gameWrap.webkitRequestFullscreen) {
+                gameWrap.webkitRequestFullscreen();
+            } else if (gameWrap.msRequestFullscreen) {
+                gameWrap.msRequestFullscreen();
+            }
+        }
+        
+        function exitFullscreen() {
+            gameWrap.classList.remove('fullscreen');
+            fullscreenIcon.className = 'fas fa-expand';
+            isFullscreen = false;
+            
+            // 退出原生全屏
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(err => console.log(err));
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+        
+        // 监听原生全屏变化
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement) {
+                gameWrap.classList.remove('fullscreen');
+                fullscreenIcon.className = 'fas fa-expand';
+                isFullscreen = false;
+            }
+        });
+        
+        // ESC键退出全屏
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isFullscreen) {
+                exitFullscreen();
+            }
+        });
+        
         const COLS = 10, ROWS = 20, SIZE = 24;
         const canvas = document.getElementById('game');
         const nextCanvas = document.getElementById('next');
