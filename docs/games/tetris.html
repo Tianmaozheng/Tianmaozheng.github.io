@@ -6,653 +6,321 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>俄罗斯方块 | 小田的小游戏</title>
+    <title>俄罗斯方块 | 移动版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* 1. 基础样式和布局 */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            font-family: 'Microsoft YaHei', Arial, sans-serif; 
-            background: #0f172a; 
-            color: #e2e8f0; 
+            font-family: 'Poppins', 'Microsoft YaHei', Arial, sans-serif; /* 更改字体以增加现代感 */
+            background: #1e293b; /* 更深的背景色 */
+            color: #f8fafc; 
             display: flex; 
             min-height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden; /* 移动端防止滚动 */
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 移动端视口修正 */
+        html, body {
+            height: 100%;
+            width: 100%;
+            touch-action: manipulation; /* 禁用双击缩放 */
         }
         
         .wrap { 
-            margin: auto; 
             display: flex; 
-            gap: 28px; 
-            align-items: flex-start; 
-            padding: 16px;
-            max-width: 100%;
+            flex-direction: column; /* 手机模式下主板和侧边信息上下排列 */
+            gap: 12px; 
+            align-items: center; 
+            padding: 8px;
+            max-width: 420px; /* 限制最大宽度，更像手机屏幕 */
+            width: 100%;
+            height: 100vh;
+            justify-content: space-between; /* 游戏板和控制区两端对齐 */
         }
         
-        .board { 
-            background: #0b1220; 
-            padding: 14px; 
+        .board-container {
+            background: #0f172a; 
+            padding: 10px; 
             border-radius: 16px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.06); 
-            display: flex; 
-            gap: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.1); 
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1; /* 占据剩余空间 */
+            max-height: 65%; /* 限制游戏板大小 */
+            width: 95%;
+            margin-top: calc(env(safe-area-inset-top) + 4px);
         }
         
         canvas { 
-            background: #0a1326; 
-            border-radius: 10px; 
+            background: #0b1220; 
+            border-radius: 8px; 
             box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
             display: block;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* 保持比例缩放 */
         }
         
+        /* 2. 信息侧边栏优化为顶部信息条 */
         .side { 
-            min-width: 200px; 
+            width: 100%; 
             display: flex; 
-            flex-direction: column; 
-            gap: 14px; 
+            flex-direction: row; 
+            gap: 8px; 
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 0 4px;
         }
         
         .panel { 
-            background: #0b1220; 
-            border-radius: 12px; 
-            padding: 12px 14px; 
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); 
+            background: #2d3848; /* 优化信息面板背景 */
+            border-radius: 10px; 
+            padding: 8px 12px; 
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); 
+            flex: 1 1 auto;
+            min-width: 100px;
+            max-width: 180px;
         }
         
         .panel h3 { 
-            margin: 0 0 8px; 
-            font-size: 14px; 
+            margin: 0 0 4px; 
+            font-size: 12px; 
             color: #94a3b8; 
-            font-weight: 600; 
-            letter-spacing: .3px; 
+            font-weight: 500; 
+            letter-spacing: .2px; 
+            text-transform: uppercase;
         }
         
         .stat { 
-            font-size: 22px; 
+            font-size: 20px; 
             font-weight: 700; 
-            color: #e2e8f0; 
+            color: #7dd3fc; /* 醒目的分数颜色 */
         }
         
-        .btns { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 8px; 
+        .next-panel {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        button { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        button:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .help { 
-            font-size: 12px; 
-            color: #94a3b8; 
-            line-height: 1.6; 
-        }
-        
+
         .next-wrap { 
             display: flex; 
-            align-items: center; 
-            gap: 10px; 
+            flex-direction: column;
+            align-items: flex-start; 
+            gap: 2px;
         }
         
         .badge { 
-            font-size: 12px; 
+            font-size: 11px; 
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-            color: #667eea;
-            padding: 4px 10px;
+            color: #a78bfa;
+            padding: 3px 8px;
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 999px;
             font-weight: 600;
         }
 
-        /* 全屏按钮 */
-        .fullscreen-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background: rgba(102, 126, 234, 0.2);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 8px;
-            color: #667eea;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            transition: all 0.3s ease;
-        }
-        
-        .fullscreen-btn:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: scale(1.1);
-        }
+        /* 移除桌面端按钮，改用移动端控制 */
+        .btns, .help, .fullscreen-btn { display: none !important; }
 
-        /* 全屏模式 */
-        .wrap.fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100vw;
-            height: 100vh;
-            height: calc(var(--vh, 1vh) * 100);
-            margin: 0;
-            padding: 0;
-            background: #0f172a;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        
-        .wrap.fullscreen .board {
-            max-width: 100%;
-            max-height: 100vh;
-        }
-        
-        .wrap.fullscreen .mobile-controls {
-            display: flex !important;
-            position: fixed;
-            bottom: 0;
-            z-index: 10000;
-        }
-
-        /* 移动端控制 */
+        /* 3. 移动端虚拟控制优化 */
         .mobile-controls { 
-            display: none; 
+            display: flex !important; /* 强制显示移动端控制 */
             position: fixed; 
             left: 0; 
             right: 0; 
             bottom: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px 16px;
+            background: #1e293b;
+            padding: 10px 16px calc(env(safe-area-inset-bottom) + 10px);
             z-index: 1000;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .mc-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            gap: 10px;
+            border-top: 2px solid #334155;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
             max-width: 600px;
             margin: 0 auto;
         }
         
+        .mc-row { 
+            width: 100%;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 10px;
+        }
+        
         .mc-group { 
             display: flex; 
-            gap: 8px; 
+            gap: 12px; 
+            align-items: center;
         }
         
         .mc-btn { 
-            width: 56px; 
-            height: 56px; 
-            border-radius: 12px; 
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
-            border: 1px solid rgba(102, 126, 234, 0.5);
-            color: #e2e8f0; 
-            font-size: 20px; 
+            width: 60px; /* 增大点击区域 */
+            height: 60px; 
+            border-radius: 50%; /* 圆形按钮，更像手柄 */
+            background: linear-gradient(145deg, #374151, #1f2937);
+            border: 2px solid #475569;
+            color: #cbd5e1; 
+            font-size: 24px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            box-shadow: 0 4px 12px rgba(0,0,0,.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.1);
             user-select: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.1s ease;
+            font-weight: 700;
         }
         
         .mc-btn:active { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(145deg, #4f46e5, #7c3aed); /* 按下时的深色或强调色 */
             transform: scale(0.95);
+            color: white;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,.5);
+        }
+
+        .mc-left-right .mc-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
         }
         
         .mc-wide { 
-            width: 100px;
+            width: 80px; /* 下落按钮更宽 */
+            height: 60px;
+            border-radius: 30px; /* 椭圆按钮 */
             font-size: 14px;
-            font-weight: 600;
+        }
+        
+        /* 旋转按钮使用不同的颜色 */
+        .mc-rotate {
+            background: linear-gradient(145deg, #dc2626, #991b1b);
+            border: 2px solid #ef4444;
+            color: white;
+        }
+        .mc-rotate:active {
+            background: linear-gradient(145deg, #b91c1c, #7f1d1d);
+        }
+        
+        /* 暂停/开始按钮使用不同的颜色 */
+        .mc-pause {
+            background: linear-gradient(145deg, #10b981, #059669);
+            border: 2px solid #34d399;
+            color: white;
+        }
+        .mc-pause:active {
+            background: linear-gradient(145deg, #059669, #047857);
         }
 
-        /* 移动端适配 */
+        /* 4. 响应式布局优化 */
         @media (max-width: 900px) {
-            html, body {
+             .wrap {
                 height: 100%;
-                overflow: hidden;
-                position: fixed;
-                width: 100%;
-            }
-            
-            .wrap { 
-                flex-direction: column; 
-                align-items: center; 
-                gap: 8px;
-                padding: 8px;
-                padding-bottom: 0;
-                width: 100%;
-                height: 100vh;
-                overflow: hidden;
                 justify-content: flex-start;
-            }
-            
-            /* 全屏模式调整 */
-            .wrap.fullscreen {
                 padding-bottom: 0;
             }
-            
-            .wrap.fullscreen .mobile-controls {
-                display: flex !important;
+
+            .board-container {
+                max-height: calc(100% - 140px - 90px - env(safe-area-inset-bottom)); /* 减去信息栏和控制区高度 */
+                width: calc(100% - 16px);
+                flex-grow: 0;
             }
-            
-            .board {
-                width: 100%;
-                max-width: 100%;
-                padding: 8px;
-                flex-shrink: 0;
-                margin-bottom: 0;
-            }
-            
-            /* 游戏画布自适应 */
+
             canvas#game {
-                width: min(240px, calc(100vw - 40px));
-                height: auto;
-                max-height: calc(100vh - 320px);
-            }
-            
-            canvas#next {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .side { 
-                width: 100%;
-                flex-direction: row; 
-                flex-wrap: wrap; 
-                gap: 8px; 
-                justify-content: center;
-                padding: 0 4px;
-                margin-bottom: 0;
-            }
-            
-            .panel { 
-                flex: 1 1 calc(50% - 8px);
-                min-width: 130px;
-                max-width: 200px;
-            }
-            
-            .panel.btns {
-                flex: 1 1 100%;
-                max-width: 100%;
-            }
-            
-            .panel.btns button {
-                flex: 1;
-                min-width: calc(33.333% - 6px);
-            }
-            
-            .mobile-controls { 
-                display: flex !important;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(15, 23, 42, 0.98);
-                backdrop-filter: blur(10px);
-                padding: 10px 12px calc(env(safe-area-inset-bottom) + 10px);
-                border-top: 2px solid rgba(102, 126, 234, 0.3);
-                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-            }
-            
-            .help {
-                display: none;
-            }
-            
-            .fullscreen-btn {
-                top: 6px;
-                right: 6px;
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .wrap {
-                padding: 6px;
-                gap: 6px;
-            }
-            
-            .board {
-                padding: 6px;
-            }
-            
-            canvas#game {
-                width: min(220px, calc(100vw - 30px));
-                max-height: calc(100vh - 300px);
-            }
-            
-            canvas#next {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .mc-btn {
-                width: 48px;
-                height: 48px;
-                font-size: 16px;
-            }
-            
-            .mc-wide {
-                width: 85px;
-                font-size: 12px;
-            }
-            
-            .mc-group {
-                gap: 6px;
-            }
-            
-            .panel {
-                flex: 1 1 calc(50% - 6px);
-                min-width: 110px;
-                padding: 8px;
-            }
-            
-            .stat {
-                font-size: 18px;
-            }
-            
-            .panel h3 {
-                font-size: 12px;
-            }
-            
-            button {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-            
-            .mobile-controls {
-                padding: 8px 10px calc(env(safe-area-inset-bottom) + 8px);
-            }
-        }
-        
-        @media (max-width: 380px) {
-            canvas#game {
-                width: min(200px, calc(100vw - 24px));
-                max-height: calc(100vh - 280px);
-            }
-            
-            .mc-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 14px;
-            }
-            
-            .mc-wide {
-                width: 75px;
-                font-size: 11px;
-            }
-        }
-        
-        /* 横屏适配 */
-        @media (max-width: 900px) and (orientation: landscape) {
-            .wrap {
-                flex-direction: row;
-                height: 100vh;
-                padding: 8px;
-                padding-bottom: 0;
-            }
-            
-            .board {
-                max-width: 50%;
+                width: auto;
                 height: 100%;
+                aspect-ratio: 1/2; /* Tetris 经典比例 */
             }
-            
-            canvas#game {
-                max-height: calc(100vh - 100px);
-            }
-            
+
             .side {
-                flex-direction: column;
-                overflow-y: auto;
-                max-height: calc(100vh - 20px);
-            }
-            
-            .mobile-controls {
-                right: 0;
-                left: auto;
-                width: 48%;
-                height: 100vh;
-                padding: 12px;
-                border-left: 2px solid rgba(102, 126, 234, 0.3);
-                border-top: none;
-                flex-direction: column;
-                justify-content: center;
-            }
-            
-            .mc-row {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .mc-group {
-                width: 100%;
-                justify-content: center;
+                padding-top: 8px;
+                padding-left: 8px;
+                padding-right: 8px;
             }
         }
     </style>
-    <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
 </head>
 <body>
     <div class="wrap" id="gameWrap">
-        <div class="board">
-            <!-- 全屏按钮 -->
-            <button class="fullscreen-btn" id="fullscreenBtn" title="全屏/退出全屏">
-                <i class="fas fa-expand"></i>
-            </button>
-            <canvas id="game" width="240" height="480"></canvas>
-            <div class="side">
-                <div class="panel">
-                    <h3>分数</h3>
-                    <div class="stat" id="score">0</div>
-                </div>
-                <div class="panel">
+        <div class="side">
+            <div class="panel">
+                <h3>分数</h3>
+                <div class="stat" id="score">0</div>
+            </div>
+            <div class="panel">
+                <div class="next-panel">
+                    <canvas id="next" width="72" height="72"></canvas>
                     <div class="next-wrap">
-                        <h3 style="margin:0">下一个</h3>
+                        <h3>下一个</h3>
                         <span class="badge" id="level">Lv.1</span>
                     </div>
-                    <canvas id="next" width="80" height="80" style="margin-top:6px;"></canvas>
                 </div>
-                <div class="panel btns">
-                    <button id="start"><i class="fas fa-play"></i> 开始/暂停</button>
-                    <button id="restart"><i class="fas fa-redo"></i> 重新开始</button>
-                    <button id="drop"><i class="fas fa-arrow-down"></i> 快速下落</button>
-                </div>
-                <div class="panel help">
-                    <strong>💡 操作提示：</strong>
-                    <div>← → 移动  |  ↑ 旋转  |  ↓ 加速</div>
-                    <div>空格 快速下落  |  P 暂停  |  R 重开</div>
-                </div>
+            </div>
+        </div>
+
+        <div class="board-container">
+            <canvas id="game" width="240" height="480"></canvas>
+            <div id="game-message" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); color: white; display: none; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; border-radius: 16px;">
+                PAUSED
             </div>
         </div>
     </div>
 
-    <!-- Mobile on-screen controls -->
     <div class="mobile-controls" aria-hidden="true">
         <div class="mc-row">
-            <div class="mc-group">
+            <div class="mc-group mc-left-right">
                 <div class="mc-btn" data-action="left" title="左">
                     <i class="fas fa-arrow-left"></i>
                 </div>
                 <div class="mc-btn" data-action="right" title="右">
                     <i class="fas fa-arrow-right"></i>
                 </div>
-                <div class="mc-btn" data-action="rotate" title="旋转">
+            </div>
+            
+            <div class="mc-group">
+                <div class="mc-btn mc-rotate" data-action="rotate" title="旋转">
                     <i class="fas fa-undo"></i>
                 </div>
+                <div class="mc-btn mc-pause" data-action="pause" title="暂停/继续">
+                    <i class="fas fa-pause"></i>
+                </div>
             </div>
+
             <div class="mc-group">
-                <div class="mc-btn mc-wide" data-action="hard" title="快速下落">下落</div>
                 <div class="mc-btn" data-action="soft" title="加速">
                     <i class="fas fa-arrow-down"></i>
                 </div>
-                <div class="mc-btn" data-action="pause" title="暂停/继续">
-                    <i class="fas fa-pause"></i>
-                </div>
+                <div class="mc-btn mc-wide" data-action="hard" title="快速下落">DROP</div>
             </div>
         </div>
     </div>
 
     <script>
     (function(){
-        // 移动端初始化
+        // --- 移动端初始化与视口修正 ---
         function initMobile() {
-            const isMobile = window.innerWidth <= 900;
-            if (isMobile) {
-                // 防止下拉刷新
-                document.body.addEventListener('touchmove', function(e) {
-                    if (e.target.closest('.wrap')) {
-                        e.preventDefault();
-                    }
-                }, { passive: false });
-                
-                // 防止双击缩放
-                let lastTouchEnd = 0;
-                document.addEventListener('touchend', function(e) {
-                    const now = Date.now();
-                    if (now - lastTouchEnd <= 300) {
-                        e.preventDefault();
-                    }
-                    lastTouchEnd = now;
-                }, false);
-                
-                // 确保控制按钮可见
-                const controls = document.querySelector('.mobile-controls');
-                if (controls) {
-                    controls.style.display = 'flex';
-                }
-                
-                // 调整视口高度
-                const setViewportHeight = () => {
-                    const vh = window.innerHeight * 0.01;
-                    document.documentElement.style.setProperty('--vh', `${vh}px`);
-                };
-                setViewportHeight();
-                window.addEventListener('resize', setViewportHeight);
-                window.addEventListener('orientationchange', setViewportHeight);
-            }
-        }
-        
-        // 页面加载完成后初始化
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initMobile);
-        } else {
-            initMobile();
-        }
-        
-        // 全屏功能
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const gameWrap = document.getElementById('gameWrap');
-        const fullscreenIcon = fullscreenBtn.querySelector('i');
-        
-        let isFullscreen = false;
-        
-        fullscreenBtn.addEventListener('click', function() {
-            if (!isFullscreen) {
-                enterFullscreen();
-            } else {
-                exitFullscreen();
-            }
-        });
-        
-        function enterFullscreen() {
-            gameWrap.classList.add('fullscreen');
-            fullscreenIcon.className = 'fas fa-compress';
-            isFullscreen = true;
+            const setViewportHeight = () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+                // 调整游戏画布大小以适应新视口
+                resizeGameCanvas();
+            };
             
-            // 移动端使用伪全屏（确保控制按钮可见）
-            const isMobile = window.innerWidth <= 900;
+            // 防止下拉刷新等浏览器手势
+            document.body.addEventListener('touchmove', e => { e.preventDefault(); }, { passive: false });
             
-            if (!isMobile) {
-                // 桌面端使用原生全屏
-                if (gameWrap.requestFullscreen) {
-                    gameWrap.requestFullscreen().catch(err => console.log(err));
-                } else if (gameWrap.webkitRequestFullscreen) {
-                    gameWrap.webkitRequestFullscreen();
-                } else if (gameWrap.msRequestFullscreen) {
-                    gameWrap.msRequestFullscreen();
-                }
-            } else {
-                // 移动端伪全屏：隐藏地址栏
-                window.scrollTo(0, 1);
-                document.body.style.overflow = 'hidden';
-                
-                // 强制显示控制按钮
-                const controls = document.querySelector('.mobile-controls');
-                if (controls) {
-                    controls.style.display = 'flex';
-                    controls.style.zIndex = '10000';
-                }
-            }
+            // 调整视口高度
+            setViewportHeight();
+            window.addEventListener('resize', setViewportHeight);
+            window.addEventListener('orientationchange', setViewportHeight);
         }
-        
-        function exitFullscreen() {
-            gameWrap.classList.remove('fullscreen');
-            fullscreenIcon.className = 'fas fa-expand';
-            isFullscreen = false;
-            
-            // 退出原生全屏
-            if (document.fullscreenElement) {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(err => console.log(err));
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
-            }
-            
-            // 恢复移动端滚动
-            document.body.style.overflow = '';
-        }
-        
-        // 监听原生全屏变化
-        document.addEventListener('fullscreenchange', function() {
-            if (!document.fullscreenElement) {
-                gameWrap.classList.remove('fullscreen');
-                fullscreenIcon.className = 'fas fa-expand';
-                isFullscreen = false;
-            }
-        });
-        
-        // ESC键退出全屏
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && isFullscreen) {
-                exitFullscreen();
-            }
-        });
-        
+
+        // --- 游戏常量和状态 ---
         const COLS = 10, ROWS = 20, SIZE = 24;
         const canvas = document.getElementById('game');
         const nextCanvas = document.getElementById('next');
@@ -660,22 +328,23 @@
         const nctx = nextCanvas.getContext('2d');
         const scoreEl = document.getElementById('score');
         const levelEl = document.getElementById('level');
+        const messageEl = document.getElementById('game-message');
 
         const COLORS = {
-            0: '#0a1326',
-            1: '#22d3ee', // I
-            2: '#f59e0b', // L
-            3: '#8b5cf6', // J
-            4: '#10b981', // S
-            5: '#ef4444', // Z
-            6: '#eab308', // O
-            7: '#3b82f6'  // T
+            0: '#0a1326', // 背景色
+            1: '#22d3ee', // I-青色
+            2: '#f59e0b', // L-橙色
+            3: '#8b5cf6', // J-紫色
+            4: '#10b981', // S-绿色
+            5: '#ef4444', // Z-红色
+            6: '#eab308', // O-黄色
+            7: '#3b82f6'  // T-蓝色
         };
 
         const SHAPES = {
             I: [[1,1,1,1]],
-            L: [[2,0,0],[2,2,2]],
-            J: [[0,0,3],[3,3,3]],
+            L: [[0,0,2],[2,2,2]],
+            J: [[3,0,0],[3,3,3]],
             S: [[0,4,4],[4,4,0]],
             Z: [[5,5,0],[0,5,5]],
             O: [[6,6],[6,6]],
@@ -691,34 +360,64 @@
         let score = 0;
         let paused = false;
         let gameOver = false;
+        let animationFrameId = null;
+
+        // --- 游戏逻辑函数 ---
 
         function createMatrix(w,h){
             const m = [];
             for(let y=0;y<h;y++){ m.push(new Array(w).fill(0)); }
             return m;
         }
-        function drawCell(x,y,val,context){
+
+        function drawCell(x,y,val,context, cell_size=SIZE){
             const c = context||ctx;
-            c.fillStyle = COLORS[val];
-            c.fillRect(x*SIZE, y*SIZE, SIZE-1, SIZE-1);
+            const color = COLORS[val] || COLORS[0];
+            c.fillStyle = color;
+            // 绘制带有边框/立体感的方块
+            c.fillRect(x*cell_size, y*cell_size, cell_size-1, cell_size-1);
+            c.strokeStyle = '#000';
+            c.lineWidth = 1;
+            c.strokeRect(x*cell_size, y*cell_size, cell_size-1, cell_size-1);
         }
+
         function draw(){
             ctx.clearRect(0,0,canvas.width,canvas.height);
+            // 绘制游戏板上的固定方块
             for(let y=0;y<ROWS;y++){
                 for(let x=0;x<COLS;x++) drawCell(x,y, grid[y][x]);
             }
+            // 绘制当前下落的方块
             if(piece) drawPiece(piece, ctx);
+            
+            // 游戏状态消息
+            if (gameOver) {
+                messageEl.textContent = 'GAME OVER';
+                messageEl.style.display = 'flex';
+            } else if (paused) {
+                messageEl.textContent = 'PAUSED';
+                messageEl.style.display = 'flex';
+            } else {
+                messageEl.style.display = 'none';
+            }
         }
-        function drawPiece(p, context){
+
+        function drawPiece(p, context, cell_size=SIZE){
             p.shape.forEach((row, y)=>{
-                row.forEach((val,x)=>{ if(val) drawCell(p.x + x, p.y + y, val, context); });
+                row.forEach((val,x)=>{ 
+                    if(val) drawCell(p.x + x, p.y + y, val, context, cell_size); 
+                });
             });
         }
+
         function merge(){
             piece.shape.forEach((row,y)=>{
-                row.forEach((val,x)=>{ if(val) grid[piece.y+y][piece.x+x] = val; });
+                row.forEach((val,x)=>{ 
+                    if(val) grid[piece.y+y][piece.x+x] = val; 
+                });
             });
         }
+
         function collide(nx=piece.x, ny=piece.y, shape=piece.shape){
             for(let y=0;y<shape.length;y++){
                 for(let x=0;x<shape[y].length;x++){
@@ -731,12 +430,15 @@
             }
             return false;
         }
+
         function rotate(shape){
+            // 简单的转置和反转实现90度旋转
             const N = shape.length, M = shape[0].length;
             const res = Array.from({length:M},()=>Array(N).fill(0));
             for(let y=0;y<N;y++) for(let x=0;x<M;x++) res[x][N-1-y] = shape[y][x];
             return res;
         }
+
         function newPiece(){
             piece = nextPiece || randomPiece();
             nextPiece = randomPiece();
@@ -745,29 +447,41 @@
             piece.y = -1;
             if(collide(piece.x, piece.y, piece.shape)){
                 gameOver = true;
-                paused = true;
+                paused = true; // 游戏结束时自动暂停
+                // 更新暂停按钮图标为重新开始
+                updatePauseButton('restart'); 
             }
         }
+
         function randomPiece(){
             const t = TYPES[(Math.random()*TYPES.length)|0];
             const shape = SHAPES[t].map(r=>r.slice());
-            // normalize to numbers 1..7 already in shape
             return { shape, x:0, y:0 };
         }
+
         function drawNext(){
+            const next_size = nextCanvas.width / 4;
             nctx.clearRect(0,0,nextCanvas.width,nextCanvas.height);
             if(!nextPiece) return;
-            // center in 4x4 box
-            const offX = ((4 - nextPiece.shape[0].length)/2)|0;
-            const offY = ((4 - nextPiece.shape.length)/2)|0;
+            // 居中绘制在 4x4 的区域内
+            const shape_w = nextPiece.shape[0].length;
+            const shape_h = nextPiece.shape.length;
+            const offX = ((4 - shape_w)/2) * next_size;
+            const offY = ((4 - shape_h)/2) * next_size;
+            
             nextPiece.shape.forEach((row,y)=>{
-                row.forEach((val,x)=>{ if(val){
-                    nctx.fillStyle = COLORS[val];
-                    const s = 18;
-                    nctx.fillRect((offX+x)*s+2, (offY+y)*s+2, s-2, s-2);
-                }});
+                row.forEach((val,x)=>{ 
+                    if(val){
+                        nctx.fillStyle = COLORS[val];
+                        nctx.fillRect(offX + x*next_size + 1, offY + y*next_size + 1, next_size - 2, next_size - 2);
+                        nctx.strokeStyle = '#000';
+                        nctx.lineWidth = 1;
+                        nctx.strokeRect(offX + x*next_size + 1, offY + y*next_size + 1, next_size - 2, next_size - 2);
+                    }
+                });
             });
         }
+
         function sweep(){
             let lines = 0;
             for(let y=ROWS-1;y>=0;y--){
@@ -784,10 +498,13 @@
                 scoreEl.textContent = score;
                 const level = 1 + Math.min(9, (score/1000)|0);
                 levelEl.textContent = 'Lv.'+level;
-                dropInterval = Math.max(120, 900 - (level-1)*80);
+                // 难度调整：每升一级，下降间隔减少80ms
+                dropInterval = Math.max(120, 900 - (level-1)*80); 
             }
         }
+
         function drop(){
+            if (gameOver || paused) return;
             piece.y++;
             if(collide()){
                 piece.y--;
@@ -797,98 +514,190 @@
             }
             dropCounter = 0;
         }
+
         function move(dir){
+            if (gameOver || paused) return;
             piece.x += dir;
             if(collide()) piece.x -= dir;
         }
+
         function rotatePiece(){
+            if (gameOver || paused) return;
             const r = rotate(piece.shape);
-            const old = piece.shape; piece.shape = r;
-            // wall kick simple
+            const old = piece.shape; 
+            piece.shape = r;
+            
+            // 简单的 Wall Kick 机制
             if(collide()){
                 piece.x++;
-                if(collide()){ piece.x -= 2; if(collide()){ piece.x++; piece.shape = old; } }
+                if(collide()){ 
+                    piece.x -= 2; 
+                    if(collide()){ 
+                        piece.x++; 
+                        piece.shape = old; // 无法旋转
+                    } 
+                }
             }
-        }
-        function hardDrop(){
-            while(!collide()) piece.y++;
-            piece.y--; merge(); sweep(); newPiece(); dropCounter = 0; draw();
-        }
-        function update(time=0){
-            const dt = time - lastTime; lastTime = time;
-            if(!paused){
-                dropCounter += dt;
-                if(dropCounter > dropInterval) drop();
-                draw();
-            }
-            requestAnimationFrame(update);
         }
 
-        document.addEventListener('keydown', e=>{
-            if(gameOver){ if(e.key.toLowerCase()==='r') restart(); return; }
-            switch(e.key){
-                case 'ArrowLeft': move(-1); break;
-                case 'ArrowRight': move(1); break;
-                case 'ArrowDown': piece.y++; if(collide()) piece.y--; dropCounter=0; break;
-                case 'ArrowUp': rotatePiece(); break;
-                case ' ': e.preventDefault(); hardDrop(); break;
-                case 'p': case 'P': paused = !paused; break;
-                case 'r': case 'R': restart(); break;
+        function hardDrop(){
+            if (gameOver || paused) return;
+            let finalY = piece.y;
+            while(!collide(piece.x, finalY + 1, piece.shape)) finalY++;
+            
+            // 计分: 硬下落每格 2 分
+            score += (finalY - piece.y) * 2;
+            scoreEl.textContent = score;
+
+            piece.y = finalY;
+            merge(); 
+            sweep(); 
+            newPiece(); 
+            dropCounter = 0; 
+            draw();
+        }
+
+        function togglePause(){
+            if (gameOver) {
+                restart();
+                return;
+            }
+            paused = !paused;
+            // 更新暂停按钮图标
+            updatePauseButton(paused ? 'play' : 'pause');
+        }
+        
+        function updatePauseButton(state) {
+            const pauseBtn = document.querySelector('.mc-pause i');
+            if (pauseBtn) {
+                if (state === 'pause') {
+                    pauseBtn.className = 'fas fa-pause';
+                } else {
+                    pauseBtn.className = 'fas fa-play';
+                }
+            }
+        }
+        
+        function restart(){
+            grid = createMatrix(COLS,ROWS);
+            score = 0; scoreEl.textContent = '0';
+            dropInterval = 900; levelEl.textContent = 'Lv.1';
+            gameOver = false; 
+            paused = false; 
+            nextPiece = randomPiece(); 
+            newPiece(); 
+            draw();
+            updatePauseButton('pause');
+        }
+
+        function resizeGameCanvas() {
+            // 根据父容器的实际大小，计算最合适的 SIZE
+            const boardContainer = document.querySelector('.board-container');
+            if (!boardContainer) return;
+
+            const containerWidth = boardContainer.clientWidth - 20; // 减去padding
+            const containerHeight = boardContainer.clientHeight - 20;
+
+            const maxCellSizeW = Math.floor(containerWidth / COLS);
+            const maxCellSizeH = Math.floor(containerHeight / ROWS);
+            const newSize = Math.min(maxCellSizeW, maxCellSizeH);
+
+            if (newSize > 10) { // 防止尺寸过小
+                canvas.width = newSize * COLS;
+                canvas.height = newSize * ROWS;
+                // 更新全局 SIZE
+                window.SIZE = newSize; 
+                // 重新绘制
+                draw();
+            }
+        }
+
+        // --- 主循环 ---
+        function update(time=0){
+            const dt = time - lastTime; 
+            lastTime = time;
+            
+            if(!paused && !gameOver){
+                dropCounter += dt;
+                if(dropCounter > dropInterval) drop();
             }
             draw();
-        });
-        // Touch controls with press-to-repeat for left/right/soft
-        (function initTouch(){
+            animationFrameId = requestAnimationFrame(update);
+        }
+
+        // --- 事件监听 (触摸/鼠标) ---
+        (function initTouchControls(){
             const map = {
                 left: ()=>move(-1),
                 right: ()=>move(1),
                 rotate: ()=>rotatePiece(),
                 soft: ()=>{ piece.y++; if(collide()) piece.y--; dropCounter=0; },
                 hard: ()=>hardDrop(),
-                pause: ()=>{ if(gameOver) restart(); else paused = !paused; }
+                pause: ()=>togglePause()
             };
             let interval = null;
-            let repeatAction = null;
-            function startRepeat(fn){
-                fn();
-                repeatAction = fn;
-                interval = setInterval(()=>{ fn(); draw(); }, 120);
+            
+            function startRepeat(fn, delay=150){
+                if (gameOver || paused) return;
+                fn(); // 立即执行一次
+                if (interval) clearInterval(interval);
+                interval = setInterval(()=>{ 
+                    if (gameOver || paused) {
+                        stopRepeat();
+                        return;
+                    }
+                    fn(); 
+                    draw(); 
+                }, delay);
             }
-            function stopRepeat(){ if(interval){ clearInterval(interval); interval=null; } repeatAction=null; }
+            
+            function stopRepeat(){ 
+                if(interval){ 
+                    clearInterval(interval); 
+                    interval=null; 
+                } 
+                draw(); // 确保停止后立即重绘一次
+            }
+
             document.querySelectorAll('.mc-btn').forEach(btn=>{
                 const act = btn.getAttribute('data-action');
                 const fn = map[act];
                 if(!fn) return;
+                
+                // 区分按住重复操作和单次操作
                 if(act==='left'||act==='right'||act==='soft'){
-                    btn.addEventListener('touchstart', e=>{ e.preventDefault(); if(gameOver) return; startRepeat(fn); });
-                    btn.addEventListener('touchend', ()=>stopRepeat());
-                    btn.addEventListener('touchcancel', ()=>stopRepeat());
-                    btn.addEventListener('mousedown', e=>{ e.preventDefault(); if(gameOver) return; startRepeat(fn); });
-                    btn.addEventListener('mouseup', ()=>stopRepeat());
-                    btn.addEventListener('mouseleave', ()=>stopRepeat());
+                    const repeatDelay = act === 'soft' ? 80 : 150; // 加速下落可以更快
+                    const startEvents = ['touchstart', 'mousedown'];
+                    const endEvents = ['touchend', 'touchcancel', 'mouseup', 'mouseleave'];
+                    
+                    startEvents.forEach(evt => btn.addEventListener(evt, e=>{ 
+                        e.preventDefault(); 
+                        if(e.button === 0 || evt === 'touchstart') startRepeat(fn, repeatDelay);
+                    }));
+                    endEvents.forEach(evt => btn.addEventListener(evt, e=>{ 
+                        if (e.button === 0 || evt.includes('touch')) stopRepeat();
+                    }));
                 } else {
-                    btn.addEventListener('touchstart', e=>{ e.preventDefault(); if(gameOver && act!=='pause') return; fn(); draw(); });
-                    btn.addEventListener('mousedown', e=>{ e.preventDefault(); if(gameOver && act!=='pause') return; fn(); draw(); });
+                    const events = ['touchstart', 'mousedown'];
+                    events.forEach(evt => btn.addEventListener(evt, e=>{ 
+                        e.preventDefault(); 
+                        if(gameOver && act!=='pause') return; 
+                        fn(); 
+                        draw(); 
+                    }));
                 }
             });
         })();
-        document.getElementById('start').onclick = ()=>{ if(gameOver) restart(); else paused = !paused; };
-        document.getElementById('restart').onclick = ()=>restart();
-        document.getElementById('drop').onclick = ()=>hardDrop();
-
-        function restart(){
-            grid = createMatrix(COLS,ROWS);
-            score = 0; scoreEl.textContent = '0';
-            dropInterval = 900; levelEl.textContent = 'Lv.1';
-            paused = false; gameOver = false; nextPiece = randomPiece(); newPiece(); draw();
-        }
-
-        // init
-        newPiece(); drawNext(); update();
+        
+        // --- 启动游戏 ---
+        window.onload = function() {
+            initMobile();
+            // 在 update 循环启动前，先手动设置画布尺寸，防止第一次绘制尺寸不对
+            resizeGameCanvas(); 
+            restart(); 
+            update();
+        };
     })();
     </script>
-    
 </body>
 </html>
-
-
