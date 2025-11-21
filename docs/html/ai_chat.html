@@ -566,14 +566,39 @@
 
         let currentChatId = null;
         let chats = [];
+        let isInitialized = false; // 防止重复初始化
 
-        function loadChatHistory() {
+        function loadChatHistory(forceReload = false) {
+            // 如果已经初始化过且不强制重载，直接返回，避免重复加载
+            if (isInitialized && !forceReload) {
+                return;
+            }
+            
             try {
                 const saved = localStorage.getItem('ai_chat_history');
+                const savedCurrentId = localStorage.getItem('ai_chat_current_id');
+                
+                // 如果当前已经有对话打开，且不是强制重载，保持当前状态
+                if (!forceReload && currentChatId && savedCurrentId === currentChatId) {
+                    const chat = chats.find(c => c.id === currentChatId);
+                    if (chat) {
+                        // 只更新历史列表，不重新加载对话
+                        if (saved) {
+                            chats = JSON.parse(saved);
+                            renderChatHistory();
+                        }
+                        return;
+                    }
+                }
+                
                 if (saved) {
                     chats = JSON.parse(saved);
                     renderChatHistory();
-                    if (chats.length > 0) {
+                    
+                    // 优先恢复上次打开的对话，如果没有则打开第一个
+                    if (savedCurrentId && chats.find(c => c.id === savedCurrentId)) {
+                        loadChat(savedCurrentId);
+                    } else if (chats.length > 0) {
                         loadChat(chats[0].id);
                     } else {
                         createNewChat();
@@ -581,9 +606,12 @@
                 } else {
                     createNewChat();
                 }
+                
+                isInitialized = true;
             } catch (e) {
                 console.error('加载历史对话失败:', e);
                 createNewChat();
+                isInitialized = true;
             }
         }
 
@@ -616,6 +644,13 @@
             if (!chat) return;
 
             currentChatId = chatId;
+            // 保存当前打开的对话ID到localStorage
+            try {
+                localStorage.setItem('ai_chat_current_id', chatId);
+            } catch (e) {
+                console.error('保存当前对话ID失败:', e);
+            }
+            
             messages = JSON.parse(JSON.stringify(chat.messages));
             
             const messagesDiv = document.getElementById('chatMessages');
@@ -638,7 +673,12 @@
             }
             
             renderChatHistory();
-            document.getElementById('userInput').focus();
+            // 滚动到底部但不触发焦点，避免页面跳动
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            const input = document.getElementById('userInput');
+            if (input) {
+                input.focus();
+            }
         }
 
         function renderChatHistory() {
@@ -1038,10 +1078,27 @@
             }
         }
 
-        window.onload = function() {
-            loadChatHistory();
-            document.getElementById('userInput').focus();
-        };
+        // 使用 DOMContentLoaded 初始化
+        function initChatPage() {
+            if (!isInitialized) {
+                loadChatHistory();
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initChatPage);
+        } else {
+            initChatPage();
+        }
+        
+        // 处理页面从缓存恢复的情况（bfcache）
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // 页面从缓存恢复，重新初始化但保持当前状态
+                isInitialized = false;
+                loadChatHistory(false);
+            }
+        });
     </script>
 
     <div id="footer-mount"></div>
