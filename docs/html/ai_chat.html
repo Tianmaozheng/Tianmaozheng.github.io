@@ -51,11 +51,9 @@
         }
         
         body.ai-chat-page .main-container {
-            display: flex; /* 显式恢复flex布局 */
-            min-height: calc(100vh - 140px);
-            align-items: stretch;
-            justify-content: center;
-            max-width: 100%;
+            display: block; /* 与其他页面保持一致的 block 布局 */
+            max-width: 1000px; /* 与其他页面保持一致的宽度限制 */
+            margin: 30px auto; /* 与其他页面保持一致的边距 */
             padding: 0 20px; /* 统一内边距，防止抖动 */
         }
         body.ai-chat-page .content {
