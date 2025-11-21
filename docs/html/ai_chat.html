@@ -493,13 +493,8 @@
                             <button class="clear-btn" onclick="clearChat()">🗑️ 清空</button>
                         </div>
                         <div class="chat-messages" id="chatMessages">
-            <div class="message assistant">
-                <div class="message-avatar"><img src="../personal_blog/img/sign.jpg" alt="AI"></div>
-                <div class="message-content">
-                    你好！我是小田，请问有什么可以帮你的嘛？
-                </div>
-            </div>
-        </div>
+                            <!-- 消息内容由JavaScript动态加载 -->
+                        </div>
         <div class="chat-input-area">
             <input 
                 type="text" 
@@ -643,6 +638,15 @@
             const chat = chats.find(c => c.id === chatId);
             if (!chat) return;
 
+            // 如果已经是当前对话，且内容未变化，不重新加载
+            if (currentChatId === chatId) {
+                const messagesDiv = document.getElementById('chatMessages');
+                if (messagesDiv && messagesDiv.children.length > 0) {
+                    // 已经有内容，不需要重新加载
+                    return;
+                }
+            }
+
             currentChatId = chatId;
             // 保存当前打开的对话ID到localStorage
             try {
@@ -654,31 +658,43 @@
             messages = JSON.parse(JSON.stringify(chat.messages));
             
             const messagesDiv = document.getElementById('chatMessages');
-            messagesDiv.innerHTML = '';
+            if (!messagesDiv) return;
             
-            const displayMessages = messages.filter(m => m.role !== 'system');
-            if (displayMessages.length === 0) {
-                messagesDiv.innerHTML = `
-                    <div class="message assistant">
-                        <div class="message-avatar"><img src="../personal_blog/img/sign.jpg" alt="AI"></div>
-                        <div class="message-content">
-                            你好！我是小田，请问有什么可以帮你的嘛？
+            // 使用 requestAnimationFrame 优化DOM更新，减少视觉抖动
+            requestAnimationFrame(() => {
+                messagesDiv.innerHTML = '';
+                
+                const displayMessages = messages.filter(m => m.role !== 'system');
+                if (displayMessages.length === 0) {
+                    messagesDiv.innerHTML = `
+                        <div class="message assistant">
+                            <div class="message-avatar"><img src="../personal_blog/img/sign.jpg" alt="AI"></div>
+                            <div class="message-content">
+                                你好！我是小田，请问有什么可以帮你的嘛？
+                            </div>
                         </div>
-                    </div>
-                `;
-            } else {
-                displayMessages.forEach(msg => {
-                    addMessage(msg.role, msg.content, null, false);
+                    `;
+                } else {
+                    displayMessages.forEach(msg => {
+                        addMessage(msg.role, msg.content, null, false);
+                    });
+                }
+                
+                // 滚动到底部
+                requestAnimationFrame(() => {
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 });
-            }
+            });
             
             renderChatHistory();
-            // 滚动到底部但不触发焦点，避免页面跳动
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            const input = document.getElementById('userInput');
-            if (input) {
-                input.focus();
-            }
+            
+            // 延迟焦点，避免页面跳动
+            setTimeout(() => {
+                const input = document.getElementById('userInput');
+                if (input) {
+                    input.focus();
+                }
+            }, 100);
         }
 
         function renderChatHistory() {
@@ -1078,25 +1094,34 @@
             }
         }
 
-        // 使用 DOMContentLoaded 初始化
+        // 使用 DOMContentLoaded 初始化，确保只加载一次
         function initChatPage() {
-            if (!isInitialized) {
-                loadChatHistory();
+            // 检查是否已经初始化过
+            if (isInitialized) {
+                return;
             }
+            
+            // 延迟执行，避免与页面渲染冲突
+            setTimeout(() => {
+                if (!isInitialized) {
+                    loadChatHistory();
+                }
+            }, 0);
         }
         
+        // 只在DOM完全准备好后初始化
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initChatPage);
         } else {
+            // DOM已经准备好，立即初始化
             initChatPage();
         }
         
         // 处理页面从缓存恢复的情况（bfcache）
         window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                // 页面从缓存恢复，重新初始化但保持当前状态
-                isInitialized = false;
-                loadChatHistory(false);
+            // 页面从缓存恢复时，如果已经初始化过就不重新加载
+            if (event.persisted && !isInitialized) {
+                initChatPage();
             }
         });
     </script>
