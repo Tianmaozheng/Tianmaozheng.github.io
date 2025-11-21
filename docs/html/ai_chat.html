@@ -54,7 +54,7 @@
             align-items: stretch;
             justify-content: center;
             max-width: 100%;
-            padding: 0 15px;
+            padding: 0 20px; /* 统一内边距，防止抖动 */
         }
         body.ai-chat-page .content {
             display: flex;
@@ -66,11 +66,11 @@
         .chat-layout {
             display: flex;
             width: 100%;
-            max-width: 95vw;
+            max-width: 100%; /* 避免使用 vw 导致滚动条宽度计算差异 */
             margin: 0 auto;
             gap: 20px;
             height: calc(100vh - 200px);
-            padding: 0 10px;
+            padding: 0; /* 内部无需 padding，由 container 控制 */
         }
         
         .chat-sidebar {
