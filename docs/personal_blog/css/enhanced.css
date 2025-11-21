@@ -13,6 +13,11 @@
     --theme-shadow-hover: rgba(102, 126, 234, 0.5);
 }
 
+/* 强制显示垂直滚动条，防止页面切换抖动 */
+html {
+    overflow-y: scroll;
+}
+
 /* 页面加载动画 */
 @keyframes fadeInDown {
     from {
