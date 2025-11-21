@@ -6,6 +6,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="x5-fullscreen" content="true">
     <title>俄罗斯方块 | 移动版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -34,7 +37,7 @@
             flex-direction: column;
             gap: 10px; 
             align-items: center; 
-            padding: 8px;
+            padding: 8px 8px calc(220px + 8px) 8px; /* 底部留出控制按钮的空间 */
             max-width: 500px;
             width: 100%;
             height: 100vh;
@@ -58,6 +61,8 @@
             max-width: 100%;
             min-height: 0;
             overflow: visible;
+            /* 确保游戏画面不会被底部按钮遮挡 */
+            margin-bottom: 0;
         }
         
         canvas#game { 
@@ -173,15 +178,15 @@
             left: 50%;
             transform: translateX(-50%);
             bottom: 0;
-            height: 200px;
-            width: 200px;
+            height: 210px;
+            width: 210px;
             max-width: 90vw;
-            background: rgba(30, 41, 59, 0.95);
+            background: rgba(30, 41, 59, 0.98);
             backdrop-filter: blur(10px);
             padding: 20px calc(env(safe-area-inset-bottom) + 20px) calc(env(safe-area-inset-bottom) + 20px);
-            z-index: 1000;
+            z-index: 3000;
             border-radius: 24px 24px 0 0;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
         }
@@ -343,31 +348,53 @@
             width: 100vw;
             height: 100vh;
             height: calc(var(--vh, 1vh) * 100);
-            padding: 10px;
-            gap: 12px;
+            padding: 0;
+            gap: 0;
+            justify-content: space-between;
         }
         
+        /* 全屏模式下，信息栏固定在顶部，不占用flex空间 */
         .wrap.fullscreen-mode .side {
-            position: fixed;
-            top: calc(env(safe-area-inset-top) + 65px);
+            position: absolute;
+            top: calc(env(safe-area-inset-top) + 60px);
             left: 50%;
             transform: translateX(-50%);
             width: auto;
-            max-width: calc(100vw - 40px);
+            max-width: calc(100vw - 160px);
             z-index: 1500;
-            padding: 8px 12px;
-            gap: 12px;
+            padding: 6px 10px;
+            gap: 10px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         
+        .wrap.fullscreen-mode .panel {
+            padding: 6px 10px;
+            min-width: 80px;
+        }
+        
+        .wrap.fullscreen-mode .panel h3 {
+            font-size: 10px;
+        }
+        
+        .wrap.fullscreen-mode .stat {
+            font-size: 16px;
+        }
+        
+        /* 全屏模式下游戏板容器 */
         .wrap.fullscreen-mode .board-container {
-            flex: 1;
-            width: 100%;
-            max-width: 100%;
-            margin: 60px auto 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: calc(100vw - 20px);
+            height: calc(100vh - 240px);
+            height: calc(var(--vh, 1vh) * 100 - 240px);
+            max-width: calc(100vh - 240px);
+            padding: 12px;
+            margin: 0;
         }
         
         .wrap.fullscreen-mode canvas#game {
@@ -375,6 +402,12 @@
             height: 100% !important;
             max-width: 100% !important;
             max-height: 100% !important;
+        }
+        
+        /* 全屏模式下移动控制区域样式不变 */
+        .wrap.fullscreen-mode .mobile-controls {
+            position: fixed;
+            bottom: 0;
         }
         
         /* 5. 响应式布局优化 */
@@ -826,68 +859,94 @@
             }
         }
         
-        // 全屏功能 - 锁定竖屏
-        function toggleFullscreen() {
+        // 全屏功能 - 强制锁定竖屏
+        let orientationLocked = false;
+        
+        async function toggleFullscreen() {
             const wrap = document.getElementById('gameWrap');
             const btn = document.getElementById('fullscreenBtn');
             const icon = btn ? btn.querySelector('i') : null;
             
-            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            const isCurrentlyFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            
+            if (!isCurrentlyFullscreen) {
                 // 进入全屏
-                const elem = document.documentElement;
-                
-                // 尝试锁定竖屏方向
-                const lockOrientation = async () => {
-                    try {
-                        if (screen.orientation && screen.orientation.lock) {
-                            await screen.orientation.lock('portrait');
+                try {
+                    const elem = document.documentElement;
+                    
+                    // 先锁定竖屏方向（在进入全屏之前）
+                    if (screen.orientation && screen.orientation.lock) {
+                        try {
+                            await screen.orientation.lock('portrait-primary');
+                            orientationLocked = true;
+                            console.log('Orientation locked to portrait');
+                        } catch (e) {
+                            console.log('Failed to lock orientation before fullscreen:', e);
+                            // 即使锁定失败也继续进入全屏
                         }
-                    } catch (e) {
-                        console.log('Screen orientation lock not supported:', e);
                     }
-                };
-                
-                const enterFullscreen = async () => {
-                    try {
-                        if (elem.requestFullscreen) {
-                            await elem.requestFullscreen();
-                        } else if (elem.webkitRequestFullscreen) {
-                            await elem.webkitRequestFullscreen();
-                        } else if (elem.msRequestFullscreen) {
-                            await elem.msRequestFullscreen();
+                    
+                    // 进入全屏
+                    if (elem.requestFullscreen) {
+                        await elem.requestFullscreen({ navigationUI: 'hide' });
+                    } else if (elem.webkitRequestFullscreen) {
+                        await elem.webkitRequestFullscreen();
+                    } else if (elem.mozRequestFullScreen) {
+                        await elem.mozRequestFullScreen();
+                    } else if (elem.msRequestFullscreen) {
+                        await elem.msRequestFullscreen();
+                    }
+                    
+                    // 全屏成功后再次尝试锁定方向
+                    if (!orientationLocked && screen.orientation && screen.orientation.lock) {
+                        try {
+                            await screen.orientation.lock('portrait-primary');
+                            orientationLocked = true;
+                            console.log('Orientation locked after fullscreen');
+                        } catch (e) {
+                            console.log('Failed to lock orientation after fullscreen:', e);
                         }
-                        
-                        wrap.classList.add('fullscreen-mode');
-                        document.body.classList.add('fullscreen-active');
-                        if (icon) icon.className = 'fas fa-compress';
-                        
-                        // 锁定方向
-                        await lockOrientation();
-                        
-                        // 延迟调整画布
-                        setTimeout(() => {
-                            resizeGameCanvas();
-                            draw();
-                        }, 200);
-                    } catch (err) {
-                        console.log('Fullscreen request failed:', err);
                     }
-                };
-                
-                enterFullscreen();
+                    
+                    wrap.classList.add('fullscreen-mode');
+                    document.body.classList.add('fullscreen-active');
+                    if (icon) icon.className = 'fas fa-compress';
+                    
+                    // 延迟调整画布
+                    setTimeout(() => {
+                        resizeGameCanvas();
+                        draw();
+                    }, 300);
+                    
+                } catch (err) {
+                    console.error('Fullscreen request failed:', err);
+                    alert('全屏功能不可用，请尝试手动旋转屏幕');
+                }
             } else {
                 // 退出全屏
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
+                try {
+                    if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        await document.webkitExitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        await document.mozCancelFullScreen();
+                    } else if (document.msExitFullscreen) {
+                        await document.msExitFullscreen();
+                    }
+                } catch(e) {
+                    console.error('Exit fullscreen failed:', e);
                 }
                 
                 // 解锁屏幕方向
-                if (screen.orientation && screen.orientation.unlock) {
-                    screen.orientation.unlock();
+                if (orientationLocked && screen.orientation && screen.orientation.unlock) {
+                    try {
+                        screen.orientation.unlock();
+                        orientationLocked = false;
+                        console.log('Orientation unlocked');
+                    } catch(e) {
+                        console.log('Failed to unlock orientation:', e);
+                    }
                 }
                 
                 wrap.classList.remove('fullscreen-mode');
@@ -898,7 +957,7 @@
                 setTimeout(() => {
                     resizeGameCanvas();
                     draw();
-                }, 200);
+                }, 300);
             }
         }
         
@@ -916,17 +975,31 @@
                 if (icon) icon.className = 'fas fa-expand';
                 
                 // 解锁屏幕方向
-                if (screen.orientation && screen.orientation.unlock) {
+                if (orientationLocked && screen.orientation && screen.orientation.unlock) {
                     try {
                         screen.orientation.unlock();
-                    } catch(e) {}
+                        orientationLocked = false;
+                        console.log('Orientation unlocked on fullscreen exit');
+                    } catch(e) {
+                        console.log('Failed to unlock orientation:', e);
+                    }
                 }
                 
                 // 延迟调整画布，确保布局恢复
                 setTimeout(() => {
                     resizeGameCanvas();
                     draw();
-                }, 300);
+                }, 400);
+            } else {
+                // 进入全屏时也尝试锁定方向（双重保险）
+                if (!orientationLocked && screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('portrait-primary').then(() => {
+                        orientationLocked = true;
+                        console.log('Orientation locked in fullscreen change event');
+                    }).catch(e => {
+                        console.log('Could not lock orientation in change event:', e);
+                    });
+                }
             }
         }
         
@@ -934,6 +1007,21 @@
         document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
         document.addEventListener('mozfullscreenchange', handleFullscreenChange);
         document.addEventListener('msfullscreenchange', handleFullscreenChange);
+        
+        // 监听方向变化，在全屏模式下强制竖屏
+        window.addEventListener('orientationchange', function() {
+            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            if (isFullscreen && screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('portrait-primary').catch(e => {
+                    console.log('Could not re-lock orientation:', e);
+                });
+            }
+            
+            setTimeout(() => {
+                resizeGameCanvas();
+                draw();
+            }, 300);
+        });
         
         function restart(){
             grid = createMatrix(COLS,ROWS);
