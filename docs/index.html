@@ -17,20 +17,57 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
         
+        /* 单栏布局 */
         .main-container {
-            align-items: flex-start;
+            display: block;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .content {
+            max-width: 100%;
+            padding: 0;
         }
         
         /* Hero区域 */
         .hero-section {
             background: white;
             border-radius: 24px;
-            padding: 80px 60px;
-            text-align: center;
+            padding: 60px 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
             margin-bottom: 40px;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .hero-avatar {
+            flex: 0 0 180px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #fff;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.25);
+            transition: transform 0.4s ease;
+        }
+        
+        .hero-avatar:hover {
+            transform: scale(1.05) rotate(3deg);
+        }
+        
+        .hero-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .hero-content {
+            flex: 1;
+            text-align: left;
         }
         
         .hero-section::before {
@@ -46,7 +83,7 @@
         .hero-content h1 {
             font-size: 3em;
             color: #2c3e50;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -54,20 +91,20 @@
         }
         
         .hero-subtitle {
-            font-size: 1.5em;
+            font-size: 1.4em;
             color: #7f8c8d;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            line-height: 1.5;
         }
         
         .hero-buttons {
             display: flex;
             gap: 20px;
-            justify-content: center;
             flex-wrap: wrap;
         }
         
         .btn-hero {
-            padding: 16px 40px;
+            padding: 14px 35px;
             border-radius: 50px;
             font-size: 1.1em;
             font-weight: 600;
@@ -103,18 +140,18 @@
         
         /* 快速导航 */
         .quick-nav {
-            margin-top: 20px;
+            margin-top: 40px;
         }
         
         .nav-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 25px;
         }
         
         .nav-card {
             background: white;
-            padding: 40px 30px;
+            padding: 35px 25px;
             border-radius: 20px;
             text-align: center;
             text-decoration: none;
@@ -148,15 +185,15 @@
         }
         
         .nav-icon {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             margin: 0 auto 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5em;
+            font-size: 2.2em;
             color: white;
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
             transition: all 0.4s ease;
@@ -168,7 +205,7 @@
         
         .nav-card h3 {
             color: #2c3e50;
-            font-size: 1.5em;
+            font-size: 1.4em;
             margin-bottom: 10px;
             transition: color 0.3s ease;
         }
@@ -179,24 +216,85 @@
         
         .nav-card p {
             color: #7f8c8d;
-            font-size: 1em;
+            font-size: 0.95em;
         }
         
+        /* 首页技能概览 */
+        .skills-overview {
+            margin-top: 50px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .skills-title {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .skill-tag {
+            background: #f8f9fa;
+            color: #555;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .skill-tag i {
+            color: #667eea;
+        }
+        
+        .skill-tag:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .skill-tag:hover i {
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .hero-section {
-                padding: 50px 30px;
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 20px;
+                gap: 30px;
+            }
+            
+            .hero-content {
+                text-align: center;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
             }
             
             .hero-content h1 {
-                font-size: 2em;
-            }
-            
-            .hero-subtitle {
-                font-size: 1.2em;
+                font-size: 2.2em;
             }
             
             .nav-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .main-container {
+                padding: 0 15px;
             }
         }
     </style>
@@ -205,55 +303,17 @@
     <div id="navbar-mount"></div>
 
     <div class="main-container">
-        <aside class="profile-sidebar scroll-reveal">
-            <div class="profile-card profile-card-enhanced">
-                <div class="profile-image profile-image-enhanced animate-float">
-                    <img src="personal_blog/img/sign.jpg" alt="小田">
-                </div>
-                <h2 class="animate-fade-in-down delay-200">小田</h2>
-                <p class="profile-title animate-fade-in-down delay-300">全栈开发者 & 技术博主</p>
-                <p class="profile-bio animate-fade-in-down delay-400">热爱编程，喜欢分享技术经验，专注于Web开发和人工智能领域。</p>
-                
-                <div class="skills-section">
-                    <h3>技术栈</h3>
-                    <ul class="skills-list">
-                        <li><i class="fas fa-server"></i> Python 后端开发</li>
-                        <li><i class="fas fa-database"></i> 数据分析与可视化</li>
-                        <li><i class="fas fa-spider"></i> 网络爬虫开发</li>
-                        <li><i class="fas fa-laptop-code"></i> 前端开发</li>
-                        <li><i class="fas fa-brain"></i> 机器学习/深度学习</li>
-                        <li><i class="fas fa-server"></i> 服务器运维</li>
-                        <li><i class="fab fa-linux"></i> Linux 系统管理</li>
-                    </ul>
-                </div>
-                
-                <div class="social-links">
-                    <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="#" class="social-icon social-icon-enhanced" title="知乎"><i class="fab fa-zhihu"></i></a>
-                    <a href="#" class="social-icon social-icon-enhanced" title="微信"><i class="fab fa-weixin"></i></a>
-                    <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
-                </div>
-                
-                <div class="skills-section">
-                    <h3>分类</h3>
-                    <ul class="skills-list">
-                        <li><i class="fas fa-code"></i> <a href="#">编程语言</a></li>
-                        <li><i class="fas fa-globe"></i> <a href="#">Web开发</a></li>
-                        <li><i class="fas fa-robot"></i> <a href="#">人工智能</a></li>
-                        <li><i class="fas fa-project-diagram"></i> <a href="#">数据结构与算法</a></li>
-                        <li><i class="fas fa-database"></i> <a href="#">数据库</a></li>
-                        <li><i class="fas fa-server"></i> <a href="#">DevOps</a></li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+        <!-- 侧边栏已移除 -->
         
         <main class="content">
             <!-- Hero区域 -->
             <section class="hero-section scroll-reveal animate-fade-in-up">
+                <div class="hero-avatar">
+                    <img src="personal_blog/img/sign.jpg" alt="小田">
+                </div>
                 <div class="hero-content">
-                    <h1>欢迎来到我的博客</h1>
-                    <p class="hero-subtitle">分享技术，记录成长</p>
+                    <h1>你好，我是小田</h1>
+                    <p class="hero-subtitle">全栈开发者 & 技术博主。<br>热衷于构建优雅的 Web 应用与探索 AI 的无限可能。</p>
                     <div class="hero-buttons">
                         <a href="html/articles.html" class="btn-hero primary">
                             <i class="fas fa-book"></i> 阅读文章
@@ -262,6 +322,20 @@
                             <i class="fas fa-code"></i> 查看项目
                         </a>
                     </div>
+                </div>
+            </section>
+            
+            <!-- 技能概览 -->
+            <section class="skills-overview scroll-reveal delay-100">
+                <h2 class="skills-title">技能与专长</h2>
+                <div class="skills-tags">
+                    <div class="skill-tag"><i class="fas fa-server"></i> Python 后端</div>
+                    <div class="skill-tag"><i class="fas fa-laptop-code"></i> 前端工程化</div>
+                    <div class="skill-tag"><i class="fas fa-database"></i> 数据分析</div>
+                    <div class="skill-tag"><i class="fas fa-brain"></i> 机器学习</div>
+                    <div class="skill-tag"><i class="fas fa-spider"></i> 网络爬虫</div>
+                    <div class="skill-tag"><i class="fab fa-linux"></i> Linux 运维</div>
+                    <div class="skill-tag"><i class="fas fa-project-diagram"></i> 系统架构</div>
                 </div>
             </section>
 

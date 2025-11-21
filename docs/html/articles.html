@@ -21,6 +21,82 @@
             margin: 10px 0 6px;
         }
         body.articles-page .post-info { position: static; }
+
+        /* 单栏布局调整 */
+        body.articles-page .main-container {
+            display: block;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+        
+        body.articles-page .content {
+            max-width: 100%;
+            padding: 0;
+        }
+        
+        /* 复用 about-hero 样式并微调 */
+        .page-header-card {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        
+        .page-header-img {
+            flex: 0 0 120px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+            margin-right: 30px;
+            transition: transform 0.4s ease;
+        }
+        
+        .page-header-img:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+        
+        .page-header-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .page-header-content h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: var(--theme-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+        
+        .page-header-content p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .page-header-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+            }
+            .page-header-img {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
         
         /* 文章卡片科技感增强 */
         .article-card-tech {
@@ -118,24 +194,26 @@
     <div id="navbar-mount"></div>
 
     <div class="main-container">
-        <aside class="profile-sidebar scroll-reveal">
-            <div class="profile-card profile-card-enhanced">
-                <div class="profile-image profile-image-enhanced animate-float">
-                    <img src="../personal_blog/img/sign.jpg" alt="小田">
-                </div>
-                <h2 class="animate-fade-in-down delay-200">小田</h2>
-                <p class="profile-title animate-fade-in-down delay-300">全栈开发者 & 技术博主</p>
-                <p class="profile-bio animate-fade-in-down delay-400">记录工程实践、架构思考与学习笔记。</p>
-                <div class="social-links">
-                    <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
-                </div>
-            </div>
-        </aside>
+        <!-- 侧边栏已移除 -->
 
         <main class="content">
+            <!-- 顶部介绍卡片 -->
+            <div class="page-header-card animate-fade-in-down">
+                <div class="page-header-img">
+                    <img src="../personal_blog/img/sign.jpg" alt="小田">
+                </div>
+                <div class="page-header-content">
+                    <h2>技术文章</h2>
+                    <p>这里汇集了我的技术探索与工程实践笔记，涵盖后端架构、前端开发、数据科学与人工智能等领域。</p>
+                    <div class="social-links" style="margin-top: 15px; justify-content: flex-start;">
+                        <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
+
             <section class="recent-posts">
-                <h2 class="section-title scroll-reveal">📝 技术文章</h2>
+                <h2 class="section-title scroll-reveal">📝 最新发布</h2>
 
                 <article class="article-card-tech scroll-reveal">
                     <div class="post-image">

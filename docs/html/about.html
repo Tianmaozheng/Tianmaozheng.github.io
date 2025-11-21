@@ -68,28 +68,40 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* 针对 about 页面单栏布局调整 */
+        body.about-page .main-container {
+            display: block; 
+            max-width: 1000px; /* 限制内容最大宽度，阅读体验更好 */
+        }
+        body.about-page .content {
+            max-width: 100%;
+            padding: 0;
+        }
     </style>
 </head>
 <body class="about-page">
     <div id="navbar-mount"></div>
 
     <div class="main-container">
-        <aside class="profile-sidebar scroll-reveal">
-            <div class="profile-card profile-card-enhanced">
-                <div class="profile-image profile-image-enhanced animate-float">
-                    <img src="../personal_blog/img/sign.jpg" alt="小田">
-                </div>
-                <h2 class="animate-fade-in-down delay-200">小田</h2>
-                <p class="profile-title animate-fade-in-down delay-300">全栈开发者 & 技术博主</p>
-                <p class="profile-bio animate-fade-in-down delay-400">热爱编程，喜欢分享技术与生活，聚焦 Web 与 AI。</p>
-                <div class="social-links">
-                    <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
-                </div>
-            </div>
-        </aside>
+        <!-- 原侧边栏已移除，整合到主要内容区 -->
 
         <main class="content">
+            <div class="about-hero animate-fade-in-down">
+                <div class="about-hero-img">
+                    <img src="../personal_blog/img/sign.jpg" alt="小田">
+                </div>
+                <div class="about-hero-content">
+                    <h2>小田</h2>
+                    <p class="profile-title">全栈开发者 & 技术博主</p>
+                    <p class="profile-bio">热爱编程，喜欢分享技术与生活，聚焦 Web 与 AI。致力于构建优雅、高效的数字产品。</p>
+                    <div class="social-links">
+                        <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
+
             <section class="recent-posts">
                 <h2 class="section-title scroll-reveal">关于我</h2>
                 <article class="post-card enhanced-card scroll-reveal">

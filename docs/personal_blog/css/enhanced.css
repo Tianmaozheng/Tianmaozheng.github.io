@@ -167,7 +167,124 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* 个人资料卡片增强 */
+/* 关于页-横向个人简介卡片 (新) */
+.about-hero {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+}
+
+/* 装饰背景 */
+.about-hero::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.08) 100%);
+    transform: rotate(-15deg);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.about-hero-img {
+    flex: 0 0 180px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #fff;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.25);
+    margin-right: 40px;
+    z-index: 1;
+    transition: transform 0.4s ease;
+}
+
+.about-hero-img:hover {
+    transform: scale(1.05) rotate(3deg);
+}
+
+.about-hero-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.about-hero-content {
+    flex: 1;
+    z-index: 1;
+}
+
+.about-hero h2 {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 700;
+    background: var(--theme-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.about-hero .profile-title {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    font-weight: 500;
+    background: rgba(102, 126, 234, 0.1);
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    color: var(--theme-primary);
+}
+
+.about-hero .profile-bio {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #555;
+    margin-bottom: 25px;
+    max-width: 90%;
+}
+
+.about-hero .social-links {
+    justify-content: flex-start; /* 左对齐 */
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .about-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+    
+    .about-hero-img {
+        margin-right: 0;
+        margin-bottom: 25px;
+        width: 150px;
+        height: 150px;
+    }
+    
+    .about-hero .social-links {
+        justify-content: center;
+    }
+    
+    .about-hero .profile-bio {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* 个人资料卡片增强 (旧样式保留以防万一，但不再使用) */
 .profile-card-enhanced {
     position: relative;
     background: white;
@@ -303,4 +420,3 @@ html {
     background: var(--theme-light);
     color: #2c3e50;
 }
-
