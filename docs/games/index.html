@@ -1,163 +1,107 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+﻿<!DOCTYPE html>
+<html lang="zh-CN" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小游戏合集 | 小田的小游戏</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../personal_blog/css/style.css">
-    <link rel="stylesheet" href="../personal_blog/css/enhanced.css">
-    <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <style>
-        .games-grid { 
-            display:grid; 
-            grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); 
-            gap:25px; 
-        }
-        .game-card { 
-            background:#fff; 
-            border-radius: 20px; 
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); 
-            padding:30px; 
-            display:flex; 
-            flex-direction:column; 
-            gap:15px;
-            transition: all 0.4s ease;
-            border-top: 4px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s ease;
-        }
-        .game-card:hover::before {
-            transform: scaleX(1);
-        }
-        .game-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-        .game-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            color: white;
-            margin-bottom: 10px;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            transition: all 0.4s ease;
-        }
-        .game-card:hover .game-icon {
-            transform: rotateY(180deg) scale(1.1);
-        }
-        .game-card h3 { 
-            margin:0; 
-            color:#2c3e50; 
-            font-size: 1.4em;
-            transition: color 0.3s ease;
-        }
-        .game-card:hover h3 {
-            color: #667eea;
-        }
-        .game-meta { 
-            color:#7f8c8d; 
-            font-size: 0.95em; 
-            line-height: 1.6;
-        }
-        .game-actions { 
-            margin-top:auto; 
-            display:flex; 
-            gap:12px; 
-        }
-        .btn { 
-            display:inline-flex; 
-            align-items:center; 
-            justify-content: center;
-            gap:8px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color:#fff; 
-            border:none; 
-            border-radius:25px; 
-            padding:12px 24px; 
-            text-decoration:none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-        }
-        .btn.secondary { 
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            box-shadow: none;
-        }
-        .btn.secondary:hover {
-            background: #667eea;
-            color: white;
-        }
-    </style>
+    <title>小游戏 | violet的博客</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/custom.css">
+    <link rel="shortcut icon" href="../../assets/public/favicon.svg"/>
 </head>
 <body>
-    <div id="navbar-mount"></div>
-
-    <div class="main-container">
-        <main class="content" style="max-width:100%">
-            <section class="recent-posts">
-                <h2 class="section-title scroll-reveal">🎮 小游戏合集</h2>
-                <div class="games-grid">
-                    <div class="game-card scroll-reveal">
-                        <div class="game-icon">
-                            <i class="fas fa-gamepad"></i>
-                        </div>
-                        <h3>俄罗斯方块</h3>
-                        <div class="game-meta">
-                            经典的俄罗斯方块游戏，使用键盘方向键操作，空格键快速下落。
-                            支持暂停、重新开始等功能，适合休闲娱乐。
-                        </div>
-                        <div class="game-actions">
-                            <a class="btn" href="tetris.html"><i class="fas fa-play"></i> 开始游戏</a>
-                        </div>
-                    </div>
-
-                    <div class="game-card scroll-reveal delay-100">
-                        <div class="game-icon">
-                            <i class="fas fa-puzzle-piece"></i>
-                        </div>
-                        <h3>更多游戏（敬请期待）</h3>
-                        <div class="game-meta">
-                            将陆续上线贪吃蛇、2048、扫雷等经典小游戏，
-                            敬请期待更多精彩内容！
-                        </div>
-                        <div class="game-actions">
-                            <a class="btn secondary" href="#"><i class="fas fa-info-circle"></i> 预告</a>
-                        </div>
-                    </div>
+    <canvas class="fireworks"></canvas>
+    <div class="head">
+        <div class="main">
+            <a href="../index.html" class="logo" style="font-size:14px;font-weight:700;color:#E8E8F6;display:flex;align-items:center;height:auto;">violet</a>
+            <div class="menu">
+                <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                <li class="magical btn" onclick="window.location.href='../html/articles.html'">Blog</li>
+                <li class="magical btn" onclick="window.location.href='../html/projects.html'">Work</li>
+                <li class="magical btn" onclick="window.location.href='../html/about.html'">About</li>
+                <li class="magical btn" onclick="window.location.href='../html/guestbook.html'">Guest</li>
+                <li class="magical btn" onclick="window.location.href='../html/ai_chat.html'">AI</li>
+                <li class="magical btn nav" onclick="window.location.href='index.html'">Game</li>
+            </div>
+            <div class="menu" id="menu-expand">
+                <li class="magical btn skin" id="menu-expand-child"><i class="icon menu-icon"></i></li>
+            </div>
+            <div id="menu-panel">
+                <div class="menu-panel-content">
+                    <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                    <li class="magical btn" onclick="window.location.href='../html/articles.html'">Blog</li>
+                    <li class="magical btn" onclick="window.location.href='../html/projects.html'">Work</li>
+                    <li class="magical btn" onclick="window.location.href='../html/about.html'">About</li>
+                    <li class="magical btn" onclick="window.location.href='../html/guestbook.html'">Guest</li>
+                    <li class="magical btn" onclick="window.location.href='../html/ai_chat.html'">AI</li>
+                    <li class="magical btn nav" onclick="window.location.href='index.html'">Game</li>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
+        <blockquote></blockquote>
     </div>
-
-    <div id="footer-mount"></div>
-    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-    <script src="../personal_blog/js/script.js"></script>
-    <script src="../personal_blog/js/enhanced.js"></script>
+    <div class="page-container">
+        <div class="page-content">
+            <div class="page-title">小游戏合集</div>
+            <div class="games-grid">
+                <div class="magical game-card">
+                    <a href="tetris.html">
+                        <div class="game-emoji">🎮</div>
+                        <div class="game-name">俄罗斯方块</div>
+                        <div class="game-desc">经典的俄罗斯方块游戏，使用键盘方向键操作，空格键快速下落。支持暂停、重新开始等功能，适合休闲娱乐。</div>
+                        <div class="game-btn">开始游戏 →</div>
+                    </a>
+                </div>
+                <div class="magical game-card">
+                    <a href="#">
+                        <div class="game-emoji">🧩</div>
+                        <div class="game-name">更多游戏（敬请期待）</div>
+                        <div class="game-desc">将陆续上线贪吃蛇、2048、扫雷等经典小游戏，敬请期待更多精彩内容！</div>
+                        <div class="game-btn">预告</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="copyright">
+            <div>© 2025 Design by <a href="https://github.com/Tianmaozheng" target="_blank">violet</a></div>
+            <span>|</span>
+            <div class="fillings"><a href="../html/about.html">About</a></div>
+            <span>|</span>
+            <div class="friends"><a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a></div>
+        </div>
+    </div>
+    <div class="widget">
+        <div class="shape-light"></div>
+        <div class="shape-star">
+            <div class="rising-stars rising-stars-visible">
+                <div style="height:1px;width:1px"></div>
+                <div style="height:2px;width:2px"></div>
+                <div style="height:1px;width:1px"></div>
+            </div>
+        </div>
+        <div class="shape-earth"></div>
+    </div>
 </body>
+<script>
+    window.addEventListener("mousemove", function(e) {
+        document.querySelectorAll(".magical").forEach(element => {
+            if (!element.querySelector(".show")) {
+                element.insertAdjacentHTML("beforeend", "<div class='show'></div>");
+            }
+            const rect = element.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            element.style.setProperty("--mouse-x", `${offsetX}px`);
+            element.style.setProperty("--mouse-y", `${offsetY}px`);
+            const hoverElement = element.querySelector(".show");
+            if (hoverElement) {
+                hoverElement.style.opacity = (offsetX >= 0 && offsetX <= element.clientWidth && offsetY >= 0 && offsetY <= element.clientHeight) ? 1 : 0;
+            }
+        });
+    });
+</script>
+<script src="../../js/main.js"></script>
+<script src='../../js/anime.js'></script>
+<script src='../../js/firework.js'></script>
 </html>
-
-

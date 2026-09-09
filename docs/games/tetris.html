@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -9,16 +9,17 @@
     <meta name="screen-orientation" content="portrait">
     <meta name="x5-orientation" content="portrait">
     <meta name="x5-fullscreen" content="true">
-    <title>俄罗斯方块 | 移动版</title>
+    <title>俄罗斯方块 | violet的博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="../../assets/public/favicon.svg"/>
     <style>
-        /* 1. 基础样式和布局 */
+        /* 1. 基础样式和布局 - 配色匹配 asorn 暗色主题 */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: 'Poppins', 'Microsoft YaHei', Arial, sans-serif; /* 更改字体以增加现代感 */
-            background: #1e293b; /* 更深的背景色 */
-            color: #f8fafc; 
-            display: flex; 
+        body {
+            font-family: 'Poppins', 'Microsoft YaHei', Arial, sans-serif;
+            background: #0E0E13; /* asorn 主背景色 */
+            color: #E8E8F6; /* asorn 主文字色 */
+            display: flex;
             min-height: 100vh;
             overflow: hidden; /* 移动端防止滚动 */
             align-items: center;
@@ -47,10 +48,10 @@
         }
         
         .board-container {
-            background: #0f172a; 
-            padding: 12px; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.1); 
+            background: #14141B; /* asorn 卡片背景 */
+            padding: 12px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.1);
             position: relative;
             display: flex;
             flex-direction: column;
@@ -93,22 +94,22 @@
             flex-shrink: 0;
         }
         
-        .panel { 
-            background: #2d3848;
-            border-radius: 10px; 
-            padding: 10px 14px; 
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); 
+        .panel {
+            background: #1C1C26; /* asorn 面板背景 */
+            border-radius: 10px;
+            padding: 10px 14px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
             flex: 1 1 auto;
             min-width: 100px;
             max-width: 48%;
         }
-        
-        .panel h3 { 
-            margin: 0 0 4px; 
-            font-size: 12px; 
-            color: #94a3b8; 
-            font-weight: 500; 
-            letter-spacing: .2px; 
+
+        .panel h3 {
+            margin: 0 0 4px;
+            font-size: 12px;
+            color: #B3B3C1; /* asorn 次要文字色 */
+            font-weight: 500;
+            letter-spacing: .2px;
             text-transform: uppercase;
         }
         
@@ -172,16 +173,16 @@
         }
 
         /* 3. 移动端虚拟控制 - 游戏手柄风格 */
-        .mobile-controls { 
+        .mobile-controls {
             display: flex !important;
-            position: fixed; 
+            position: fixed;
             left: 50%;
             transform: translateX(-50%);
             bottom: 0;
             height: 210px;
             width: 210px;
             max-width: 90vw;
-            background: rgba(30, 41, 59, 0.98);
+            background: rgba(20, 20, 27, 0.98); /* asorn 暗色面板 */
             backdrop-filter: blur(10px);
             padding: 20px calc(env(safe-area-inset-bottom) + 20px) calc(env(safe-area-inset-bottom) + 20px);
             z-index: 3000;
@@ -211,9 +212,9 @@
             position: absolute;
             width: 60px;
             height: 60px;
-            background: linear-gradient(145deg, #475569, #334155);
-            border: 3px solid #64748b;
-            color: #e2e8f0;
+            background: linear-gradient(145deg, #2A2A38, #1C1C26);
+            border: 3px solid #3A3A48;
+            color: #E8E8F6;
             font-size: 24px;
             display: flex;
             align-items: center;
@@ -279,13 +280,13 @@
             transform: translate(-50%, -50%);
             width: 40px;
             height: 40px;
-            background: #1e293b;
+            background: #0E0E13;
             border-radius: 50%;
-            border: 3px solid #475569;
+            border: 3px solid #2A2A38;
             pointer-events: none;
             box-shadow: inset 0 2px 6px rgba(0,0,0,.6);
         }
-        
+
         /* 左上角控制按钮组 */
         .top-controls {
             position: fixed;
@@ -295,14 +296,14 @@
             gap: 10px;
             z-index: 2000;
         }
-        
+
         .top-btn {
             width: 48px;
             height: 48px;
-            background: rgba(30, 41, 59, 0.95);
-            border: 3px solid #475569;
+            background: rgba(20, 20, 27, 0.95);
+            border: 3px solid #2A2A38;
             border-radius: 10px;
-            color: #e2e8f0;
+            color: #E8E8F6;
             font-size: 20px;
             display: flex;
             align-items: center;
@@ -315,7 +316,7 @@
         
         .top-btn:active {
             transform: scale(0.9);
-            background: rgba(30, 41, 59, 1);
+            background: rgba(20, 20, 27, 1);
         }
         
         .top-btn.pause {
@@ -336,6 +337,35 @@
         
         .top-btn.restart:active {
             background: rgba(239, 68, 68, 0.6);
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 12px);
+            right: 70px; /* 留出全屏按钮的位置 */
+            width: 48px;
+            height: 48px;
+            background: rgba(20, 20, 27, 0.95);
+            border: 3px solid #2A2A38;
+            border-radius: 10px;
+            color: #B3B3C1;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 3px 10px rgba(0,0,0,.4);
+            text-decoration: none;
+            z-index: 2000;
+        }
+
+        .back-btn:active {
+            transform: scale(0.9);
+            background: rgba(20, 20, 27, 1);
+            color: #E8E8F6;
         }
 
         /* 4. 全屏模式 - 锁定竖屏 */
@@ -364,7 +394,7 @@
             z-index: 1500;
             padding: 6px 10px;
             gap: 10px;
-            background: rgba(30, 41, 59, 0.95);
+            background: rgba(20, 20, 27, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
@@ -527,6 +557,11 @@
     <div class="fullscreen-btn" id="fullscreenBtn" title="全屏">
         <i class="fas fa-expand"></i>
     </div>
+
+    <!-- 返回按钮 -->
+    <a href="index.html" class="back-btn" title="返回游戏列表">
+        <i class="fas fa-arrow-left"></i>
+    </a>
 
     <div class="wrap" id="gameWrap">
         <div class="side">

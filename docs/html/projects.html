@@ -1,315 +1,148 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+﻿<!DOCTYPE html>
+<html lang="zh-CN" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>项目作品 | 小田的博客</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../personal_blog/css/style.css">
-    <link rel="stylesheet" href="../personal_blog/css/enhanced.css">
-    <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <style>
-        body.projects-page .post-category {
-            position: static;
-            display: inline-block;
-            background: transparent;
-            color: var(--primary-color);
-            padding: 0;
-            border-radius: 0;
-            margin: 10px 0 6px;
-        }
-        body.projects-page .post-info { position: static; }
-
-        /* 单栏布局调整 */
-        body.projects-page .main-container {
-            display: block;
-            max-width: 1000px;
-            margin: 30px auto;
-        }
-        
-        body.projects-page .content {
-            max-width: 100%;
-            padding: 0;
-        }
-
-        /* 复用 about-hero 样式并微调 */
-        .page-header-card {
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 20px;
-            padding: 35px;
-            margin-bottom: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.8);
-        }
-        
-        .page-header-img {
-            flex: 0 0 120px;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid #fff;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
-            margin-right: 30px;
-            transition: transform 0.4s ease;
-        }
-        
-        .page-header-img:hover {
-            transform: scale(1.05) rotate(5deg);
-        }
-        
-        .page-header-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .page-header-content h2 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            background: var(--theme-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: inline-block;
-        }
-        
-        .page-header-content p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .page-header-card {
-                flex-direction: column;
-                text-align: center;
-                padding: 30px 20px;
-            }
-            .page-header-img {
-                margin-right: 0;
-                margin-bottom: 20px;
-            }
-        }
-        
-        /* 项目卡片科技感增强 */
-        .project-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 25px; 
-        }
-        
-        .project-card-tech { 
-            background: #fff; 
-            border-radius: 20px; 
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); 
-            padding: 30px; 
-            transition: all 0.4s ease;
-            border-top: 4px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .project-card-tech::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s ease;
-        }
-        
-        .project-card-tech:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .project-card-tech:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        .project-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            color: white;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            transition: all 0.4s ease;
-        }
-        
-        .project-card-tech:hover .project-icon {
-            transform: rotateY(180deg) scale(1.1);
-        }
-        
-        .project-card-tech .post-category {
-            display: inline-block;
-            padding: 6px 16px;
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        
-        .project-card-tech h3 { 
-            margin: 12px 0; 
-            font-size: 1.4em;
-            color: #2c3e50;
-            transition: color 0.3s ease;
-        }
-        
-        .project-card-tech:hover h3 {
-            color: #667eea;
-        }
-        
-        .project-card-tech p {
-            color: #7f8c8d;
-            line-height: 1.7;
-            margin: 12px 0 20px 0;
-        }
-        
-        .project-tags { 
-            display:flex; 
-            gap:10px; 
-            flex-wrap:wrap; 
-            margin-top:15px; 
-        }
-        
-        .project-tags span { 
-            background:#f5f7fa; 
-            color:#555; 
-            padding:6px 14px; 
-            border-radius:15px; 
-            font-size:.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-        
-        .project-card-tech:hover .project-tags span {
-            background: white;
-            border-color: #667eea;
-            color: #667eea;
-            transform: translateY(-2px);
-        }
-        
-        @media (max-width: 768px) {
-            .project-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>项目作品 | violet的博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <link rel="shortcut icon" href="../assets/public/favicon.svg"/>
 </head>
-<body class="projects-page">
-    <div id="navbar-mount"></div>
-
-    <div class="main-container">
-        <!-- 侧边栏已移除 -->
-
-        <main class="content">
-            <!-- 顶部介绍卡片 -->
-            <div class="page-header-card animate-fade-in-down">
-                <div class="page-header-img">
-                    <img src="../personal_blog/img/sign.jpg" alt="小田">
-                </div>
-                <div class="page-header-content">
-                    <h2>项目展示</h2>
-                    <p>这里展示了我开发的各类项目，从 Web 应用到 AI 智能助手，体现了我在全栈开发与人工智能领域的技术实践。</p>
-                    <div class="social-links" style="margin-top: 15px; justify-content: flex-start;">
-                        <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
-                    </div>
+<body>
+    <canvas class="fireworks"></canvas>
+    <div class="head">
+        <div class="main">
+            <a href="../index.html" class="logo" style="font-size:14px;font-weight:700;color:#E8E8F6;display:flex;align-items:center;height:auto;">violet</a>
+            <div class="menu">
+                <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                <li class="magical btn" onclick="window.location.href='articles.html'">Blog</li>
+                <li class="magical btn nav" onclick="window.location.href='projects.html'">Work</li>
+                <li class="magical btn" onclick="window.location.href='about.html'">About</li>
+                <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
+                <li class="magical btn" onclick="window.location.href='ai_chat.html'">AI</li>
+                <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
+            </div>
+            <div class="menu" id="menu-expand">
+                <li class="magical btn skin" id="menu-expand-child"><i class="icon menu-icon"></i></li>
+            </div>
+            <div id="menu-panel">
+                <div class="menu-panel-content">
+                    <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                    <li class="magical btn" onclick="window.location.href='articles.html'">Blog</li>
+                    <li class="magical btn nav" onclick="window.location.href='projects.html'">Work</li>
+                    <li class="magical btn" onclick="window.location.href='about.html'">About</li>
+                    <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
+                    <li class="magical btn" onclick="window.location.href='ai_chat.html'">AI</li>
+                    <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
                 </div>
             </div>
-
-            <section class="recent-posts">
-                <h2 class="section-title scroll-reveal">🚀 精选作品</h2>
-                <div class="project-grid">
-                    <div class="project-card-tech scroll-reveal">
-                        <div class="project-icon">
-                            <i class="fas fa-blog"></i>
-                        </div>
-                        <div class="post-category">Web 开发</div>
-                        <h3>个人博客系统</h3>
-                        <p>基于静态站点生成器构建的现代化博客系统，支持 Markdown 写作、自动化部署、主题定制，提供优雅的阅读体验。</p>
-                        <div class="project-tags">
-                            <span>HTML5</span>
-                            <span>CSS3</span>
-                            <span>JavaScript</span>
-                            <span>GitHub Pages</span>
-                        </div>
-                    </div>
-                    
-                    <div class="project-card-tech scroll-reveal delay-100">
-                        <div class="project-icon">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="post-category">人工智能</div>
-                        <h3>AI 智能助手</h3>
-                        <p>集成大语言模型的智能对话系统，支持上下文理解、多轮对话、历史记录管理，提供流畅的聊天体验。</p>
-                        <div class="project-tags">
-                            <span>Python</span>
-                            <span>FastAPI</span>
-                            <span>LLM</span>
-                            <span>WebSocket</span>
-                        </div>
-                    </div>
-                    
-                    <div class="project-card-tech scroll-reveal delay-200">
-                        <div class="project-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <div class="post-category">数据科学</div>
-                        <h3>数据可视化平台</h3>
-                        <p>强大的数据分析与可视化工具，支持多种图表类型、实时数据更新、交互式筛选，快速洞察数据价值。</p>
-                        <div class="project-tags">
-                            <span>ECharts</span>
-                            <span>D3.js</span>
-                            <span>React</span>
-                            <span>Dashboard</span>
-                        </div>
-                    </div>
-                    
-                    <div class="project-card-tech scroll-reveal delay-300">
-                        <div class="project-icon">
-                            <i class="fas fa-gamepad"></i>
-                        </div>
-                        <div class="post-category">游戏开发</div>
-                        <h3>休闲游戏平台</h3>
-                        <p>纯前端实现的经典游戏合集，包括俄罗斯方块、贪吃蛇等，提供流畅的游戏体验和丰富功能。</p>
-                        <div class="project-tags">
-                            <span>JavaScript</span>
-                            <span>Canvas</span>
-                            <span>Game</span>
-                            <span>HTML5</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+        </div>
+        <blockquote></blockquote>
     </div>
-
-    <div id="footer-mount"></div>
-
-    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-    <script src="../personal_blog/js/script.js"></script>
-    <script src="../personal_blog/js/enhanced.js"></script>
+    <div class="work">
+        <div class="card-list">
+            <div class="magical item">
+                <a href="https://github.com/Tianmaozheng" target="_blank">
+                    <div class="dark"><img class="cover" src="../assets/work/empty.png"></div>
+                    <div class="text">
+                        <div class="title-area">
+                            <div class="title">
+                                <div class="name">个人博客系统</div>
+                                <div class="name link"> ↗</div>
+                            </div>
+                            <div class="tag tag-web">Web</div>
+                        </div>
+                        <div class="desc">基于静态站点生成器构建的现代化博客系统，支持 Markdown 写作、自动化部署、主题定制，提供优雅的阅读体验。</div>
+                    </div>
+                </a>
+            </div>
+            <div class="magical item">
+                <a href="html/ai_chat.html">
+                    <div class="dark"><img class="cover" src="../assets/work/empty.png"></div>
+                    <div class="text">
+                        <div class="title-area">
+                            <div class="title">
+                                <div class="name">AI 智能助手</div>
+                                <div class="name link"> ↗</div>
+                            </div>
+                            <div class="tag tag-app">App</div>
+                        </div>
+                        <div class="desc">集成大语言模型的智能对话系统，支持上下文理解、多轮对话、历史记录管理，提供流畅的聊天体验。</div>
+                    </div>
+                </a>
+            </div>
+            <div class="magical item">
+                <a href="https://github.com/Tianmaozheng" target="_blank">
+                    <div class="dark"><img class="cover" src="../assets/work/empty.png"></div>
+                    <div class="text">
+                        <div class="title-area">
+                            <div class="title">
+                                <div class="name">数据可视化平台</div>
+                                <div class="name link"> ↗</div>
+                            </div>
+                            <div class="tag tag-assets">Assets</div>
+                        </div>
+                        <div class="desc">强大的数据分析与可视化工具，支持多种图表类型、实时数据更新、交互式筛选，快速洞察数据价值。</div>
+                    </div>
+                </a>
+            </div>
+            <div class="magical item">
+                <a href="../games/index.html">
+                    <div class="dark"><img class="cover" src="../assets/work/empty.png"></div>
+                    <div class="text">
+                        <div class="title-area">
+                            <div class="title">
+                                <div class="name">休闲游戏平台</div>
+                                <div class="name link"> ↗</div>
+                            </div>
+                            <div class="tag tag-other">Other</div>
+                        </div>
+                        <div class="desc">纯前端实现的经典游戏合集，包括俄罗斯方块、贪吃蛇等，提供流畅的游戏体验和丰富功能。</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="copyright">
+            <div>© 2025 Design by <a href="https://github.com/Tianmaozheng" target="_blank">violet</a></div>
+            <span>|</span>
+            <div class="fillings"><a href="about.html">About</a></div>
+            <span>|</span>
+            <div class="friends"><a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a></div>
+        </div>
+    </div>
+    <div class="widget">
+        <div class="shape-light"></div>
+        <div class="shape-star">
+            <div class="rising-stars rising-stars-visible">
+                <div style="height:1px;width:1px"></div>
+                <div style="height:2px;width:2px"></div>
+                <div style="height:1px;width:1px"></div>
+            </div>
+        </div>
+        <div class="shape-earth"></div>
+    </div>
 </body>
+<script>
+    window.addEventListener("mousemove", function(e) {
+        document.querySelectorAll(".magical").forEach(element => {
+            if (!element.querySelector(".show")) {
+                element.insertAdjacentHTML("beforeend", "<div class='show'></div>");
+            }
+            const rect = element.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            element.style.setProperty("--mouse-x", `${offsetX}px`);
+            element.style.setProperty("--mouse-y", `${offsetY}px`);
+            const hoverElement = element.querySelector(".show");
+            if (hoverElement) {
+                hoverElement.style.opacity = (offsetX >= 0 && offsetX <= element.clientWidth && offsetY >= 0 && offsetY <= element.clientHeight) ? 1 : 0;
+            }
+        });
+    });
+</script>
+<script src="../js/main.js"></script>
+<script src='../js/anime.js'></script>
+<script src='../js/firework.js'></script>
 </html>
-

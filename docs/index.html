@@ -1,404 +1,215 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+﻿<!DOCTYPE html>
+<html lang="zh-CN" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小田的博客 | 个人技术博客</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <link rel="stylesheet" href="personal_blog/css/style.css">
-    <link rel="stylesheet" href="personal_blog/css/enhanced.css">
-    <link rel="icon" href="personal_blog/img/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="personal_blog/img/favicon.ico" type="image/x-icon">
-    <style>
-        /* 首页专属样式 */
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
-        
-        /* 单栏布局 */
-        .main-container {
-            display: block;
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-        
-        .content {
-            max-width: 100%;
-            padding: 0;
-        }
-        
-        /* Hero区域 */
-        .hero-section {
-            background: white;
-            border-radius: 24px;
-            padding: 60px 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-        
-        .hero-avatar {
-            flex: 0 0 180px;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 5px solid #fff;
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.25);
-            transition: transform 0.4s ease;
-        }
-        
-        .hero-avatar:hover {
-            transform: scale(1.05) rotate(3deg);
-        }
-        
-        .hero-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .hero-content {
-            flex: 1;
-            text-align: left;
-        }
-        
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .hero-content h1 {
-            font-size: 3em;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.4em;
-            color: #7f8c8d;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .btn-hero {
-            padding: 14px 35px;
-            border-radius: 50px;
-            font-size: 1.1em;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-hero.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-hero.primary:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-hero.secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-        
-        .btn-hero.secondary:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-5px);
-        }
-        
-        /* 快速导航 */
-        .quick-nav {
-            margin-top: 40px;
-        }
-        
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 25px;
-        }
-        
-        .nav-card {
-            background: white;
-            padding: 35px 25px;
-            border-radius: 20px;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.4s ease;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            border-top: 4px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .nav-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s ease;
-        }
-        
-        .nav-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .nav-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        .nav-icon {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2em;
-            color: white;
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-            transition: all 0.4s ease;
-        }
-        
-        .nav-card:hover .nav-icon {
-            transform: rotateY(180deg) scale(1.1);
-        }
-        
-        .nav-card h3 {
-            color: #2c3e50;
-            font-size: 1.4em;
-            margin-bottom: 10px;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-card:hover h3 {
-            color: #667eea;
-        }
-        
-        .nav-card p {
-            color: #7f8c8d;
-            font-size: 0.95em;
-        }
-        
-        /* 首页技能概览 */
-        .skills-overview {
-            margin-top: 50px;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-        }
-        
-        .skills-title {
-            text-align: center;
-            font-size: 1.8em;
-            margin-bottom: 30px;
-            color: #2c3e50;
-        }
-        
-        .skills-tags {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .skill-tag {
-            background: #f8f9fa;
-            color: #555;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .skill-tag i {
-            color: #667eea;
-        }
-        
-        .skill-tag:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-        
-        .skill-tag:hover i {
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .hero-section {
-                flex-direction: column;
-                text-align: center;
-                padding: 40px 20px;
-                gap: 30px;
-            }
-            
-            .hero-content {
-                text-align: center;
-            }
-            
-            .hero-buttons {
-                justify-content: center;
-            }
-            
-            .hero-content h1 {
-                font-size: 2.2em;
-            }
-            
-            .nav-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .main-container {
-                padding: 0 15px;
-            }
-        }
-    </style>
+    <title>violet的博客 | 个人技术博客</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="shortcut icon" href="assets/public/favicon.svg"/>
+    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
 </head>
 <body>
-    <div id="navbar-mount"></div>
-
-    <div class="main-container">
-        <!-- 侧边栏已移除 -->
-        
-        <main class="content">
-            <!-- Hero区域 -->
-            <section class="hero-section scroll-reveal animate-fade-in-up">
-                <div class="hero-avatar">
-                    <img src="personal_blog/img/sign.jpg" alt="小田">
+    <canvas class="fireworks"></canvas>
+    <div class="head">
+        <div class="main">
+            <a href="index.html" class="logo" style="font-size:14px;font-weight:700;color:#E8E8F6;display:flex;align-items:center;height:auto;">violet</a>
+            <div class="menu">
+                <li class="magical btn nav" onclick="window.location.href='index.html'">Home</li>
+                <li class="magical btn" onclick="window.location.href='html/articles.html'">Blog</li>
+                <li class="magical btn" onclick="window.location.href='html/projects.html'">Work</li>
+                <li class="magical btn" onclick="window.location.href='html/about.html'">About</li>
+                <li class="magical btn" onclick="window.location.href='html/guestbook.html'">Guest</li>
+                <li class="magical btn" onclick="window.location.href='html/ai_chat.html'">AI</li>
+                <li class="magical btn" onclick="window.location.href='games/index.html'">Game</li>
+            </div>
+            <div class="menu" id="menu-expand">
+                <li class="magical btn skin" id="menu-expand-child"><i class="icon menu-icon"></i></li>
+            </div>
+            <div id="menu-panel">
+                <div class="menu-panel-content">
+                    <li class="magical btn nav" onclick="window.location.href='index.html'">Home</li>
+                    <li class="magical btn" onclick="window.location.href='html/articles.html'">Blog</li>
+                    <li class="magical btn" onclick="window.location.href='html/projects.html'">Work</li>
+                    <li class="magical btn" onclick="window.location.href='html/about.html'">About</li>
+                    <li class="magical btn" onclick="window.location.href='html/guestbook.html'">Guest</li>
+                    <li class="magical btn" onclick="window.location.href='html/ai_chat.html'">AI</li>
+                    <li class="magical btn" onclick="window.location.href='games/index.html'">Game</li>
                 </div>
-                <div class="hero-content">
-                    <h1>你好，我是小田</h1>
-                    <p class="hero-subtitle">全栈开发者 & 技术博主。<br>热衷于构建优雅的 Web 应用与探索 AI 的无限可能。</p>
-                    <div class="hero-buttons">
-                        <a href="html/articles.html" class="btn-hero primary">
-                            <i class="fas fa-book"></i> 阅读文章
+            </div>
+        </div>
+        <blockquote></blockquote>
+    </div>
+    <div class="index">
+        <div class="hello">
+            <div class="title">
+                <div class="title-hi">Hi, I'm</div>
+                <a class="title-name" href="html/about.html">violet</a>
+            </div>
+            <div class="hello-desc" id="typed"></div>
+        </div>
+        <div class="content-divider"></div>
+        <div class="quickly-link">
+            <div class="title-hi">What did I do</div>
+            <div class="loader"></div>
+            <div class="link-card">
+                <div class="link-card-list">
+                    <div class="magical link-card-item">
+                        <a href="html/articles.html">
+                            <div class="info">
+                                <div class="info-title">Blog</div>
+                                <div class="info-desc">技术分享与学习笔记</div>
+                            </div>
+                            <div class="icon icon-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                                </svg>
+                            </div>
                         </a>
-                        <a href="html/projects.html" class="btn-hero secondary">
-                            <i class="fas fa-code"></i> 查看项目
+                    </div>
+                    <div class="magical link-card-item">
+                        <a href="html/projects.html">
+                            <div class="info">
+                                <div class="info-title">Work</div>
+                                <div class="info-desc">实战项目展示</div>
+                            </div>
+                            <div class="icon icon-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="magical link-card-item">
+                        <a href="html/about.html">
+                            <div class="info">
+                                <div class="info-title">About</div>
+                                <div class="info-desc">个人简介与联系方式</div>
+                            </div>
+                            <div class="icon icon-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="magical link-card-item">
+                        <a href="html/guestbook.html">
+                            <div class="info">
+                                <div class="info-title">Guest</div>
+                                <div class="info-desc">欢迎留下你的足迹</div>
+                            </div>
+                            <div class="icon icon-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="magical link-card-item">
+                        <a href="html/ai_chat.html">
+                            <div class="info">
+                                <div class="info-title">AI</div>
+                                <div class="info-desc">智能问答系统</div>
+                            </div>
+                            <div class="icon icon-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="magical link-card-item">
+                        <a href="games/index.html">
+                            <div class="info">
+                                <div class="info-title">Game</div>
+                                <div class="info-desc">经典俄罗斯方块</div>
+                            </div>
+                            <div class="icon icon-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="magical link-card-item">
+                        <a href="https://github.com/Tianmaozheng" target="_blank">
+                            <div class="info">
+                                <div class="info-title">Github</div>
+                                <div class="info-desc">我的代码花园</div>
+                            </div>
+                            <div class="icon icon-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                                </svg>
+                            </div>
                         </a>
                     </div>
                 </div>
-            </section>
-            
-            <!-- 技能概览 -->
-            <section class="skills-overview scroll-reveal delay-100">
-                <h2 class="skills-title">技能与专长</h2>
-                <div class="skills-tags">
-                    <div class="skill-tag"><i class="fas fa-server"></i> Python 后端</div>
-                    <div class="skill-tag"><i class="fas fa-laptop-code"></i> 前端工程化</div>
-                    <div class="skill-tag"><i class="fas fa-database"></i> 数据分析</div>
-                    <div class="skill-tag"><i class="fas fa-brain"></i> 机器学习</div>
-                    <div class="skill-tag"><i class="fas fa-spider"></i> 网络爬虫</div>
-                    <div class="skill-tag"><i class="fab fa-linux"></i> Linux 运维</div>
-                    <div class="skill-tag"><i class="fas fa-project-diagram"></i> 系统架构</div>
-                </div>
-            </section>
-
-            <!-- 快速导航卡片 -->
-            <section class="quick-nav">
-                <div class="nav-grid">
-                    <a href="html/articles.html" class="nav-card scroll-reveal delay-100">
-                        <div class="nav-icon">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <h3>技术文章</h3>
-                        <p>技术分享与学习笔记</p>
-                    </a>
-                    
-                    <a href="html/projects.html" class="nav-card scroll-reveal delay-200">
-                        <div class="nav-icon">
-                            <i class="fas fa-project-diagram"></i>
-                        </div>
-                        <h3>项目作品</h3>
-                        <p>实战项目展示</p>
-                    </a>
-
-                    <a href="html/about.html" class="nav-card scroll-reveal delay-300">
-                        <div class="nav-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <h3>关于我</h3>
-                        <p>个人简介与联系方式</p>
-                    </a>
-
-                    <a href="html/guestbook.html" class="nav-card scroll-reveal delay-400">
-                        <div class="nav-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <h3>留言板</h3>
-                        <p>欢迎留下你的足迹</p>
-                    </a>
-
-                    <a href="games/tetris.html" class="nav-card scroll-reveal delay-500">
-                        <div class="nav-icon">
-                            <i class="fas fa-gamepad"></i>
-                        </div>
-                        <h3>小游戏</h3>
-                        <p>经典俄罗斯方块</p>
-                    </a>
-                    
-                    <a href="html/ai_chat.html" class="nav-card scroll-reveal delay-600">
-                        <div class="nav-icon">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <h3>AI助手</h3>
-                        <p>智能问答系统</p>
-                    </a>
-                </div>
-            </section>
-        </main>
+            </div>
+        </div>
     </div>
-
-    <div id="footer-mount"></div>
-
-    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-
-    <script src="personal_blog/js/script.js"></script>
-    <script src="personal_blog/js/enhanced.js"></script>
+    <div class="footer">
+        <div class="copyright">
+            <div>© 2025 Design by <a href="https://github.com/Tianmaozheng" target="_blank">violet</a></div>
+            <span>|</span>
+            <div class="fillings">
+                <a href="html/about.html">About</a>
+            </div>
+            <span>|</span>
+            <div class="friends">
+                <a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </div>
+    <div class="widget">
+        <div class="shape-light"></div>
+        <div class="shape-star">
+            <div class="rising-stars rising-stars-visible">
+                <div style="height:1px;width:1px"></div>
+                <div style="height:2px;width:2px"></div>
+                <div style="height:1px;width:1px"></div>
+            </div>
+        </div>
+        <div class="shape-earth"></div>
+    </div>
 </body>
+<script>
+    // 打字效果
+    const options = {
+        strings: [
+            ">_ welcome to my secret garden ^1000",
+            ">_ 全栈开发者 & 技术博主 ^1000",
+            ">_ 热衷于构建优雅的 Web 应用与探索 AI 的无限可能 ^1000",
+        ],
+        typeSpeed: 50,
+        backSpeed: 20,
+        startDelay: 300,
+        loop: true,
+        showCursor: false,
+    };
+    const typed = new Typed('#typed', options);
+</script>
+<script>
+    // magical 鼠标跟随
+    window.addEventListener("mousemove", function(e) {
+        document.querySelectorAll(".magical").forEach(element => {
+            if (!element.querySelector(".show")) {
+                element.insertAdjacentHTML("beforeend", "<div class='show'></div>");
+            }
+            const rect = element.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            element.style.setProperty("--mouse-x", `${offsetX}px`);
+            element.style.setProperty("--mouse-y", `${offsetY}px`);
+            const hoverElement = element.querySelector(".show");
+            if (hoverElement) {
+                hoverElement.style.opacity = (offsetX >= 0 && offsetX <= element.clientWidth && offsetY >= 0 && offsetY <= element.clientHeight) ? 1 : 0;
+            }
+        });
+    });
+</script>
+<script src="js/main.js"></script>
+<script src='js/anime.js'></script>
+<script src='js/firework.js'></script>
 </html>

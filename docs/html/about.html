@@ -1,156 +1,207 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+﻿<!DOCTYPE html>
+<html lang="zh-CN" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>关于我 | 小田的博客</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <link rel="stylesheet" href="../personal_blog/css/style.css">
-    <link rel="stylesheet" href="../personal_blog/css/enhanced.css">
-    <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <style>
-        body.about-page .post-category {
-            position: static;
-            display: inline-block;
-            background: transparent;
-            color: var(--primary-color);
-            padding: 0;
-            border-radius: 0;
-            margin: 10px 0 6px;
-        }
-        body.about-page .post-info { position: static; }
-        
-        /* 科技感样式增强 */
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .tech-card {
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border-radius: 15px;
-            border-left: 4px solid #667eea;
-            transition: all 0.3s ease;
-        }
-        
-        .tech-card:hover {
-            transform: translateX(10px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
-        }
-        
-        .tech-card i {
-            font-size: 2em;
-            color: #667eea;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .tech-card h4 {
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-        
-        .tech-card p {
-            color: #7f8c8d;
-            font-size: 0.9em;
-            line-height: 1.6;
-        }
-        
-        @media (max-width: 768px) {
-            .tech-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* 针对 about 页面单栏布局调整 */
-        body.about-page .main-container {
-            display: block; 
-            max-width: 1000px; /* 限制内容最大宽度，阅读体验更好 */
-        }
-        body.about-page .content {
-            max-width: 100%;
-            padding: 0;
-        }
-    </style>
+    <title>关于我 | violet的博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <link rel="shortcut icon" href="../assets/public/favicon.svg"/>
 </head>
-<body class="about-page">
-    <div id="navbar-mount"></div>
-
-    <div class="main-container">
-        <!-- 原侧边栏已移除，整合到主要内容区 -->
-
-        <main class="content">
-            <div class="about-hero animate-fade-in-down">
-                <div class="about-hero-img">
-                    <img src="../personal_blog/img/sign.jpg" alt="小田">
+<body>
+    <canvas class="fireworks"></canvas>
+    <div class="head">
+        <div class="main">
+            <a href="../index.html" class="logo" style="font-size:14px;font-weight:700;color:#E8E8F6;display:flex;align-items:center;height:auto;">violet</a>
+            <div class="menu">
+                <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                <li class="magical btn" onclick="window.location.href='articles.html'">Blog</li>
+                <li class="magical btn" onclick="window.location.href='projects.html'">Work</li>
+                <li class="magical btn nav" onclick="window.location.href='about.html'">About</li>
+                <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
+                <li class="magical btn" onclick="window.location.href='ai_chat.html'">AI</li>
+                <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
+            </div>
+            <div class="menu" id="menu-expand">
+                <li class="magical btn skin" id="menu-expand-child"><i class="icon menu-icon"></i></li>
+            </div>
+            <div id="menu-panel">
+                <div class="menu-panel-content">
+                    <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                    <li class="magical btn" onclick="window.location.href='articles.html'">Blog</li>
+                    <li class="magical btn" onclick="window.location.href='projects.html'">Work</li>
+                    <li class="magical btn nav" onclick="window.location.href='about.html'">About</li>
+                    <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
+                    <li class="magical btn" onclick="window.location.href='ai_chat.html'">AI</li>
+                    <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
                 </div>
-                <div class="about-hero-content">
-                    <h2>小田</h2>
-                    <!-- <p class="profile-title">全栈开发者 & 技术博主</p> -->
-                    <p class="profile-bio">热爱编程，喜欢分享技术与生活，聚焦 Web 与 AI。致力于构建优雅、高效的数字产品。</p>
-                    <div class="social-links">
-                        <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+        <blockquote></blockquote>
+    </div>
+    <div class="about">
+        <div class="about-top">
+            <div class="about-name">violet</div>
+            <div class="about-info">
+                <div class="about-info-left">
+                    <div class="about-info-title">Introduce</div>
+                    <div class="introduce-desc">
+                        我是一名全栈开发者与技术博主，专注 Python、前端工程化、数据分析与 AI 应用。热爱编程，喜欢分享技术与生活，聚焦 Web 与 AI。致力于构建优雅、高效的数字产品。如果你对我的内容感兴趣，欢迎通过 <a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a> 与我交流。
+                    </div>
+                </div>
+                <div class="about-info-right">
+                    <div class="contact">
+                        <div class="about-info-title">Contact</div>
+                        <div class="contact-desc">
+                            <div class="list">
+                                <div class="list-label">Email：</div>
+                                <div href="javascript:" class="list-value" id="email" tabindex="0" role="button" title="点击复制邮箱">
+                                    <a id="emailCopied">2151447128@qq.com</a>
+                                </div>
+                                <span class="list-value copied">copied&nbsp;✓</span>
+                            </div>
+                            <div class="list">
+                                <div class="list-label">Github：</div>
+                                <div class="list-value">
+                                    <a href="https://github.com/Tianmaozheng" target="_blank">Tianmaozheng ↗</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="resume">
+                        <div class="about-info-title resume-title">Resume</div>
+                        <div class="resume-desc">
+                            <div class="resume-desc-helptext">查看更多项目与开源贡献</div>
+                            <div class="magical resume-btn"><a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a></div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <section class="recent-posts">
-                <h2 class="section-title scroll-reveal">关于我</h2>
-                <article class="post-card enhanced-card scroll-reveal">
-                    <div class="post-info" style="width:100%">
-                        <div class="post-category">👋 简介</div>
-                        <h3>你好，我是小田</h3>
-                        <p style="font-size: 1.05em; line-height: 1.8; color: #555;">
-                            我是一名全栈开发者与技术博主，专注 <strong>Python</strong>、<strong>前端工程化</strong>、<strong>数据分析</strong>与 <strong>AI 应用</strong>。
-                            这里将分享我的项目、学习路径与实践心得。
-                        </p>
-                        
-                        <div class="post-category" style="margin-top:25px;">💡 技能专长</div>
-                        <div class="tech-grid">
-                            <div class="tech-card scroll-reveal delay-100">
-                                <i class="fas fa-server"></i>
-                                <h4>后端开发</h4>
-                                <p>Python / FastAPI / Flask</p>
-                            </div>
-                            <div class="tech-card scroll-reveal delay-200">
-                                <i class="fas fa-laptop-code"></i>
-                                <h4>前端开发</h4>
-                                <p>HTML/CSS/JavaScript / React</p>
-                            </div>
-                            <div class="tech-card scroll-reveal delay-300">
-                                <i class="fas fa-database"></i>
-                                <h4>数据分析</h4>
-                                <p>Pandas / NumPy / 可视化</p>
-                            </div>
-                            <div class="tech-card scroll-reveal delay-400">
-                                <i class="fas fa-brain"></i>
-                                <h4>机器学习</h4>
-                                <p>深度学习 / NLP / CV</p>
+        </div>
+        <div class="about-middle">
+            <div class="power">
+                <div class="list-00">
+                    <div class="magical power-card-number">
+                        <a>
+                            <div class="card-title">4</div>
+                            <div class="card-text">Article</div>
+                        </a>
+                    </div>
+                    <div class="magical power-card-number">
+                        <a>
+                            <div class="card-title">4</div>
+                            <div class="card-text">Project</div>
+                        </a>
+                    </div>
+                    <div class="magical power-card-number">
+                        <a>
+                            <div class="card-title">7</div>
+                            <div class="card-text">Skill</div>
+                        </a>
+                    </div>
+                    <div class="magical power-card-number">
+                        <a>
+                            <div class="card-title">∞</div>
+                            <div class="card-text">Passion</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="list-01">
+                    <div class="magical power-card">
+                        <a>
+                            <div class="card-img" style="background-image: url('../assets/about/abstract.svg')"></div>
+                            <div class="card-text">My abilities</div>
+                        </a>
+                    </div>
+                    <div class="magical power-card">
+                        <a>
+                            <div class="card-img" style="background-image: url('../assets/about/menu.svg')"></div>
+                            <div class="card-text">My abilities</div>
+                        </a>
+                    </div>
+                    <div class="magical power-card">
+                        <a>
+                            <div class="card-img" style="background-image: url('../assets/about/code.svg')"></div>
+                            <div class="card-text">My abilities</div>
+                        </a>
+                    </div>
+                    <div class="magical power-card">
+                        <a>
+                            <div class="card-img" style="background-image: url('../assets/about/pin.svg')"></div>
+                            <div class="card-text">My abilities</div>
+                        </a>
+                    </div>
+                    <div class="magical power-card">
+                        <a>
+                            <div class="card-img" style="background-image: url('../assets/about/pen.svg')"></div>
+                            <div class="card-text">My abilities</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="about-bottom">
+            <div class="experience">
+                <div class="item">
+                    <div class="time">❖ 2024 ~ Now</div>
+                    <div class="name">
+                        <div class="company"><a href="https://github.com/Tianmaozheng" target="_blank">个人开发者 ↗</a></div>
+                        <div class="job">Full Stack Developer</div>
+                    </div>
+                    <div class="project-experience">
+                        <div class="item">
+                            <div class="title">技术探索与分享</div>
+                            <div class="desc">
+                                <ul>
+                                    <li>Python 后端开发、前端工程化实践、数据分析与可视化、AI 应用开发</li>
+                                </ul>
                             </div>
                         </div>
-                        
-                        <p style="margin-top:25px; font-size: 1.05em; line-height: 1.8; color: #555;">
-                            如果你对我的内容感兴趣，欢迎通过 <a href="https://github.com/Tianmaozheng" target="_blank" style="color: #667eea; font-weight: 600;">GitHub</a> 与我交流。
-                        </p>
                     </div>
-                </article>
-            </section>
-        </main>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div id="footer-mount"></div>
-
-    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-    <script src="../personal_blog/js/script.js"></script>
-    <script src="../personal_blog/js/enhanced.js"></script>
+    <div class="footer">
+        <div class="copyright">
+            <div>© 2025 Design by <a href="https://github.com/Tianmaozheng" target="_blank">violet</a></div>
+            <span>|</span>
+            <div class="fillings"><a href="about.html">About</a></div>
+            <span>|</span>
+            <div class="friends"><a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a></div>
+        </div>
+    </div>
+    <div class="widget">
+        <div class="shape-light"></div>
+        <div class="shape-star">
+            <div class="rising-stars rising-stars-visible">
+                <div style="height:1px;width:1px"></div>
+                <div style="height:2px;width:2px"></div>
+                <div style="height:1px;width:1px"></div>
+            </div>
+        </div>
+        <div class="shape-earth"></div>
+    </div>
 </body>
+<script>
+    window.addEventListener("mousemove", function(e) {
+        document.querySelectorAll(".magical").forEach(element => {
+            if (!element.querySelector(".show")) {
+                element.insertAdjacentHTML("beforeend", "<div class='show'></div>");
+            }
+            const rect = element.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            element.style.setProperty("--mouse-x", `${offsetX}px`);
+            element.style.setProperty("--mouse-y", `${offsetY}px`);
+            const hoverElement = element.querySelector(".show");
+            if (hoverElement) {
+                hoverElement.style.opacity = (offsetX >= 0 && offsetX <= element.clientWidth && offsetY >= 0 && offsetY <= element.clientHeight) ? 1 : 0;
+            }
+        });
+    });
+</script>
+<script src="../js/main.js"></script>
+<script src='../js/anime.js'></script>
+<script src='../js/firework.js'></script>
 </html>
-

@@ -1,288 +1,174 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+﻿<!DOCTYPE html>
+<html lang="zh-CN" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>技术文章 | 小田的博客</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../personal_blog/css/style.css">
-    <link rel="stylesheet" href="../personal_blog/css/enhanced.css">
-    <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <style>
-        body.articles-page .post-category {
-            position: static;
-            display: inline-block;
-            background: transparent;
-            color: var(--primary-color);
-            padding: 0;
-            border-radius: 0;
-            margin: 10px 0 6px;
-        }
-        body.articles-page .post-info { position: static; }
-
-        /* 单栏布局调整 */
-        body.articles-page .main-container {
-            display: block;
-            max-width: 1000px;
-            margin: 30px auto;
-        }
-        
-        body.articles-page .content {
-            max-width: 100%;
-            padding: 0;
-        }
-        
-        /* 复用 about-hero 样式并微调 */
-        .page-header-card {
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 20px;
-            padding: 35px;
-            margin-bottom: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.8);
-        }
-        
-        .page-header-img {
-            flex: 0 0 120px;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid #fff;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
-            margin-right: 30px;
-            transition: transform 0.4s ease;
-        }
-        
-        .page-header-img:hover {
-            transform: scale(1.05) rotate(5deg);
-        }
-        
-        .page-header-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .page-header-content h2 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            background: var(--theme-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: inline-block;
-        }
-        
-        .page-header-content p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .page-header-card {
-                flex-direction: column;
-                text-align: center;
-                padding: 30px 20px;
-            }
-            .page-header-img {
-                margin-right: 0;
-                margin-bottom: 20px;
-            }
-        }
-        
-        /* 文章卡片科技感增强 */
-        .article-card-tech {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.4s ease;
-            margin-bottom: 25px;
-            border-left: 4px solid transparent;
-        }
-        
-        .article-card-tech:hover {
-            transform: translateX(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            border-left-color: #667eea;
-        }
-        
-        .article-card-tech .post-image {
-            height: 180px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .article-card-tech .post-image i {
-            font-size: 4em;
-            color: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
-        }
-        
-        .article-card-tech:hover .post-image i {
-            transform: scale(1.2) rotate(10deg);
-        }
-        
-        .article-card-tech .post-info {
-            padding: 25px;
-        }
-        
-        .article-card-tech .post-category {
-            display: inline-block;
-            padding: 6px 16px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: #667eea;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        
-        .article-card-tech h3 {
-            margin: 10px 0 12px 0;
-            font-size: 1.3em;
-            line-height: 1.4;
-        }
-        
-        .article-card-tech h3 a {
-            color: #2c3e50;
-            transition: color 0.3s ease;
-        }
-        
-        .article-card-tech:hover h3 a {
-            color: #667eea;
-        }
-        
-        .article-card-tech p {
-            color: #7f8c8d;
-            line-height: 1.7;
-            margin: 12px 0;
-        }
-        
-        .article-card-tech .post-meta {
-            display: flex;
-            gap: 20px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #f0f0f0;
-        }
-        
-        .article-card-tech .post-meta span {
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        
-        .article-card-tech .post-meta i {
-            color: #667eea;
-            margin-right: 5px;
-        }
-    </style>
+    <title>技术文章 | violet的博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <link rel="shortcut icon" href="../assets/public/favicon.svg"/>
 </head>
-<body class="articles-page">
-    <div id="navbar-mount"></div>
-
-    <div class="main-container">
-        <!-- 侧边栏已移除 -->
-
-        <main class="content">
-            <!-- 顶部介绍卡片 -->
-            <div class="page-header-card animate-fade-in-down">
-                <div class="page-header-img">
-                    <img src="../personal_blog/img/sign.jpg" alt="小田">
-                </div>
-                <div class="page-header-content">
-                    <h2>技术文章</h2>
-                    <p>这里汇集了我的技术探索与工程实践笔记，涵盖后端架构、前端开发、数据科学与人工智能等领域。</p>
-                    <div class="social-links" style="margin-top: 15px; justify-content: flex-start;">
-                        <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
-                    </div>
+<body>
+    <canvas class="fireworks"></canvas>
+    <div class="head">
+        <div class="main">
+            <a href="../index.html" class="logo" style="font-size:14px;font-weight:700;color:#E8E8F6;display:flex;align-items:center;height:auto;">violet</a>
+            <div class="menu">
+                <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                <li class="magical btn nav" onclick="window.location.href='articles.html'">Blog</li>
+                <li class="magical btn" onclick="window.location.href='projects.html'">Work</li>
+                <li class="magical btn" onclick="window.location.href='about.html'">About</li>
+                <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
+                <li class="magical btn" onclick="window.location.href='ai_chat.html'">AI</li>
+                <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
+            </div>
+            <div class="menu" id="menu-expand">
+                <li class="magical btn skin" id="menu-expand-child"><i class="icon menu-icon"></i></li>
+            </div>
+            <div id="menu-panel">
+                <div class="menu-panel-content">
+                    <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                    <li class="magical btn nav" onclick="window.location.href='articles.html'">Blog</li>
+                    <li class="magical btn" onclick="window.location.href='projects.html'">Work</li>
+                    <li class="magical btn" onclick="window.location.href='about.html'">About</li>
+                    <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
+                    <li class="magical btn" onclick="window.location.href='ai_chat.html'">AI</li>
+                    <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
                 </div>
             </div>
-
-            <section class="recent-posts">
-                <h2 class="section-title scroll-reveal">📝 最新发布</h2>
-
-                <article class="article-card-tech scroll-reveal">
-                    <div class="post-image">
-                        <i class="fas fa-server"></i>
-                    </div>
-                    <div class="post-info">
-                        <div class="post-category">后端开发</div>
-                        <h3><a href="#">用 FastAPI 构建高性能 API</a></h3>
-                        <p>深入探讨 FastAPI 框架的核心特性，从路由设计、依赖注入到中间件开发，以及如何进行性能优化，打造生产级 API 服务。</p>
-                        <div class="post-meta">
-                            <span><i class="far fa-calendar"></i> 2025-10-10</span>
-                            <span><i class="far fa-eye"></i> 321 浏览</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="article-card-tech scroll-reveal delay-100">
-                    <div class="post-image">
-                        <i class="fas fa-laptop-code"></i>
-                    </div>
-                    <div class="post-info">
-                        <div class="post-category">前端开发</div>
-                        <h3><a href="#">现代前端工程化实践</a></h3>
-                        <p>系统梳理前端工程化体系，包括模块化开发、自动化构建、代码分割、性能监控等关键技术点，助你构建高效开发流程。</p>
-                        <div class="post-meta">
-                            <span><i class="far fa-calendar"></i> 2025-09-28</span>
-                            <span><i class="far fa-eye"></i> 512 浏览</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="article-card-tech scroll-reveal delay-200">
-                    <div class="post-image">
-                        <i class="fas fa-database"></i>
-                    </div>
-                    <div class="post-info">
-                        <div class="post-category">数据科学</div>
-                        <h3><a href="#">Python 数据分析实战指南</a></h3>
-                        <p>从数据清洗到可视化，掌握 Pandas、NumPy、Matplotlib 等核心库，通过真实案例学习数据分析的完整流程。</p>
-                        <div class="post-meta">
-                            <span><i class="far fa-calendar"></i> 2025-09-15</span>
-                            <span><i class="far fa-eye"></i> 428 浏览</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="article-card-tech scroll-reveal delay-300">
-                    <div class="post-image">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <div class="post-info">
-                        <div class="post-category">人工智能</div>
-                        <h3><a href="#">深度学习入门：从零开始</a></h3>
-                        <p>理解神经网络基础原理，使用 TensorFlow 和 PyTorch 实现经典模型，逐步掌握深度学习的核心概念和实践技巧。</p>
-                        <div class="post-meta">
-                            <span><i class="far fa-calendar"></i> 2025-09-01</span>
-                            <span><i class="far fa-eye"></i> 687 浏览</span>
-                        </div>
-                    </div>
-                </article>
-            </section>
-        </main>
+        </div>
+        <blockquote></blockquote>
     </div>
-
-    <div id="footer-mount"></div>
-
-    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-    <script src="../personal_blog/js/script.js"></script>
-    <script src="../personal_blog/js/enhanced.js"></script>
+    <div class="blog">
+        <div class="blog-left">
+            <div class="blog-left-line"><img src="../assets/blog/line-dot.svg"></div>
+        </div>
+        <div class="blog-list">
+            <div class="item">
+                <a href="#">
+                    <div class="text">
+                        <div class="title-area">
+                            <div class="title">
+                                <div class="name">用 FastAPI 构建高性能 API</div>
+                                <div class="link"> ↗</div>
+                            </div>
+                            <div class="tag">后端开发</div>
+                        </div>
+                        <div class="desc">深入探讨 FastAPI 框架的核心特性，从路由设计、依赖注入到中间件开发，以及如何进行性能优化，打造生产级 API 服务。</div>
+                    </div>
+                    <div class="info">
+                        <div class="info-avatar"><img src="../assets/blog/avatar.svg"></div>
+                        <div class="info-name">violet</div>
+                        <div class="info-time">2025-10-10</div>
+                    </div>
+                </a>
+                <div class="content-divider"></div>
+            </div>
+            <div class="item">
+                <a href="#">
+                    <div class="text">
+                        <div class="title-area">
+                            <div class="title">
+                                <div class="name">现代前端工程化实践</div>
+                                <div class="link"> ↗</div>
+                            </div>
+                            <div class="tag">前端开发</div>
+                        </div>
+                        <div class="desc">系统梳理前端工程化体系，包括模块化开发、自动化构建、代码分割、性能监控等关键技术点，助你构建高效开发流程。</div>
+                    </div>
+                    <div class="info">
+                        <div class="info-avatar"><img src="../assets/blog/avatar.svg"></div>
+                        <div class="info-name">violet</div>
+                        <div class="info-time">2025-09-28</div>
+                    </div>
+                </a>
+                <div class="content-divider"></div>
+            </div>
+            <div class="item">
+                <a href="#">
+                    <div class="text">
+                        <div class="title-area">
+                            <div class="title">
+                                <div class="name">Python 数据分析实战指南</div>
+                                <div class="link"> ↗</div>
+                            </div>
+                            <div class="tag">数据科学</div>
+                        </div>
+                        <div class="desc">从数据清洗到可视化，掌握 Pandas、NumPy、Matplotlib 等核心库，通过真实案例学习数据分析的完整流程。</div>
+                    </div>
+                    <div class="info">
+                        <div class="info-avatar"><img src="../assets/blog/avatar.svg"></div>
+                        <div class="info-name">violet</div>
+                        <div class="info-time">2025-09-15</div>
+                    </div>
+                </a>
+                <div class="content-divider"></div>
+            </div>
+            <div class="item">
+                <a href="#">
+                    <div class="text">
+                        <div class="title-area">
+                            <div class="title">
+                                <div class="name">深度学习入门：从零开始</div>
+                                <div class="link"> ↗</div>
+                            </div>
+                            <div class="tag">人工智能</div>
+                        </div>
+                        <div class="desc">理解神经网络基础原理，使用 TensorFlow 和 PyTorch 实现经典模型，逐步掌握深度学习的核心概念和实践技巧。</div>
+                    </div>
+                    <div class="info">
+                        <div class="info-avatar"><img src="../assets/blog/avatar.svg"></div>
+                        <div class="info-name">violet</div>
+                        <div class="info-time">2025-09-01</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="copyright">
+            <div>© 2025 Design by <a href="https://github.com/Tianmaozheng" target="_blank">violet</a></div>
+            <span>|</span>
+            <div class="fillings">
+                <a href="about.html">About</a>
+            </div>
+            <span>|</span>
+            <div class="friends">
+                <a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </div>
+    <div class="widget">
+        <div class="shape-light"></div>
+        <div class="shape-star">
+            <div class="rising-stars rising-stars-visible">
+                <div style="height:1px;width:1px"></div>
+                <div style="height:2px;width:2px"></div>
+                <div style="height:1px;width:1px"></div>
+            </div>
+        </div>
+        <div class="shape-earth"></div>
+    </div>
 </body>
+<script>
+    window.addEventListener("mousemove", function(e) {
+        document.querySelectorAll(".magical").forEach(element => {
+            if (!element.querySelector(".show")) {
+                element.insertAdjacentHTML("beforeend", "<div class='show'></div>");
+            }
+            const rect = element.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            element.style.setProperty("--mouse-x", `${offsetX}px`);
+            element.style.setProperty("--mouse-y", `${offsetY}px`);
+            const hoverElement = element.querySelector(".show");
+            if (hoverElement) {
+                hoverElement.style.opacity = (offsetX >= 0 && offsetX <= element.clientWidth && offsetY >= 0 && offsetY <= element.clientHeight) ? 1 : 0;
+            }
+        });
+    });
+</script>
+<script src="../js/main.js"></script>
+<script src='../js/anime.js'></script>
+<script src='../js/firework.js'></script>
 </html>
-

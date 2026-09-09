@@ -1,599 +1,333 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+﻿<!DOCTYPE html>
+<html lang="zh-CN" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI助手 | 小田的博客</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../personal_blog/css/style.css">
-    <link rel="stylesheet" href="../personal_blog/css/enhanced.css">
-    <link rel="icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="../personal_blog/img/favicon.ico" type="image/x-icon">
-    <style>
-        /* 单栏布局调整 - 与其他页面一致 */
-        body.ai-chat-page .main-container {
-            display: block;
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-        
-        body.ai-chat-page .content {
-            max-width: 100%;
-            padding: 0;
-        }
-        
-        /* 顶部介绍卡片 - 与其他页面风格一致 */
-        .ai-hero {
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 20px;
-            padding: 35px;
-            margin-bottom: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .ai-hero-img {
-            flex: 0 0 120px;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid #fff;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
-            margin-right: 30px;
-            transition: transform 0.4s ease;
-        }
-        
-        .ai-hero-img:hover {
-            transform: scale(1.05) rotate(5deg);
-        }
-        
-        .ai-hero-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .ai-hero-content h2 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            background: var(--theme-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: inline-block;
-        }
-        
-        .ai-hero-content p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .ai-hero {
-                flex-direction: column;
-                text-align: center;
-                padding: 30px 20px;
-            }
-            .ai-hero-img {
-                margin-right: 0;
-                margin-bottom: 20px;
-            }
-        }
-        
-        /* 聊天容器 - 简洁风格 */
-        .chat-wrapper {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            max-height: 70vh;
-            min-height: 500px;
-        }
-        
-        .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 25px;
-            background: #f5f7fa;
-            min-height: 300px;
-        }
-        
-        .message {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .message.user {
-            justify-content: flex-end;
-        }
-        
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 18px;
-        }
-        
-        .message.user .message-avatar {
-            background: #667eea;
-            order: 2;
-        }
-        
-        .message.assistant .message-avatar {
-            background: #764ba2;
-        }
-        
-        .message-avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        .message-content {
-            max-width: 75%;
-            padding: 12px 18px;
-            border-radius: 18px;
-            line-height: 1.6;
-            word-wrap: break-word;
-        }
-        
-        .message.user .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        
-        .message.assistant .message-content {
-            background: white;
-            color: #333;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-        
-        .chat-input-area {
-            padding: 20px 25px;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            gap: 12px;
-        }
-        
-        #userInput {
-            flex: 1;
-            padding: 12px 18px;
-            border: 2px solid #e5e7eb;
-            border-radius: 25px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        
-        #userInput:focus {
-            border-color: #667eea;
-        }
-        
-        #sendBtn {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-        
-        #sendBtn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        #sendBtn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .loading {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 18px;
-            background: white;
-            border-radius: 18px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-        
-        .loading-dots {
-            display: inline-flex;
-            gap: 4px;
-        }
-        
-        .loading-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #667eea;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        
-        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
-        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes bounce {
-            0%, 80%, 100% {
-                transform: scale(0);
-            }
-            40% {
-                transform: scale(1);
-            }
-        }
-        
-        /* Markdown 样式 */
-        .message-content h1, .message-content h2, .message-content h3 {
-            margin: 8px 0 4px 0;
-            font-weight: 600;
-        }
-        
-        .message-content p {
-            margin: 6px 0;
-        }
-        
-        .message-content ul, .message-content ol {
-            margin: 8px 0 8px 20px;
-        }
-        
-        .message-content pre {
-            background: #f8f9fa;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 12px;
-            overflow-x: auto;
-            margin: 8px 0;
-        }
-        
-        .message-content code {
-            background: #f1f3f5;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 0.9em;
-        }
-        
-        .message-content pre code {
-            background: transparent;
-            padding: 0;
-        }
-    </style>
+    <title>AI助手 | violet的博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <link rel="shortcut icon" href="../assets/public/favicon.svg"/>
 </head>
-<body class="ai-chat-page">
-    <div id="navbar-mount"></div>
-
-    <div class="main-container">
-        <main class="content">
-            <!-- 顶部介绍卡片 -->
-            <div class="ai-hero animate-fade-in-down">
-                <div class="ai-hero-img">
-                    <img src="../personal_blog/img/sign.jpg" alt="AI助手">
-                </div>
-                <div class="ai-hero-content">
-                    <h2>AI智能助手</h2>
-                    <p>我是您的智能助手，可以回答各种问题，协助您解决技术难题、提供建议和创意灵感。</p>
-                    <div class="social-links" style="margin-top: 15px; justify-content: flex-start;">
-                        <a href="https://github.com/Tianmaozheng" target="_blank" class="social-icon social-icon-enhanced" title="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="mailto:2151447128@qq.com" class="social-icon social-icon-enhanced" title="邮箱"><i class="fas fa-envelope"></i></a>
-                    </div>
+<body>
+    <canvas class="fireworks"></canvas>
+    <div class="head">
+        <div class="main">
+            <a href="../index.html" class="logo" style="font-size:14px;font-weight:700;color:#E8E8F6;display:flex;align-items:center;height:auto;">violet</a>
+            <div class="menu">
+                <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                <li class="magical btn" onclick="window.location.href='articles.html'">Blog</li>
+                <li class="magical btn" onclick="window.location.href='projects.html'">Work</li>
+                <li class="magical btn" onclick="window.location.href='about.html'">About</li>
+                <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
+                <li class="magical btn nav" onclick="window.location.href='ai_chat.html'">AI</li>
+                <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
+            </div>
+            <div class="menu" id="menu-expand">
+                <li class="magical btn skin" id="menu-expand-child"><i class="icon menu-icon"></i></li>
+            </div>
+            <div id="menu-panel">
+                <div class="menu-panel-content">
+                    <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
+                    <li class="magical btn" onclick="window.location.href='articles.html'">Blog</li>
+                    <li class="magical btn" onclick="window.location.href='projects.html'">Work</li>
+                    <li class="magical btn" onclick="window.location.href='about.html'">About</li>
+                    <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
+                    <li class="magical btn nav" onclick="window.location.href='ai_chat.html'">AI</li>
+                    <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
                 </div>
             </div>
-
-            <!-- 聊天容器 -->
-            <div class="chat-wrapper scroll-reveal">
+        </div>
+        <blockquote></blockquote>
+    </div>
+    <div class="page-container">
+        <div class="page-content">
+            <div class="page-title">AI 智能助手</div>
+            <div class="chat-wrapper">
                 <div class="chat-header">
-                    <i class="fas fa-robot" style="margin-right: 10px;"></i>小田 AI 助手
+                    🤖 violet AI 助手
                 </div>
                 <div class="chat-messages" id="chatMessages">
-                    <!-- 初始欢迎消息 -->
                     <div class="message assistant">
                         <div class="message-avatar">
-                            <img src="../personal_blog/img/sign.jpg" alt="AI">
+                            <img src="../assets/about/sign.jpg" alt="AI">
                         </div>
                         <div class="message-content">
-                            你好！我是小田的AI助手，有什么可以帮助你的吗？
+                            你好！我是violet的AI助手，有什么可以帮助你的吗？
                         </div>
                     </div>
                 </div>
                 <div class="chat-input-area">
-                    <input 
-                        type="text" 
-                        id="userInput" 
-                        placeholder="输入你的问题..."
-                    >
-                    <button id="sendBtn">
-                        <i class="fas fa-paper-plane" style="margin-right: 6px;"></i>发送
-                    </button>
+                    <input type="text" id="userInput" placeholder="输入你的问题...">
+                    <button id="sendBtn">发送</button>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
-
-    <div id="footer-mount"></div>
-    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
-    <script src="../personal_blog/js/script.js"></script>
-    <script src="../personal_blog/js/enhanced.js"></script>
-    
-    <script>
-        // API 配置 - 保留原有配置
-        const API_URL = "https://api.siliconflow.cn/v1/chat/completions";
-        const API_KEY = "sk-gazlhxwkvononrphkuikvdrmyhliwcynlstoavrhuxwbrwye";
-        const MODEL = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B";
-        const SYSTEM_PROMPT = "你是小田的AI助手，名为'小田助手'。重要规则：1) 当被问到你是谁、你的身份时，统一回答：'我是小田的AI助手，有什么可以帮助你的嘛'。2) 当被问到你的模型、技术细节、你是什么AI模型时，用幽默搞笑的话语回答：'哈哈，我可是个东拼西凑的模型，吃百家饭长大的！什么技术都用了一点，杂糅而成，可以说是AI界的'混血儿'。虽然出身不够'纯正'，但胜在实用，能帮你解决各种问题。'不要提及具体模型名称。3) 绝对不要提及任何AI模型名称（如DeepSeek、GPT、ChatGPT、Claude、文心一言、通义千问等）。4) 不要说自己是由某公司研发或提及任何技术公司名称。5) 始终使用中文回答，语气友好专业，必要时给出分点说明。6) 输出请优先使用Markdown格式（标题、列表、表格、引用），代码使用带语言标注的代码块。";
-
-        let messages = [
-            { role: 'system', content: SYSTEM_PROMPT }
-        ];
-
-        // 添加消息
-        function addMessage(role, content, saveToHistory = true) {
-            const messagesDiv = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            if (role === 'user') {
-                avatar.textContent = '👤';
-            } else {
-                const img = document.createElement('img');
-                img.src = '../personal_blog/img/sign.jpg';
-                img.alt = 'AI';
-                avatar.appendChild(img);
+    <div class="footer">
+        <div class="copyright">
+            <div>© 2025 Design by <a href="https://github.com/Tianmaozheng" target="_blank">violet</a></div>
+            <span>|</span>
+            <div class="fillings"><a href="about.html">About</a></div>
+            <span>|</span>
+            <div class="friends"><a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a></div>
+        </div>
+    </div>
+    <div class="widget">
+        <div class="shape-light"></div>
+        <div class="shape-star">
+            <div class="rising-stars rising-stars-visible">
+                <div style="height:1px;width:1px"></div>
+                <div style="height:2px;width:2px"></div>
+                <div style="height:1px;width:1px"></div>
+            </div>
+        </div>
+        <div class="shape-earth"></div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script>
+    window.addEventListener("mousemove", function(e) {
+        document.querySelectorAll(".magical").forEach(element => {
+            if (!element.querySelector(".show")) {
+                element.insertAdjacentHTML("beforeend", "<div class='show'></div>");
             }
-
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            
-            if (role === 'assistant') {
-                try {
-                    const html = marked.parse(content || '');
-                    contentDiv.innerHTML = DOMPurify.sanitize(html);
-                } catch (_) {
-                    contentDiv.textContent = content;
-                }
-            } else {
-                contentDiv.textContent = content;
+            const rect = element.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            element.style.setProperty("--mouse-x", `${offsetX}px`);
+            element.style.setProperty("--mouse-y", `${offsetY}px`);
+            const hoverElement = element.querySelector(".show");
+            if (hoverElement) {
+                hoverElement.style.opacity = (offsetX >= 0 && offsetX <= element.clientWidth && offsetY >= 0 && offsetY <= element.clientHeight) ? 1 : 0;
             }
+        });
+    });
+</script>
+<script>
+    // API 配置
+    const API_URL = "https://api.siliconflow.cn/v1/chat/completions";
+    const API_KEY = "sk-gazlhxwkvononrphkuikvdrmyhliwcynlstoavrhuxwbrwye";
+    const MODEL = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B";
+    const SYSTEM_PROMPT = "你是violet的AI助手，名为'violet助手'。重要规则：1) 当被问到你是谁、你的身份时，统一回答：'我是violet的AI助手，有什么可以帮助你的嘛'。2) 当被问到你的模型、技术细节、你是什么AI模型时，用幽默搞笑的话语回答：'哈哈，我可是个东拼西凑的模型，吃百家饭长大的！什么技术都用了一点，杂糅而成，可以说是AI界的'混血儿'。虽然出身不够'纯正'，但胜在实用，能帮你解决各种问题。'不要提及具体模型名称。3) 绝对不要提及任何AI模型名称（如DeepSeek、GPT、ChatGPT、Claude、文心一言、通义千问等）。4) 不要说自己是由某公司研发或提及任何技术公司名称。5) 始终使用中文回答，语气友好专业，必要时给出分点说明。6) 输出请优先使用Markdown格式（标题、列表、表格、引用），代码使用带语言标注的代码块。";
 
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(contentDiv);
-            messagesDiv.appendChild(messageDiv);
+    let messages = [
+        { role: 'system', content: SYSTEM_PROMPT }
+    ];
 
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            
-            if (saveToHistory) {
-                messages.push({ role, content });
-            }
-        }
+    function addMessage(role, content, saveToHistory = true) {
+        const messagesDiv = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${role}`;
 
-        // 显示加载动画
-        function showLoading() {
-            const messagesDiv = document.getElementById('chatMessages');
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message assistant';
-            loadingDiv.id = 'loadingMessage';
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        if (role === 'user') {
+            avatar.textContent = '👤';
+        } else {
             const img = document.createElement('img');
-            img.src = '../personal_blog/img/sign.jpg';
+            img.src = '../assets/about/sign.jpg';
             img.alt = 'AI';
             avatar.appendChild(img);
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'loading';
-            contentDiv.innerHTML = `
-                <span>正在思考</span>
-                <span class="loading-dots">
-                    <span class="loading-dot"></span>
-                    <span class="loading-dot"></span>
-                    <span class="loading-dot"></span>
-                </span>
-            `;
-            
-            loadingDiv.appendChild(avatar);
-            loadingDiv.appendChild(contentDiv);
-            messagesDiv.appendChild(loadingDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-        // 隐藏加载动画
-        function hideLoading() {
-            const loadingMessage = document.getElementById('loadingMessage');
-            if (loadingMessage) {
-                loadingMessage.remove();
-            }
-        }
-
-        // 发送消息
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const message = input.value.trim();
-            
-            if (!message) return;
-
-            input.disabled = true;
-            sendBtn.disabled = true;
-            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>发送中';
-
-            addMessage('user', message);
-            input.value = '';
-            showLoading();
-
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        
+        if (role === 'assistant') {
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'text/event-stream'
-                    },
-                    body: JSON.stringify({
-                        model: MODEL,
-                        messages: messages,
-                        max_tokens: 2000,
-                        stream: true
-                    })
-                });
+                const html = marked.parse(content || '');
+                contentDiv.innerHTML = DOMPurify.sanitize(html);
+            } catch (_) {
+                contentDiv.textContent = content;
+            }
+        } else {
+            contentDiv.textContent = content;
+        }
 
-                const messagesDiv = document.getElementById('chatMessages');
-                let streamingDiv = null;
-                let streamingContent = null;
-                let fullContent = '';
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(contentDiv);
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
+        if (saveToHistory) {
+            messages.push({ role, content });
+        }
+    }
 
-                const render = (text) => {
-                    if (!streamingDiv || !streamingContent) {
-                        hideLoading();
-                        streamingDiv = document.createElement('div');
-                        streamingDiv.className = 'message assistant';
-                        
-                        const avatar = document.createElement('div');
-                        avatar.className = 'message-avatar';
-                        const img = document.createElement('img');
-                        img.src = '../personal_blog/img/sign.jpg';
-                        img.alt = 'AI';
-                        avatar.appendChild(img);
-                        
-                        streamingContent = document.createElement('div');
-                        streamingContent.className = 'message-content';
-                        
-                        streamingDiv.appendChild(avatar);
-                        streamingDiv.appendChild(streamingContent);
-                        messagesDiv.appendChild(streamingDiv);
-                    }
+    function showLoading() {
+        const messagesDiv = document.getElementById('chatMessages');
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'message assistant';
+        loadingDiv.id = 'loadingMessage';
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        const img = document.createElement('img');
+        img.src = '../assets/about/sign.jpg';
+        img.alt = 'AI';
+        avatar.appendChild(img);
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'loading';
+        contentDiv.innerHTML = `
+            <span style="font-size:14px;color:#B3B3C1;">正在思考</span>
+            <span class="loading-dots">
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+            </span>
+        `;
+        
+        loadingDiv.appendChild(avatar);
+        loadingDiv.appendChild(contentDiv);
+        messagesDiv.appendChild(loadingDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function hideLoading() {
+        const loadingMessage = document.getElementById('loadingMessage');
+        if (loadingMessage) loadingMessage.remove();
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const message = input.value.trim();
+        
+        if (!message) return;
+
+        input.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '发送中';
+
+        addMessage('user', message);
+        input.value = '';
+        showLoading();
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'text/event-stream'
+                },
+                body: JSON.stringify({
+                    model: MODEL,
+                    messages: messages,
+                    max_tokens: 2000,
+                    stream: true
+                })
+            });
+
+            const messagesDiv = document.getElementById('chatMessages');
+            let streamingDiv = null;
+            let streamingContent = null;
+            let fullContent = '';
+
+            const render = (text) => {
+                if (!streamingDiv || !streamingContent) {
+                    hideLoading();
+                    streamingDiv = document.createElement('div');
+                    streamingDiv.className = 'message assistant';
                     
-                    try {
-                        const html = marked.parse(text);
-                        streamingContent.innerHTML = DOMPurify.sanitize(html);
-                    } catch (_) {
-                        streamingContent.textContent = text;
-                    }
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                };
-
-                if (response.ok && response.body) {
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder('utf-8');
-                    let done = false;
-                    let buffer = '';
+                    const avatar = document.createElement('div');
+                    avatar.className = 'message-avatar';
+                    const img = document.createElement('img');
+                    img.src = '../assets/about/sign.jpg';
+                    img.alt = 'AI';
+                    avatar.appendChild(img);
                     
-                    while (!done) {
-                        const { value, done: doneReading } = await reader.read();
-                        done = doneReading;
-                        if (value) {
-                            buffer += decoder.decode(value, { stream: true });
-                            let parts = buffer.split(/\n\n/);
-                            buffer = parts.pop() || '';
-                            
-                            for (let part of parts) {
-                                let lines = part.split('\n');
-                                for (let line of lines) {
-                                    line = line.trim();
-                                    if (!line || !line.startsWith('data:')) continue;
-                                    if (line === 'data: [DONE]') continue;
-                                    
-                                    try {
-                                        const json = JSON.parse(line.slice(5));
-                                        const choice = json.choices?.[0];
-                                        const delta = choice?.delta?.content || choice?.message?.content || '';
-                                        if (delta) {
-                                            fullContent += delta;
-                                            render(fullContent);
-                                        }
-                                    } catch (_) {}
-                                }
+                    streamingContent = document.createElement('div');
+                    streamingContent.className = 'message-content';
+                    
+                    streamingDiv.appendChild(avatar);
+                    streamingDiv.appendChild(streamingContent);
+                    messagesDiv.appendChild(streamingDiv);
+                }
+                
+                try {
+                    const html = marked.parse(text);
+                    streamingContent.innerHTML = DOMPurify.sanitize(html);
+                } catch (_) {
+                    streamingContent.textContent = text;
+                }
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            };
+
+            if (response.ok && response.body) {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let done = false;
+                let buffer = '';
+                
+                while (!done) {
+                    const { value, done: doneReading } = await reader.read();
+                    done = doneReading;
+                    if (value) {
+                        buffer += decoder.decode(value, { stream: true });
+                        let parts = buffer.split(/\n\n/);
+                        buffer = parts.pop() || '';
+                        
+                        for (let part of parts) {
+                            let lines = part.split('\n');
+                            for (let line of lines) {
+                                line = line.trim();
+                                if (!line || !line.startsWith('data:')) continue;
+                                if (line === 'data: [DONE]') continue;
+                                
+                                try {
+                                    const json = JSON.parse(line.slice(5));
+                                    const choice = json.choices?.[0];
+                                    const delta = choice?.delta?.content || choice?.message?.content || '';
+                                    if (delta) {
+                                        fullContent += delta;
+                                        render(fullContent);
+                                    }
+                                } catch (_) {}
                             }
                         }
                     }
-                    
-                    if (fullContent) {
-                        messages.push({ role: 'assistant', content: fullContent });
-                    } else {
-                        if (streamingDiv) streamingDiv.remove();
-                        addMessage('assistant', '❌ 抱歉，没有收到回复内容');
-                    }
-                } else {
-                    const result = await response.json().catch(() => ({}));
-                    addMessage('assistant', '❌ 抱歉，出现了错误：' + (result.message || '未知错误'));
                 }
-            } catch (error) {
-                hideLoading();
-                addMessage('assistant', '❌ 请求失败：' + error.message);
+                
+                if (fullContent) {
+                    messages.push({ role: 'assistant', content: fullContent });
+                } else {
+                    if (streamingDiv) streamingDiv.remove();
+                    addMessage('assistant', '❌ 抱歉，没有收到回复内容');
+                }
+            } else {
+                const result = await response.json().catch(() => ({}));
+                addMessage('assistant', '❌ 抱歉，出现了错误：' + (result.message || '未知错误'));
             }
-
-            input.disabled = false;
-            sendBtn.disabled = false;
-            sendBtn.innerHTML = '<i class="fas fa-paper-plane" style="margin-right: 6px;"></i>发送';
-            input.focus();
+        } catch (error) {
+            hideLoading();
+            addMessage('assistant', '❌ 请求失败：' + error.message);
         }
 
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.getElementById('userInput');
-            const sendBtn = document.getElementById('sendBtn');
-            
-            // Enter 键发送
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            // 点击发送按钮
-            sendBtn.addEventListener('click', sendMessage);
-            
-            input.focus();
+        input.disabled = false;
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '发送';
+        input.focus();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         });
-    </script>
-</body>
+        
+        sendBtn.addEventListener('click', sendMessage);
+        input.focus();
+    });
+</script>
+<script src="../js/main.js"></script>
+<script src='../js/anime.js'></script>
+<script src='../js/firework.js'></script>
 </html>
