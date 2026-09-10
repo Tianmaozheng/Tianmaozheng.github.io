@@ -1,8 +1,10 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-CN" style="color-scheme: dark;">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="violet 的个人技术博客 - 技术分享、项目实战与学习笔记">
+    <meta name="author" content="violet">
     <title>violet的博客 | 个人技术博客</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/custom.css">
@@ -10,11 +12,12 @@
     <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
 </head>
 <body>
-    <canvas class="fireworks"></canvas>
-    <div class="head">
+    <div class="head" id="headscrollbg">
         <div class="main">
-            <a href="index.html" class="logo" style="font-size:14px;font-weight:700;color:#E8E8F6;display:flex;align-items:center;height:auto;">violet</a>
-            <div class="menu">
+            <div class="main-left">
+                <a href="index.html" class="logo">violet</a>
+            </div>
+            <div class="menu" id="main-menu">
                 <li class="magical btn nav" onclick="window.location.href='index.html'">Home</li>
                 <li class="magical btn" onclick="window.location.href='html/articles.html'">Blog</li>
                 <li class="magical btn" onclick="window.location.href='html/projects.html'">Work</li>
@@ -24,140 +27,216 @@
                 <li class="magical btn" onclick="window.location.href='games/index.html'">Game</li>
             </div>
             <div class="menu" id="menu-expand">
-                <li class="magical btn skin" id="menu-expand-child"><i class="icon menu-icon"></i></li>
+                <li class="magical btn menu-icon-btn" id="menu-expand-child">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18 18V20H6V18H18ZM21 11V13H3V11H21ZM18 4V6H6V4H18Z"></path>
+                    </svg>
+                </li>
             </div>
             <div id="menu-panel">
-                <div class="menu-panel-content">
-                    <li class="magical btn nav" onclick="window.location.href='index.html'">Home</li>
-                    <li class="magical btn" onclick="window.location.href='html/articles.html'">Blog</li>
-                    <li class="magical btn" onclick="window.location.href='html/projects.html'">Work</li>
-                    <li class="magical btn" onclick="window.location.href='html/about.html'">About</li>
-                    <li class="magical btn" onclick="window.location.href='html/guestbook.html'">Guest</li>
-                    <li class="magical btn" onclick="window.location.href='html/ai_chat.html'">AI</li>
-                    <li class="magical btn" onclick="window.location.href='games/index.html'">Game</li>
+                <div class="menu-panel-content" id="menu-panel-content"></div>
+                <div class="menu-close-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10.5859 12L2.79297 4.20706L4.20718 2.79285L12.0001 10.5857L19.793 2.79285L21.2072 4.20706L13.4143 12L21.2072 19.7928L19.793 21.2071L12.0001 13.4142L4.20718 21.2071L2.79297 19.7928L10.5859 12Z"></path>
+                    </svg>
                 </div>
             </div>
         </div>
-        <blockquote></blockquote>
     </div>
     <div class="index">
         <div class="hello">
-            <div class="title">
-                <div class="title-hi">Hi, I'm</div>
-                <a class="title-name" href="html/about.html">violet</a>
+            <div class="hello-left">
+                <div class="title">
+                    <div class="title-hi">Hi, I'm</div>
+                    <a class="title-name text-effect" href="html/about.html">violet</a>
+                </div>
+                <div class="hello-introduce load-pro">
+                    <span id="typed"></span>
+                </div>
+                <div class="hello-actions">
+                    <div class="magical primary-btn"><a href="html/articles.html">阅读博客</a></div>
+                    <div class="magical normal-btn">
+                        <a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a>
+                        <div class="glowing-border"></div>
+                    </div>
+                </div>
             </div>
-            <div class="hello-desc" id="typed"></div>
+            <div class="hello-right">
+                <div class="eyes-container">
+                    <div class="eye eye-pic-one">
+                        <div class="pupil"></div>
+                    </div>
+                    <div class="eye eye-pic-two">
+                        <div class="pupil"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="content-divider"></div>
-        <div class="quickly-link">
-            <div class="title-hi">What did I do</div>
-            <div class="loader"></div>
-            <div class="link-card">
-                <div class="link-card-list">
-                    <div class="magical link-card-item">
-                        <a href="html/articles.html">
-                            <div class="info">
-                                <div class="info-title">Blog</div>
-                                <div class="info-desc">技术分享与学习笔记</div>
-                            </div>
-                            <div class="icon icon-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
-                                </svg>
-                            </div>
-                        </a>
+        <div class="main-content">
+            <div class="power-list-container">
+                <div class="power-list load-pro">
+                    <div class="power-card load-item">
+                        <div class="power-container">
+                            <div class="card-img" style="background-image: url('./assets/index/web.svg')"></div>
+                            <div class="title">Web 开发</div>
+                        </div>
+                        <span class="power-separator"></span>
                     </div>
-                    <div class="magical link-card-item">
-                        <a href="html/projects.html">
-                            <div class="info">
-                                <div class="info-title">Work</div>
-                                <div class="info-desc">实战项目展示</div>
-                            </div>
-                            <div class="icon icon-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
-                                </svg>
-                            </div>
-                        </a>
+                    <div class="power-card load-item">
+                        <div class="power-container">
+                            <div class="card-img" style="background-image: url('./assets/index/app.svg')"></div>
+                            <div class="title">移动应用</div>
+                        </div>
+                        <span class="power-separator"></span>
                     </div>
-                    <div class="magical link-card-item">
-                        <a href="html/about.html">
-                            <div class="info">
-                                <div class="info-title">About</div>
-                                <div class="info-desc">个人简介与联系方式</div>
-                            </div>
-                            <div class="icon icon-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
-                                </svg>
-                            </div>
-                        </a>
+                    <div class="power-card load-item">
+                        <div class="power-container">
+                            <div class="card-img" style="background-image: url('./assets/index/code.svg')"></div>
+                            <div class="title">全栈开发</div>
+                        </div>
+                        <span class="power-separator"></span>
                     </div>
-                    <div class="magical link-card-item">
-                        <a href="html/guestbook.html">
-                            <div class="info">
-                                <div class="info-title">Guest</div>
-                                <div class="info-desc">欢迎留下你的足迹</div>
-                            </div>
-                            <div class="icon icon-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
-                                </svg>
-                            </div>
-                        </a>
+                    <div class="power-card load-item">
+                        <div class="power-container">
+                            <div class="card-img" style="background-image: url('./assets/index/interactive.svg')"></div>
+                            <div class="title">交互设计</div>
+                        </div>
+                        <span class="power-separator"></span>
                     </div>
-                    <div class="magical link-card-item">
-                        <a href="html/ai_chat.html">
-                            <div class="info">
-                                <div class="info-title">AI</div>
-                                <div class="info-desc">智能问答系统</div>
-                            </div>
-                            <div class="icon icon-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
-                                </svg>
-                            </div>
-                        </a>
+                    <div class="power-card load-item">
+                        <div class="power-container">
+                            <div class="card-img" style="background-image: url('./assets/index/ai.svg')"></div>
+                            <div class="title">AI 探索</div>
+                        </div>
+                        <span class="power-separator"></span>
                     </div>
-                    <div class="magical link-card-item">
-                        <a href="games/index.html">
-                            <div class="info">
-                                <div class="info-title">Game</div>
-                                <div class="info-desc">经典俄罗斯方块</div>
-                            </div>
-                            <div class="icon icon-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
-                                </svg>
-                            </div>
-                        </a>
+                    <div class="power-card load-item">
+                        <div class="power-container">
+                            <div class="card-img" style="background-image: url('./assets/index/tob.svg')"></div>
+                            <div class="title">项目实战</div>
+                        </div>
+                        <span class="power-separator"></span>
                     </div>
-                    <div class="magical link-card-item">
-                        <a href="https://github.com/Tianmaozheng" target="_blank">
-                            <div class="info">
-                                <div class="info-title">Github</div>
-                                <div class="info-desc">我的代码花园</div>
-                            </div>
-                            <div class="icon icon-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                    <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
-                                </svg>
-                            </div>
-                        </a>
+                    <div class="power-card load-item">
+                        <div class="power-container">
+                            <div class="card-img" style="background-image: url('./assets/index/assets.svg')"></div>
+                            <div class="title">开源分享</div>
+                        </div>
                     </div>
+                    <div class="power-card sticky-item" id="sticky-item">
+                        <div class="loader"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="link-list load-pro">
+                <div class="magical link-card">
+                    <a href="html/articles.html">
+                        <div class="link-emoji">📝</div>
+                        <div class="info">
+                            <div class="info-title">Blog</div>
+                            <div class="info-desc">技术分享与学习笔记</div>
+                        </div>
+                        <div class="icon icon-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <div class="magical link-card">
+                    <a href="html/projects.html">
+                        <div class="link-emoji">💼</div>
+                        <div class="info">
+                            <div class="info-title">Work</div>
+                            <div class="info-desc">实战项目展示</div>
+                        </div>
+                        <div class="icon icon-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <div class="magical link-card">
+                    <a href="html/about.html">
+                        <div class="link-emoji">👋</div>
+                        <div class="info">
+                            <div class="info-title">About</div>
+                            <div class="info-desc">个人简介与联系方式</div>
+                        </div>
+                        <div class="icon icon-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <div class="magical link-card">
+                    <a href="html/guestbook.html">
+                        <div class="link-emoji">💬</div>
+                        <div class="info">
+                            <div class="info-title">Guest</div>
+                            <div class="info-desc">欢迎留下你的足迹</div>
+                        </div>
+                        <div class="icon icon-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <div class="magical link-card">
+                    <a href="html/ai_chat.html">
+                        <div class="link-emoji">🤖</div>
+                        <div class="info">
+                            <div class="info-title">AI</div>
+                            <div class="info-desc">智能问答助手</div>
+                        </div>
+                        <div class="icon icon-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <div class="magical link-card">
+                    <a href="games/index.html">
+                        <div class="link-emoji">🎮</div>
+                        <div class="info">
+                            <div class="info-title">Game</div>
+                            <div class="info-desc">经典俄罗斯方块</div>
+                        </div>
+                        <div class="icon icon-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <div class="magical link-card">
+                    <a href="https://github.com/Tianmaozheng" target="_blank">
+                        <div class="link-emoji">🌱</div>
+                        <div class="info">
+                            <div class="info-title">GitHub</div>
+                            <div class="info-desc">我的代码花园</div>
+                        </div>
+                        <div class="icon icon-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                            </svg>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     <div class="footer">
-        <div class="copyright">
-            <div>© 2025 Design by <a href="https://github.com/Tianmaozheng" target="_blank">violet</a></div>
-            <span>|</span>
-            <div class="fillings">
-                <a href="html/about.html">About</a>
+        <div class="footer-content">
+            <div class="copyright">
+                <div>© 2025 <a href="https://github.com/Tianmaozheng" target="_blank">violet</a> All Rights Reserved.</div>
             </div>
-            <span>|</span>
             <div class="friends">
+                <a href="html/about.html">About</a>
                 <a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a>
             </div>
         </div>
@@ -173,6 +252,7 @@
         </div>
         <div class="shape-earth"></div>
     </div>
+    <div class="widget-top"></div>
 </body>
 <script>
     // 打字效果
@@ -190,26 +270,5 @@
     };
     const typed = new Typed('#typed', options);
 </script>
-<script>
-    // magical 鼠标跟随
-    window.addEventListener("mousemove", function(e) {
-        document.querySelectorAll(".magical").forEach(element => {
-            if (!element.querySelector(".show")) {
-                element.insertAdjacentHTML("beforeend", "<div class='show'></div>");
-            }
-            const rect = element.getBoundingClientRect();
-            const offsetX = e.clientX - rect.left;
-            const offsetY = e.clientY - rect.top;
-            element.style.setProperty("--mouse-x", `${offsetX}px`);
-            element.style.setProperty("--mouse-y", `${offsetY}px`);
-            const hoverElement = element.querySelector(".show");
-            if (hoverElement) {
-                hoverElement.style.opacity = (offsetX >= 0 && offsetX <= element.clientWidth && offsetY >= 0 && offsetY <= element.clientHeight) ? 1 : 0;
-            }
-        });
-    });
-</script>
 <script src="js/main.js"></script>
-<script src='js/anime.js'></script>
-<script src='js/firework.js'></script>
 </html>

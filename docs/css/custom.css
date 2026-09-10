@@ -1,5 +1,70 @@
-﻿/* violet博客 - asorn 暗色主题补充样式 */
-/* 覆盖 asorn 模板未涉及的页面：留言板、AI 助手、小游戏 */
+/* violet博客 - asorn.cn 线上版风格补充样式 */
+/* 覆盖线上版 CSS 未包含的页面与组件 */
+
+/* ===== 文字 logo（线上版用图片 logo，这里用文字替代） ===== */
+.head .main-left .logo {
+    height: auto;
+    font-size: 14px;
+    font-weight: 700;
+    color: #E8E8F6;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* ===== 页脚补充 ===== */
+.copyright span, .fillings, .friends {
+    display: none !important;
+}
+
+.footer .footer-content .copyright a {
+    color: #B3B3C1;
+}
+
+.footer .footer-content .copyright a:hover {
+    color: #6461F1;
+}
+
+/* ===== 首页 hero 补充 ===== */
+.title-hi {
+    font-size: 32px;
+    line-height: 42px;
+    font-weight: 700;
+    background: linear-gradient(180deg, #E8E8F6 0%, rgba(232, 232, 246, 0.72) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.title-name {
+    font-size: 32px;
+    line-height: 42px;
+    font-weight: 700;
+    color: #6461F1;
+    text-decoration: none;
+}
+
+/* 打字机文本 */
+.hello-introduce #typed {
+    color: #B3B3C1;
+}
+
+/* link-card 图标（用 emoji 替代线上 PNG 图标） */
+.link-card .link-emoji {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    opacity: .8;
+    flex-shrink: 0;
+}
+
+.link-card a {
+    color: inherit;
+    text-decoration: none;
+}
 
 /* ===== 通用页面容器 ===== */
 .page-container {
@@ -34,7 +99,8 @@
     border-radius: 6px;
     box-shadow: 0px 0px 8px 0px rgba(10, 10, 14, 0.4);
     padding: 40px;
-    max-width: 720px;
+    width: 100%;
+    max-width: 560px;
     margin: 0 auto;
 }
 
@@ -151,10 +217,14 @@
     background: rgba(21, 166, 117, 0.1);
     border: 1px solid rgba(21, 166, 117, 0.3);
     color: #57AC84;
-    padding: 24px;
+    padding: 16px 24px;
     border-radius: 6px;
-    margin-bottom: 30px;
+    margin: 0 auto 30px auto;
+    width: 100%;
+    max-width: 560px;
     text-align: center;
+    box-sizing: border-box;
+    transition: opacity 0.3s ease;
 }
 
 .guestbook-success.show {
@@ -162,8 +232,8 @@
 }
 
 .guestbook-success .success-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
+    font-size: 28px;
+    margin-bottom: 8px;
     display: block;
 }
 

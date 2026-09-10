@@ -9,11 +9,12 @@
     <link rel="shortcut icon" href="../assets/public/favicon.svg"/>
 </head>
 <body>
-    <canvas class="fireworks"></canvas>
-    <div class="head">
+    <div class="head" id="headscrollbg">
         <div class="main">
-            <a href="../index.html" class="logo" style="font-size:14px;font-weight:700;color:#E8E8F6;display:flex;align-items:center;height:auto;">violet</a>
-            <div class="menu">
+            <div class="main-left">
+                <a href="../index.html" class="logo">violet</a>
+            </div>
+            <div class="menu" id="main-menu">
                 <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
                 <li class="magical btn" onclick="window.location.href='articles.html'">Blog</li>
                 <li class="magical btn" onclick="window.location.href='projects.html'">Work</li>
@@ -23,21 +24,21 @@
                 <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
             </div>
             <div class="menu" id="menu-expand">
-                <li class="magical btn skin" id="menu-expand-child"><i class="icon menu-icon"></i></li>
+                <li class="magical btn menu-icon-btn" id="menu-expand-child">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18 18V20H6V18H18ZM21 11V13H3V11H21ZM18 4V6H6V4H18Z"></path>
+                    </svg>
+                </li>
             </div>
             <div id="menu-panel">
-                <div class="menu-panel-content">
-                    <li class="magical btn" onclick="window.location.href='../index.html'">Home</li>
-                    <li class="magical btn" onclick="window.location.href='articles.html'">Blog</li>
-                    <li class="magical btn" onclick="window.location.href='projects.html'">Work</li>
-                    <li class="magical btn" onclick="window.location.href='about.html'">About</li>
-                    <li class="magical btn" onclick="window.location.href='guestbook.html'">Guest</li>
-                    <li class="magical btn nav" onclick="window.location.href='ai_chat.html'">AI</li>
-                    <li class="magical btn" onclick="window.location.href='../games/index.html'">Game</li>
+                <div class="menu-panel-content" id="menu-panel-content"></div>
+                <div class="menu-close-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10.5859 12L2.79297 4.20706L4.20718 2.79285L12.0001 10.5857L19.793 2.79285L21.2072 4.20706L13.4143 12L21.2072 19.7928L19.793 21.2071L12.0001 13.4142L4.20718 21.2071L2.79297 19.7928L10.5859 12Z"></path>
+                    </svg>
                 </div>
             </div>
         </div>
-        <blockquote></blockquote>
     </div>
     <div class="page-container">
         <div class="page-content">
@@ -64,12 +65,14 @@
         </div>
     </div>
     <div class="footer">
-        <div class="copyright">
-            <div>© 2025 Design by <a href="https://github.com/Tianmaozheng" target="_blank">violet</a></div>
-            <span>|</span>
-            <div class="fillings"><a href="about.html">About</a></div>
-            <span>|</span>
-            <div class="friends"><a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a></div>
+        <div class="footer-content">
+            <div class="copyright">
+                <div>© 2025 <a href="https://github.com/Tianmaozheng" target="_blank">violet</a> All Rights Reserved.</div>
+            </div>
+            <div class="friends">
+                <a href="about.html">About</a>
+                <a href="https://github.com/Tianmaozheng" target="_blank">GitHub</a>
+            </div>
         </div>
     </div>
     <div class="widget">
@@ -83,27 +86,10 @@
         </div>
         <div class="shape-earth"></div>
     </div>
+    <div class="widget-top"></div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
-<script>
-    window.addEventListener("mousemove", function(e) {
-        document.querySelectorAll(".magical").forEach(element => {
-            if (!element.querySelector(".show")) {
-                element.insertAdjacentHTML("beforeend", "<div class='show'></div>");
-            }
-            const rect = element.getBoundingClientRect();
-            const offsetX = e.clientX - rect.left;
-            const offsetY = e.clientY - rect.top;
-            element.style.setProperty("--mouse-x", `${offsetX}px`);
-            element.style.setProperty("--mouse-y", `${offsetY}px`);
-            const hoverElement = element.querySelector(".show");
-            if (hoverElement) {
-                hoverElement.style.opacity = (offsetX >= 0 && offsetX <= element.clientWidth && offsetY >= 0 && offsetY <= element.clientHeight) ? 1 : 0;
-            }
-        });
-    });
-</script>
 <script>
     // API 配置
     const API_URL = "https://api.siliconflow.cn/v1/chat/completions";
@@ -328,6 +314,4 @@
     });
 </script>
 <script src="../js/main.js"></script>
-<script src='../js/anime.js'></script>
-<script src='../js/firework.js'></script>
 </html>
