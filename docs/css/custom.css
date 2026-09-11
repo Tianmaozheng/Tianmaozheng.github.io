@@ -45,6 +45,11 @@
 }
 
 /* 打字机文本 */
+.hello-introduce {
+    /* 固定高度避免打字时下方内容抖动 */
+    min-height: 48px;
+}
+
 .hello-introduce #typed {
     color: #B3B3C1;
 }

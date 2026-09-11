@@ -15,13 +15,14 @@
     <div class="head" id="headscrollbg">
         <div class="main">
             <div class="main-left">
-                <a href="index.html" class="logo">violet</a>
+                <a href="./index.html" class="logo"><img src="./assets/public/logo_text.svg"></a>
             </div>
             <div class="menu" id="main-menu">
                 <li class="magical btn nav" onclick="window.location.href='index.html'">Home</li>
                 <li class="magical btn" onclick="window.location.href='html/articles.html'">Blog</li>
                 <li class="magical btn" onclick="window.location.href='html/projects.html'">Work</li>
                 <li class="magical btn" onclick="window.location.href='html/about.html'">About</li>
+                <li class="magical btn" onclick="window.location.href='html/books.html'">Book</li>
                 <li class="magical btn" onclick="window.location.href='html/guestbook.html'">Guest</li>
                 <li class="magical btn" onclick="window.location.href='html/ai_chat.html'">AI</li>
                 <li class="magical btn" onclick="window.location.href='games/index.html'">Game</li>
@@ -172,6 +173,20 @@
                     </a>
                 </div>
                 <div class="magical link-card">
+                    <a href="html/books.html">
+                        <div class="link-emoji">📚</div>
+                        <div class="info">
+                            <div class="info-title">Book</div>
+                            <div class="info-desc">书架与阅读笔记</div>
+                        </div>
+                        <div class="icon icon-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M10.55 7.58332H1.16663V6.41665H10.55L7.75415 3.62082L8.5791 2.79587L12.1645 6.3813C12.5062 6.72299 12.5062 7.27701 12.1645 7.61873L8.5791 11.2042L7.75415 10.3792L10.55 7.58332Z" fill="#B3B3C1"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <div class="magical link-card">
                     <a href="html/guestbook.html">
                         <div class="link-emoji">💬</div>
                         <div class="info">
@@ -259,7 +274,6 @@
     const options = {
         strings: [
             ">_ welcome to my secret garden ^1000",
-            ">_ 全栈开发者 & 技术博主 ^1000",
             ">_ 热衷于构建优雅的 Web 应用与探索 AI 的无限可能 ^1000",
         ],
         typeSpeed: 50,

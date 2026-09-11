@@ -142,3 +142,33 @@ document.addEventListener("DOMContentLoaded", (function () {
         r.style.height = `${e}%`
     }), 16))
 }));
+
+// 书籍封面懒加载
+document.addEventListener("DOMContentLoaded", (function () {
+    function applyCover(item, url) {
+        var img = new Image;
+        img.src = url;
+        img.onload = function () {
+            // 封面只设到最外层 b-front，其余层保持透明作为书页厚度
+            var front = item.querySelector(".b-front");
+            if (front) front.style.backgroundImage = "url('" + url + "')";
+        };
+    }
+    if (!("IntersectionObserver" in window)) {
+        document.querySelectorAll(".book-item").forEach(function (e) {
+            var t = e.dataset.coverUrl;
+            t && applyCover(e, t);
+        });
+        return;
+    }
+    var o = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (e) {
+            if (e.isIntersecting) {
+                var t = e.target, n = t.dataset.coverUrl;
+                n && applyCover(t, n);
+                obs.unobserve(e.target);
+            }
+        });
+    }, { root: null, rootMargin: "0px", threshold: 0.1 });
+    document.querySelectorAll(".book-item").forEach(function (e) { o.observe(e); });
+}));
