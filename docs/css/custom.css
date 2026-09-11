@@ -44,6 +44,23 @@
     text-decoration: none;
 }
 
+.normal-btn a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.normal-btn .btn-icon {
+    margin-left: -8px;
+}
+
+.btn-icon {
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+    display: block;
+}
+
 /* 打字机文本 */
 .hello-introduce {
     /* 固定高度避免打字时下方内容抖动 */
