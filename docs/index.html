@@ -17,16 +17,7 @@
             <div class="main-left">
                 <a href="./index.html" class="logo"><img src="./assets/public/logo_text.svg"></a>
             </div>
-            <div class="menu" id="main-menu">
-                <li class="magical btn nav" onclick="window.location.href='index.html'">Home</li>
-                <li class="magical btn" onclick="window.location.href='html/articles.html'">Blog</li>
-                <li class="magical btn" onclick="window.location.href='html/projects.html'">Work</li>
-                <li class="magical btn" onclick="window.location.href='html/about.html'">About</li>
-                <li class="magical btn" onclick="window.location.href='html/books.html'">Book</li>
-                <li class="magical btn" onclick="window.location.href='html/guestbook.html'">Guest</li>
-                <li class="magical btn" onclick="window.location.href='html/ai_chat.html'">AI</li>
-                <li class="magical btn" onclick="window.location.href='games/index.html'">Game</li>
-            </div>
+            <div class="menu" id="main-menu" data-nav-level="0"></div>
             <div class="menu" id="menu-expand">
                 <li class="magical btn menu-icon-btn" id="menu-expand-child">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -284,5 +275,6 @@
     };
     const typed = new Typed('#typed', options);
 </script>
+<script src="js/nav.js"></script>
 <script src="js/main.js"></script>
 </html>
