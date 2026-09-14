@@ -7,8 +7,8 @@ const navList = [
     { name: "About", file: "about.html" },
     { name: "Book",  file: "books.html" },
     { name: "Guest", file: "guestbook.html" },
-    { name: "AI",    file: "ai_chat.html" },
-    { name: "Game",  file: "index.html", dir: "games/" },
+    // { name: "AI",    file: "ai_chat.html" },
+    // { name: "Game",  file: "index.html", dir: "games/" },
 ];
 
 (function () {
