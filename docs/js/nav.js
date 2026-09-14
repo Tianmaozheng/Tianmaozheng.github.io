@@ -1,5 +1,4 @@
-// violet博客 - 全局导航
-// 新增/修改菜单只改这个数组即可，无需动各页面 HTML
+// 新增/修改菜单
 const navList = [
     { name: "Home",  file: "index.html" },
     { name: "Blog",  file: "articles.html" },
