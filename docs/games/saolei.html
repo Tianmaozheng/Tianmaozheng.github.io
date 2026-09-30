@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="x5-fullscreen" content="true">
+    <title>扫雷 | violet的博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="../../assets/public/favicon.svg"/>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            height: 100%; width: 100%;
+            touch-action: manipulation;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Poppins', 'Microsoft YaHei', Arial, sans-serif;
+            background: #0E0E13;
+            color: #E8E8F6;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            padding: 70px 10px 16px 10px;
+            width: 100%;
+            max-width: 620px;
+            margin: 0 auto;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            justify-content: flex-start;
+        }
+
+        /* 顶部信息栏 */
+        .info-bar {
+            width: 100%;
+            background: #1C1C26;
+            border-radius: 12px;
+            padding: 8px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+            flex-shrink: 0;
+        }
+
+        .info-bar select,
+        .info-bar input[type="number"] {
+            background: #0E0E13;
+            color: #E8E8F6;
+            border: 1px solid #2A2A33;
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            min-width: 0;
+        }
+        .info-bar input[type="number"] { width: 56px; text-align: center; }
+        .info-bar select:focus, .info-bar input:focus { border-color: #6361DC; }
+
+        .info-bar button {
+            background: #6361DC;
+            color: #E8E8F6;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.2s;
+        }
+        .info-bar button:active { opacity: 0.7; }
+
+        .stats {
+            display: flex;
+            gap: 14px;
+            margin-left: auto;
+            align-items: center;
+        }
+        .stat-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 56px;
+            line-height: 1.1;
+        }
+        .stat-block .label {
+            font-size: 10px;
+            color: #B3B3C1;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .stat-block .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #7dd3fc;
+        }
+
+        /* 雷区 — 宽高同时受限于可用视口宽度和高度，保证整盘可见不溢出 */
+        .grid-container {
+            background: #14141B;
+            padding: 10px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.08);
+            display: grid;
+            gap: 2px;
+            flex: 0 0 auto;
+            width: min(95vw, 560px, calc(var(--vh, 1vh) * 100 - 200px));
+            height: min(95vw, 560px, calc(var(--vh, 1vh) * 100 - 200px));
+            margin: auto 0;
+            overflow: hidden;
+        }
+
+        .cell {
+            background: #2A2A38;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.1s, transform 0.05s;
+            color: #E8E8F6;
+            min-width: 0;
+            min-height: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .cell:hover:not(.opened):not(.flag):not(.mine) { background: #3A3A48; }
+        .cell:active { transform: scale(0.92); }
+        .cell.opened {
+            background: #1C1C26;
+            cursor: default;
+        }
+        .cell.opened:active { transform: none; }
+        .cell.flag {
+            background: #6361DC;
+            color: #E8E8F6;
+        }
+        .cell.mine { background: #dc2626; color: #fff; }
+        .cell.mine-revealed { background: #7f1d1d; color: #fff; }
+
+        /* 数字颜色（适配深色背景，比原版更亮） */
+        .cell.n1 { color: #60a5fa; }
+        .cell.n2 { color: #4ade80; }
+        .cell.n3 { color: #f87171; }
+        .cell.n4 { color: #818cf8; }
+        .cell.n5 { color: #fb923c; }
+        .cell.n6 { color: #2dd4bf; }
+        .cell.n7 { color: #f3f4f6; }
+        .cell.n8 { color: #9ca3af; }
+
+        /* 顶部按钮 */
+        .top-controls {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 12px);
+            left: 12px;
+            display: flex;
+            gap: 10px;
+            z-index: 2000;
+        }
+        .top-right {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 12px);
+            right: 12px;
+            display: flex;
+            gap: 10px;
+            z-index: 2000;
+        }
+        .top-btn, .fullscreen-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(20, 20, 27, 0.95);
+            border: 3px solid #2A2A38;
+            border-radius: 10px;
+            color: #E8E8F6;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 3px 10px rgba(0,0,0,.4);
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .top-btn:active, .fullscreen-btn:active {
+            transform: scale(0.9);
+            background: rgba(20, 20, 27, 1);
+        }
+        .top-btn.restart {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #f87171;
+            color: #ef4444;
+        }
+        .top-btn.restart:active { background: rgba(239, 68, 68, 0.6); }
+        .top-btn.flag-active {
+            background: rgba(99, 97, 220, 0.6);
+            border-color: #818cf8;
+            color: #c7d2fe;
+        }
+        .fullscreen-btn {
+            background: rgba(16, 185, 129, 0.3);
+            border: 3px solid rgba(16, 185, 129, 0.5);
+            color: #10b981;
+        }
+        .fullscreen-btn:active { background: rgba(16, 185, 129, 0.6); }
+
+        /* 游戏结束遮罩 */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+            backdrop-filter: blur(4px);
+        }
+        .overlay.show { display: flex; }
+        .overlay-box {
+            background: #1C1C26;
+            border: 1px solid #2A2A33;
+            border-radius: 14px;
+            padding: 28px 36px;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 20px 60px rgba(0,0,0,.6);
+        }
+        .overlay-box .icon { font-size: 48px; margin-bottom: 12px; }
+        .overlay-box .title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .overlay-box .desc { font-size: 13px; color: #B3B3C1; margin-bottom: 20px; }
+        .overlay-box button {
+            background: #6361DC;
+            color: #E8E8F6;
+            border: none;
+            border-radius: 9999px;
+            padding: 10px 26px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .overlay-box button:active { opacity: 0.8; }
+
+        /* 全屏模式 */
+        body.fullscreen-active { overflow: hidden; }
+        .wrap.fullscreen-mode {
+            max-width: 100%;
+            width: 100vw;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            padding: 70px 8px 8px 8px;
+        }
+        .wrap.fullscreen-mode .grid-container {
+            width: min(96vw, calc(var(--vh, 1vh) * 100 - 170px));
+            height: min(96vw, calc(var(--vh, 1vh) * 100 - 170px));
+        }
+
+        @media (max-width: 480px) {
+            .info-bar { padding: 6px 8px; gap: 4px; }
+            .info-bar select, .info-bar input[type="number"] { font-size: 12px; padding: 5px 6px; }
+            .info-bar button { font-size: 12px; padding: 5px 10px; }
+            .stats { gap: 10px; }
+            .stat-block .value { font-size: 16px; }
+            .cell { font-size: 13px; }
+            .top-btn, .fullscreen-btn { width: 44px; height: 44px; font-size: 18px; }
+        }
+        @media (max-width: 360px) {
+            .info-bar select { width: 100px; }
+            .stat-block { min-width: 44px; }
+            .stat-block .value { font-size: 14px; }
+            .cell { font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-controls">
+        <a href="index.html" class="top-btn" title="返回游戏列表">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="top-btn restart" id="restartBtn" title="重新开始">
+            <i class="fas fa-redo"></i>
+        </div>
+    </div>
+    <div class="top-right">
+        <div class="top-btn" id="flagBtn" title="切换标旗模式（手机用）">
+            <i class="fas fa-flag"></i>
+        </div>
+        <div class="fullscreen-btn" id="fullscreenBtn" title="全屏">
+            <i class="fas fa-expand"></i>
+        </div>
+    </div>
+
+    <div class="wrap" id="gameWrap">
+        <div class="info-bar">
+            <select id="diff" title="难度">
+                <option value="easy">初级 8×8</option>
+                <option value="medium" selected>中级 12×12</option>
+                <option value="hard">高级 16×16</option>
+            </select>
+            <input type="number" id="mineCount" value="15" min="1" max="254" title="雷数"/>
+            <button id="applyBtn">应用</button>
+            <div class="stats">
+                <div class="stat-block">
+                    <span class="label">💣剩余</span>
+                    <span class="value" id="remain">15</span>
+                </div>
+                <div class="stat-block">
+                    <span class="label">⏱秒</span>
+                    <span class="value" id="timer">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="grid-container" id="grid"></div>
+    </div>
+
+    <div class="overlay" id="overlay">
+        <div class="overlay-box">
+            <div class="icon" id="ovIcon">💥</div>
+            <div class="title" id="ovTitle">踩到地雷！</div>
+            <div class="desc" id="ovDesc">点击下方按钮重新开始一局</div>
+            <button id="ovBtn">再来一次</button>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        // ---- 视口高度修正 ----
+        function setVh(){
+            document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+        }
+        setVh();
+        window.addEventListener('resize', setVh);
+        window.addEventListener('orientationchange', () => setTimeout(setVh, 300));
+        document.body.addEventListener('touchmove', e => { if (e.scale && e.scale !== 1) e.preventDefault(); }, { passive: false });
+
+        // ---- 游戏状态 ----
+        const DIFF_PRESETS = {
+            easy:   { rows: 8,  cols: 8,  mines: 10 },
+            medium: { rows: 12, cols: 12, mines: 15 },
+            hard:   { rows: 16, cols: 16, mines: 40 }
+        };
+        let rows = 12, cols = 12, mines = 15;
+        let mineMap = [], opened = [], flagged = [];
+        let totalFlags = 0, openedSafe = 0;
+        let gameOver = false;
+        let flagMode = false;
+        let timer = 0, timerInt = null, started = false;
+
+        const gridEl = document.getElementById('grid');
+        const remainEl = document.getElementById('remain');
+        const timerEl = document.getElementById('timer');
+        const diffSel = document.getElementById('diff');
+        const mineInput = document.getElementById('mineCount');
+        const applyBtn = document.getElementById('applyBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const flagBtn = document.getElementById('flagBtn');
+        const fsBtn = document.getElementById('fullscreenBtn');
+        const overlay = document.getElementById('overlay');
+        const ovIcon = document.getElementById('ovIcon');
+        const ovTitle = document.getElementById('ovTitle');
+        const ovDesc = document.getElementById('ovDesc');
+        const ovBtn = document.getElementById('ovBtn');
+
+        // ---- 初始化网格数据 ----
+        function initMineMap(){
+            mineMap = Array.from({length: rows}, () => Array(cols).fill(0));
+            opened  = Array.from({length: rows}, () => Array(cols).fill(false));
+            flagged = Array.from({length: rows}, () => Array(cols).fill(false));
+        }
+
+        function placeMines(){
+            let placed = 0;
+            while (placed < mines){
+                const r = Math.floor(Math.random() * rows);
+                const c = Math.floor(Math.random() * cols);
+                if (mineMap[r][c] !== -1){
+                    mineMap[r][c] = -1;
+                    placed++;
+                }
+            }
+        }
+
+        function calcNumbers(){
+            const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+            for (let r = 0; r < rows; r++){
+                for (let c = 0; c < cols; c++){
+                    if (mineMap[r][c] === -1) continue;
+                    let cnt = 0;
+                    for (const [dr, dc] of dirs){
+                        const nr = r + dr, nc = c + dc;
+                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && mineMap[nr][nc] === -1) cnt++;
+                    }
+                    mineMap[r][c] = cnt;
+                }
+            }
+        }
+
+        // ---- 渲染网格 ----
+        function renderGrid(){
+            gridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            gridEl.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+            gridEl.innerHTML = '';
+            for (let r = 0; r < rows; r++){
+                for (let c = 0; c < cols; c++){
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.r = r;
+                    cell.dataset.c = c;
+                    cell.addEventListener('click', onCellClick);
+                    cell.addEventListener('contextmenu', onCellRightClick);
+                    // 触摸长按 = 插旗（手机端备用方案）
+                    let pressTimer = null;
+                    cell.addEventListener('touchstart', e => {
+                        pressTimer = setTimeout(() => {
+                            pressTimer = null;
+                            toggleFlag(r, c);
+                            if (navigator.vibrate) navigator.vibrate(10);
+                        }, 400);
+                    }, { passive: true });
+                    cell.addEventListener('touchend', e => {
+                        if (pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+                    });
+                    cell.addEventListener('touchmove', e => {
+                        if (pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+                    }, { passive: true });
+                    gridEl.appendChild(cell);
+                }
+            }
+        }
+
+        function getCellEl(r, c){
+            return gridEl.children[r * cols + c];
+        }
+
+        // ---- 点击逻辑 ----
+        function onCellClick(e){
+            if (gameOver) return;
+            const r = +this.dataset.r, c = +this.dataset.c;
+            if (flagMode){
+                toggleFlag(r, c);
+                return;
+            }
+            if (opened[r][c] || flagged[r][c]) return;
+            if (!started) startTimer();
+            if (mineMap[r][c] === -1){
+                revealAllMines();
+                endGame(false, r, c);
+                return;
+            }
+            openCell(r, c);
+            checkWin();
+        }
+
+        function onCellRightClick(e){
+            e.preventDefault();
+            if (gameOver) return;
+            const r = +this.dataset.r, c = +this.dataset.c;
+            toggleFlag(r, c);
+        }
+
+        function openCell(r, c){
+            if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+            if (opened[r][c] || flagged[r][c]) return;
+            opened[r][c] = true;
+            openedSafe++;
+            const cell = getCellEl(r, c);
+            cell.classList.add('opened');
+            const val = mineMap[r][c];
+            if (val > 0){
+                cell.textContent = val;
+                cell.classList.add('n' + val);
+            } else {
+                cell.textContent = '';
+                const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+                for (const [dr, dc] of dirs) openCell(r + dr, c + dc);
+            }
+        }
+
+        function toggleFlag(r, c){
+            if (gameOver) return;
+            if (opened[r][c]) return;
+            const cell = getCellEl(r, c);
+            if (!flagged[r][c]){
+                flagged[r][c] = true;
+                totalFlags++;
+                cell.classList.add('flag');
+                cell.textContent = '🚩';
+            } else {
+                flagged[r][c] = false;
+                totalFlags--;
+                cell.classList.remove('flag');
+                cell.textContent = '';
+            }
+            remainEl.textContent = Math.max(0, mines - totalFlags);
+            checkWin();
+        }
+
+        function revealAllMines(){
+            for (let r = 0; r < rows; r++){
+                for (let c = 0; c < cols; c++){
+                    if (mineMap[r][c] === -1){
+                        const cell = getCellEl(r, c);
+                        cell.classList.add('mine-revealed');
+                        cell.textContent = '💣';
+                    }
+                }
+            }
+        }
+
+        function checkWin(){
+            const totalSafe = rows * cols - mines;
+            if (openedSafe >= totalSafe){
+                endGame(true);
+            }
+        }
+
+        function endGame(win, hitR, hitC){
+            gameOver = true;
+            stopTimer();
+            if (win){
+                ovIcon.textContent = '🎉';
+                ovTitle.textContent = '扫雷成功！';
+                ovDesc.textContent = `用时 ${timer} 秒，点击下方按钮开启新一局`;
+            } else {
+                ovIcon.textContent = '💥';
+                ovTitle.textContent = '踩到地雷！';
+                ovDesc.textContent = '点击下方按钮重新开始一局';
+                if (hitR != null){
+                    const cell = getCellEl(hitR, hitC);
+                    cell.classList.remove('mine-revealed');
+                    cell.classList.add('mine');
+                    cell.textContent = '💣';
+                }
+            }
+            setTimeout(() => overlay.classList.add('show'), 200);
+        }
+
+        // ---- 计时器 ----
+        function startTimer(){
+            started = true;
+            timer = 0;
+            timerEl.textContent = '0';
+            timerInt = setInterval(() => {
+                timer++;
+                timerEl.textContent = timer;
+            }, 1000);
+        }
+        function stopTimer(){
+            if (timerInt){ clearInterval(timerInt); timerInt = null; }
+            started = false;
+        }
+
+        // ---- 重置游戏 ----
+        function resetGame(){
+            gameOver = false;
+            totalFlags = 0;
+            openedSafe = 0;
+            stopTimer();
+            timer = 0;
+            timerEl.textContent = '0';
+            remainEl.textContent = mines;
+            overlay.classList.remove('show');
+            initMineMap();
+            placeMines();
+            calcNumbers();
+            renderGrid();
+        }
+
+        // ---- 难度切换/应用设置 ----
+        function applyDifficulty(){
+            const preset = DIFF_PRESETS[diffSel.value];
+            rows = preset.rows;
+            cols = preset.cols;
+            mines = preset.mines;
+            mineInput.value = mines;
+            mineInput.max = rows * cols - 1;
+            resetGame();
+        }
+
+        function applyCustomMines(){
+            const v = parseInt(mineInput.value, 10);
+            const maxM = rows * cols - 1;
+            if (isNaN(v) || v < 1){
+                alert('雷数不能小于1');
+                return;
+            }
+            if (v >= maxM){
+                alert(`雷数不能超过 ${maxM}`);
+                return;
+            }
+            mines = v;
+            resetGame();
+        }
+
+        // ---- 标旗模式切换 ----
+        flagBtn.addEventListener('click', () => {
+            flagMode = !flagMode;
+            flagBtn.classList.toggle('flag-active', flagMode);
+            flagBtn.title = flagMode ? '当前：插旗模式（点击格子插旗）' : '当前：挖开模式（点击格子挖开）';
+        });
+
+        // ---- 全屏 ----
+        const wrap = document.getElementById('gameWrap');
+        async function toggleFullscreen(){
+            const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            const icon = fsBtn.querySelector('i');
+            if (!isFs){
+                try {
+                    const el = document.documentElement;
+                    if (el.requestFullscreen) await el.requestFullscreen({ navigationUI: 'hide' });
+                    else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+                    wrap.classList.add('fullscreen-mode');
+                    document.body.classList.add('fullscreen-active');
+                    if (icon) icon.className = 'fas fa-compress';
+                    if (screen.orientation && screen.orientation.lock) {
+                        try { await screen.orientation.lock('portrait-primary'); } catch(e) {}
+                    }
+                } catch(e){ alert('全屏不可用，请手动旋转设备'); }
+            } else {
+                try {
+                    if (document.exitFullscreen) await document.exitFullscreen();
+                    else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
+                } catch(e){}
+                wrap.classList.remove('fullscreen-mode');
+                document.body.classList.remove('fullscreen-active');
+                if (icon) icon.className = 'fas fa-expand';
+            }
+        }
+        function handleFsChange(){
+            const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            const icon = fsBtn.querySelector('i');
+            if (!isFs){
+                wrap.classList.remove('fullscreen-mode');
+                document.body.classList.remove('fullscreen-active');
+                if (icon) icon.className = 'fas fa-expand';
+            } else {
+                wrap.classList.add('fullscreen-mode');
+                document.body.classList.add('fullscreen-active');
+                if (icon) icon.className = 'fas fa-compress';
+            }
+        }
+        document.addEventListener('fullscreenchange', handleFsChange);
+        document.addEventListener('webkitfullscreenchange', handleFsChange);
+        fsBtn.addEventListener('click', toggleFullscreen);
+
+        // ---- 事件绑定 ----
+        diffSel.addEventListener('change', applyDifficulty);
+        applyBtn.addEventListener('click', applyCustomMines);
+        restartBtn.addEventListener('click', resetGame);
+        ovBtn.addEventListener('click', resetGame);
+
+        // 防止右键菜单
+        gridEl.addEventListener('contextmenu', e => e.preventDefault());
+
+        // ---- 启动 ----
+        applyDifficulty();
+    })();
+    </script>
+</body>
+</html>

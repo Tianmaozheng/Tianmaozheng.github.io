@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="x5-fullscreen" content="true">
+    <title>数独 | violet的博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="../../assets/public/favicon.svg"/>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            height: 100%; width: 100%;
+            touch-action: manipulation;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Poppins', 'Microsoft YaHei', Arial, sans-serif;
+            background: #0E0E13;
+            color: #E8E8F6;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            padding: 70px 10px 16px 10px;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            justify-content: flex-start;
+        }
+
+        /* 顶部信息栏 */
+        .info-bar {
+            width: 100%;
+            background: #1C1C26;
+            border-radius: 12px;
+            padding: 8px 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+            flex-shrink: 0;
+        }
+        .info-bar select {
+            background: #0E0E13;
+            color: #E8E8F6;
+            border: 1px solid #2A2A33;
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+        .info-bar select:focus { border-color: #6361DC; }
+
+        .info-bar .action-btn {
+            background: #2A2A38;
+            color: #E8E8F6;
+            border: 1px solid #3A3A48;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .info-bar .action-btn:active { transform: scale(0.94); background: #3A3A48; }
+        .info-bar .action-btn.primary { background: #6361DC; border-color: #6361DC; }
+        .info-bar .action-btn.primary:active { opacity: 0.8; }
+        .info-bar .action-btn.danger { color: #f87171; border-color: #7f1d1d; }
+        .info-bar .action-btn.success { color: #34d399; border-color: #064e3b; }
+
+        /* 数独棋盘：3x3 子宫结构 */
+        .board-wrap {
+            background: #14141B;
+            padding: 10px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.08);
+            flex: 0 0 auto;
+        }
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 3px;
+            background: #6361DC;
+            padding: 3px;
+            border-radius: 6px;
+            width: min(90vw, 460px, calc(var(--vh, 1vh) * 100 - 260px));
+            height: min(90vw, 460px, calc(var(--vh, 1vh) * 100 - 260px));
+        }
+        .box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 1px;
+            background: #2A2A33;
+            min-height: 0;
+            min-width: 0;
+        }
+        .cell {
+            background: #1C1C26;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            color: #E8E8F6;
+            transition: background 0.1s;
+            min-width: 0;
+            min-height: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .cell.given { color: #B3B3C1; cursor: default; }
+        .cell.user { color: #7dd3fc; }
+        .cell.hint { color: #fbbf24; }
+        .cell.answer { color: #34d399; }
+        .cell.selected { background: #6361DC !important; color: #fff; }
+        .cell:hover:not(.given):not(.selected) { background: #2A2A38; }
+        .cell.error { color: #ef4444; }
+
+        /* 底部数字面板 */
+        .num-panel {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            background: #1C1C26;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+            flex-shrink: 0;
+        }
+        .num-btn {
+            background: #2A2A38;
+            color: #E8E8F6;
+            border: 1px solid #3A3A48;
+            border-radius: 8px;
+            padding: 10px 0;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .num-btn:active { transform: scale(0.92); background: #6361DC; color: #fff; }
+        .num-btn.clear { color: #f87171; border-color: #7f1d1d; }
+        .num-btn.clear:active { background: #dc2626; color: #fff; }
+
+        /* 顶部按钮 */
+        .top-controls {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 12px);
+            left: 12px;
+            display: flex;
+            gap: 10px;
+            z-index: 2000;
+        }
+        .top-right {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 12px);
+            right: 12px;
+            display: flex;
+            gap: 10px;
+            z-index: 2000;
+        }
+        .top-btn, .fullscreen-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(20, 20, 27, 0.95);
+            border: 3px solid #2A2A38;
+            border-radius: 10px;
+            color: #E8E8F6;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 3px 10px rgba(0,0,0,.4);
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .top-btn:active, .fullscreen-btn:active {
+            transform: scale(0.9);
+            background: rgba(20, 20, 27, 1);
+        }
+        .top-btn.restart {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #f87171;
+            color: #ef4444;
+        }
+        .top-btn.restart:active { background: rgba(239, 68, 68, 0.6); }
+        .fullscreen-btn {
+            background: rgba(16, 185, 129, 0.3);
+            border: 3px solid rgba(16, 185, 129, 0.5);
+            color: #10b981;
+        }
+        .fullscreen-btn:active { background: rgba(16, 185, 129, 0.6); }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(28, 28, 38, 0.96);
+            border: 1px solid #2A2A33;
+            border-radius: 12px;
+            padding: 18px 28px;
+            color: #E8E8F6;
+            font-size: 15px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5);
+            z-index: 4000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s ease;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            max-width: 80%;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .toast .toast-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+        .toast.success { border-color: rgba(52, 211, 153, 0.4); }
+        .toast.success .toast-icon { color: #34d399; }
+        .toast.error { border-color: rgba(239, 68, 68, 0.4); }
+        .toast.error .toast-icon { color: #ef4444; }
+        .toast.info .toast-icon { color: #7dd3fc; }
+
+        /* 全屏模式 */
+        body.fullscreen-active { overflow: hidden; }
+        .wrap.fullscreen-mode {
+            max-width: 100%;
+            width: 100vw;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            padding: 70px 8px 8px 8px;
+        }
+        .wrap.fullscreen-mode .sudoku-grid {
+            width: min(96vw, calc(var(--vh, 1vh) * 100 - 230px));
+            height: min(96vw, calc(var(--vh, 1vh) * 100 - 230px));
+        }
+
+        @media (max-width: 480px) {
+            .info-bar { padding: 6px 8px; gap: 4px; }
+            .info-bar select { font-size: 12px; padding: 5px 6px; }
+            .info-bar .action-btn { font-size: 11px; padding: 5px 8px; }
+            .num-btn { font-size: 16px; padding: 8px 0; }
+            .cell { font-size: 18px; }
+            .top-btn, .fullscreen-btn { width: 44px; height: 44px; font-size: 18px; }
+        }
+        @media (max-width: 380px) {
+            .info-bar .action-btn { padding: 5px 6px; font-size: 10px; }
+            .num-btn { font-size: 14px; padding: 7px 0; }
+            .cell { font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-controls">
+        <a href="index.html" class="top-btn" title="返回游戏列表">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="top-btn restart" id="restartBtn" title="新游戏">
+            <i class="fas fa-redo"></i>
+        </div>
+    </div>
+    <div class="top-right">
+        <div class="fullscreen-btn" id="fullscreenBtn" title="全屏">
+            <i class="fas fa-expand"></i>
+        </div>
+    </div>
+
+    <div class="wrap" id="gameWrap">
+        <div class="info-bar">
+            <select id="diff" title="难度">
+                <option value="easy">简单</option>
+                <option value="medium" selected>中等</option>
+                <option value="hard">困难</option>
+            </select>
+            <button class="action-btn primary" data-act="new">新游戏</button>
+            <button class="action-btn success" data-act="check">检查</button>
+            <button class="action-btn" data-act="hint">提示</button>
+            <button class="action-btn" data-act="answer">答案</button>
+            <button class="action-btn danger" data-act="clear">清空</button>
+        </div>
+
+        <div class="board-wrap">
+            <div class="sudoku-grid" id="grid"></div>
+        </div>
+
+        <div class="num-panel" id="numPanel"></div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span class="toast-icon" id="toastIcon">✓</span>
+        <span id="toastText">提示文字</span>
+    </div>
+
+    <script>
+    (function(){
+        // ---- 视口高度修正 ----
+        function setVh(){
+            document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+        }
+        setVh();
+        window.addEventListener('resize', setVh);
+        window.addEventListener('orientationchange', () => setTimeout(setVh, 300));
+        document.body.addEventListener('touchmove', e => { if (e.scale && e.scale !== 1) e.preventDefault(); }, { passive: false });
+
+        // ---- 游戏状态 ----
+        const KEEP_BY_LEVEL = { easy: 40, medium: 32, hard: 26 };
+        let solution = [];
+        let puzzle = [];
+        let cells = []; // cells[r][c] - DOM 元素
+        let curR = null, curC = null;
+
+        const gridEl = document.getElementById('grid');
+        const numPanel = document.getElementById('numPanel');
+        const diffSel = document.getElementById('diff');
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastText = document.getElementById('toastText');
+        let toastTimer = null;
+
+        // ---- Toast ----
+        function showToast(msg, type='info'){
+            toast.className = 'toast ' + type;
+            toastText.textContent = msg;
+            const icons = { success: '🎉', error: '❌', info: '💡' };
+            toastIcon.textContent = icons[type] || '💡';
+            toast.classList.add('show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        // ---- 棋盘渲染 ----
+        function buildGrid(){
+            gridEl.innerHTML = '';
+            cells = [];
+            for (let r = 0; r < 9; r++){
+                cells.push([]);
+            }
+            for (let boxR = 0; boxR < 3; boxR++){
+                for (let boxC = 0; boxC < 3; boxC++){
+                    const box = document.createElement('div');
+                    box.className = 'box';
+                    for (let subR = 0; subR < 3; subR++){
+                        for (let subC = 0; subC < 3; subC++){
+                            const r = boxR * 3 + subR;
+                            const c = boxC * 3 + subC;
+                            const cell = document.createElement('div');
+                            cell.className = 'cell';
+                            cell.dataset.r = r;
+                            cell.dataset.c = c;
+                            cell.addEventListener('click', () => selectCell(r, c));
+                            box.appendChild(cell);
+                            cells[r][c] = cell;
+                        }
+                    }
+                    gridEl.appendChild(box);
+                }
+            }
+        }
+
+        function buildNumPanel(){
+            numPanel.innerHTML = '';
+            for (let i = 1; i <= 9; i++){
+                const b = document.createElement('button');
+                b.className = 'num-btn';
+                b.textContent = i;
+                b.addEventListener('click', () => fillNum(i));
+                numPanel.appendChild(b);
+            }
+            const clr = document.createElement('button');
+            clr.className = 'num-btn clear';
+            clr.textContent = '✕';
+            clr.title = '清除当前格';
+            clr.addEventListener('click', clearSelected);
+            numPanel.appendChild(clr);
+        }
+
+        // ---- 选中/填数 ----
+        function selectCell(r, c){
+            if (curR !== null && curC !== null){
+                cells[curR][curC].classList.remove('selected');
+            }
+            curR = r;
+            curC = c;
+            cells[r][c].classList.add('selected');
+        }
+
+        function clearSelection(){
+            if (curR !== null && curC !== null){
+                cells[curR][curC].classList.remove('selected');
+            }
+            curR = null; curC = null;
+        }
+
+        function fillNum(n){
+            if (curR === null || curC === null){
+                showToast('请先点击一个空格', 'info');
+                return;
+            }
+            const r = curR, c = curC;
+            if (puzzle[r][c] !== 0) return; // 给定数字不能改
+            const cell = cells[r][c];
+            cell.textContent = n;
+            cell.classList.remove('hint', 'answer', 'error');
+            cell.classList.add('user');
+            // 验证：冲突高亮
+            validateCurrent();
+        }
+
+        function clearSelected(){
+            if (curR === null || curC === null) return;
+            const r = curR, c = curC;
+            if (puzzle[r][c] !== 0) return;
+            const cell = cells[r][c];
+            cell.textContent = '';
+            cell.classList.remove('user', 'hint', 'answer', 'error');
+        }
+
+        function validateCurrent(){
+            // 清掉所有 error 标记，再标记当前用户填的冲突格
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    cells[r][c].classList.remove('error');
+                }
+            }
+            const user = readUserBoard();
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    const v = user[r][c];
+                    if (v === 0) continue;
+                    // 行
+                    for (let cc = 0; cc < 9; cc++){
+                        if (cc !== c && user[r][cc] === v){
+                            cells[r][c].classList.add('error');
+                            break;
+                        }
+                    }
+                    if (cells[r][c].classList.contains('error')) continue;
+                    // 列
+                    for (let rr = 0; rr < 9; rr++){
+                        if (rr !== r && user[rr][c] === v){
+                            cells[r][c].classList.add('error');
+                            break;
+                        }
+                    }
+                    if (cells[r][c].classList.contains('error')) continue;
+                    // 3x3
+                    const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+                    for (let rr = br; rr < br+3; rr++){
+                        for (let cc = bc; cc < bc+3; cc++){
+                            if ((rr !== r || cc !== c) && user[rr][cc] === v){
+                                cells[r][c].classList.add('error');
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ---- 读取用户棋盘 ----
+        function readUserBoard(){
+            const b = puzzle.map(row => row.slice());
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    const t = (cells[r][c].textContent || '').trim();
+                    if (/^[1-9]$/.test(t)) b[r][c] = parseInt(t, 10);
+                }
+            }
+            return b;
+        }
+
+        // ---- 刷新显示 ----
+        function refreshUI(){
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    const cell = cells[r][c];
+                    cell.classList.remove('given', 'user', 'selected', 'hint', 'answer', 'error');
+                    const v = puzzle[r][c];
+                    if (v !== 0){
+                        cell.textContent = v;
+                        cell.classList.add('given');
+                    } else {
+                        cell.textContent = '';
+                    }
+                }
+            }
+            curR = null; curC = null;
+        }
+
+        // ---- 数独生成算法（移植自 .py） ----
+        function is_valid(board, r, c, num){
+            for (let i = 0; i < 9; i++){
+                if (board[r][i] === num) return false;
+                if (board[i][c] === num) return false;
+            }
+            const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+            for (let i = br; i < br+3; i++){
+                for (let j = bc; j < bc+3; j++){
+                    if (board[i][j] === num) return false;
+                }
+            }
+            return true;
+        }
+
+        function genFullSolution(board){
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    if (board[r][c] === 0){
+                        const nums = shuffle([1,2,3,4,5,6,7,8,9]);
+                        for (const n of nums){
+                            if (is_valid(board, r, c, n)){
+                                board[r][c] = n;
+                                if (genFullSolution(board)) return true;
+                                board[r][c] = 0;
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function countSolutions(board){
+            const tmp = board.map(row => row.slice());
+            let cnt = 0;
+            function dfs(b){
+                if (cnt > 1) return;
+                for (let r = 0; r < 9; r++){
+                    for (let c = 0; c < 9; c++){
+                        if (b[r][c] === 0){
+                            for (let n = 1; n <= 9; n++){
+                                if (is_valid(b, r, c, n)){
+                                    b[r][c] = n;
+                                    dfs(b);
+                                    b[r][c] = 0;
+                                    if (cnt > 1) return;
+                                }
+                            }
+                            return;
+                        }
+                    }
+                }
+                cnt++;
+            }
+            dfs(tmp);
+            return cnt;
+        }
+
+        function generatePuzzle(level){
+            const full = Array.from({length: 9}, () => Array(9).fill(0));
+            genFullSolution(full);
+            const sol = full.map(row => row.slice());
+            const keep = KEEP_BY_LEVEL[level];
+            const cellList = [];
+            for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) cellList.push([r, c]);
+            shuffle(cellList);
+            const pz = full.map(row => row.slice());
+            for (const [r, c] of cellList){
+                const remaining = pz.flat().filter(v => v !== 0).length;
+                if (remaining <= keep) break;
+                const old = pz[r][c];
+                pz[r][c] = 0;
+                if (countSolutions(pz) !== 1){
+                    pz[r][c] = old;
+                }
+            }
+            return { puzzle: pz, solution: sol };
+        }
+
+        function shuffle(arr){
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--){
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        // ---- 游戏操作 ----
+        function newGame(){
+            const level = diffSel.value;
+            const { puzzle: pz, solution: sol } = generatePuzzle(level);
+            puzzle = pz;
+            solution = sol;
+            refreshUI();
+        }
+
+        function checkAnswer(){
+            const user = readUserBoard();
+            let allFilled = true;
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    if (user[r][c] === 0){ allFilled = false; break; }
+                }
+            }
+            let ok = true;
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    if (user[r][c] !== solution[r][c]){ ok = false; break; }
+                }
+            }
+            if (ok && allFilled){
+                showToast('恭喜，全部正确！', 'success');
+            } else if (ok){
+                showToast('目前答案正确，继续填完吧！', 'info');
+            } else {
+                // 标记错误格
+                for (let r = 0; r < 9; r++){
+                    for (let c = 0; c < 9; c++){
+                        const cell = cells[r][c];
+                        if (puzzle[r][c] === 0){
+                            const t = (cell.textContent || '').trim();
+                            if (t && parseInt(t, 10) !== solution[r][c]){
+                                cell.classList.add('error');
+                            }
+                        }
+                    }
+                }
+                showToast('还有错误，红色为错格', 'error');
+            }
+        }
+
+        function hint(){
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    const t = (cells[r][c].textContent || '').trim();
+                    if (!t && puzzle[r][c] === 0){
+                        cells[r][c].textContent = solution[r][c];
+                        cells[r][c].classList.remove('user', 'answer', 'error');
+                        cells[r][c].classList.add('hint');
+                        return;
+                    }
+                }
+            }
+            showToast('没有可提示的空格', 'info');
+        }
+
+        function showAnswer(){
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    const cell = cells[r][c];
+                    cell.textContent = solution[r][c];
+                    cell.classList.remove('user', 'hint', 'error', 'selected');
+                    cell.classList.add('answer');
+                }
+            }
+            curR = null; curC = null;
+            showToast('已显示完整答案', 'info');
+        }
+
+        function clearUserInput(){
+            for (let r = 0; r < 9; r++){
+                for (let c = 0; c < 9; c++){
+                    if (puzzle[r][c] === 0){
+                        const cell = cells[r][c];
+                        cell.textContent = '';
+                        cell.classList.remove('user', 'hint', 'answer', 'error');
+                    }
+                }
+            }
+            clearSelection();
+        }
+
+        // ---- 全屏 ----
+        const wrap = document.getElementById('gameWrap');
+        const fsBtn = document.getElementById('fullscreenBtn');
+        async function toggleFullscreen(){
+            const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            const icon = fsBtn.querySelector('i');
+            if (!isFs){
+                try {
+                    const el = document.documentElement;
+                    if (el.requestFullscreen) await el.requestFullscreen({ navigationUI: 'hide' });
+                    else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+                    wrap.classList.add('fullscreen-mode');
+                    document.body.classList.add('fullscreen-active');
+                    if (icon) icon.className = 'fas fa-compress';
+                    if (screen.orientation && screen.orientation.lock){
+                        try { await screen.orientation.lock('portrait-primary'); } catch(e){}
+                    }
+                } catch(e){ alert('全屏不可用，请手动旋转设备'); }
+            } else {
+                try {
+                    if (document.exitFullscreen) await document.exitFullscreen();
+                    else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
+                } catch(e){}
+                wrap.classList.remove('fullscreen-mode');
+                document.body.classList.remove('fullscreen-active');
+                if (icon) icon.className = 'fas fa-expand';
+            }
+        }
+        function handleFsChange(){
+            const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            const icon = fsBtn.querySelector('i');
+            wrap.classList.toggle('fullscreen-mode', isFs);
+            document.body.classList.toggle('fullscreen-active', isFs);
+            if (icon) icon.className = isFs ? 'fas fa-compress' : 'fas fa-expand';
+        }
+        document.addEventListener('fullscreenchange', handleFsChange);
+        document.addEventListener('webkitfullscreenchange', handleFsChange);
+        fsBtn.addEventListener('click', toggleFullscreen);
+
+        // ---- 事件绑定 ----
+        document.getElementById('restartBtn').addEventListener('click', newGame);
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const act = btn.dataset.act;
+                if (act === 'new') newGame();
+                else if (act === 'check') checkAnswer();
+                else if (act === 'hint') hint();
+                else if (act === 'answer') showAnswer();
+                else if (act === 'clear') clearUserInput();
+            });
+        });
+
+        // 键盘支持（电脑端）
+        document.addEventListener('keydown', e => {
+            if (e.key >= '1' && e.key <= '9'){
+                if (curR !== null) fillNum(parseInt(e.key, 10));
+            } else if (e.key === '0' || e.key === 'Backspace' || e.key === 'Delete'){
+                clearSelected();
+            } else if (e.key === 'ArrowUp' && curR !== null){
+                selectCell(Math.max(0, curR - 1), curC); e.preventDefault();
+            } else if (e.key === 'ArrowDown' && curR !== null){
+                selectCell(Math.min(8, curR + 1), curC); e.preventDefault();
+            } else if (e.key === 'ArrowLeft' && curC !== null){
+                selectCell(curR, Math.max(0, curC - 1)); e.preventDefault();
+            } else if (e.key === 'ArrowRight' && curC !== null){
+                selectCell(curR, Math.min(8, curC + 1)); e.preventDefault();
+            }
+        });
+
+        // ---- 启动 ----
+        buildGrid();
+        buildNumPanel();
+        newGame();
+    })();
+    </script>
+</body>
+</html>
