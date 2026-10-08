@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,6 @@
     <meta name="x5-orientation" content="portrait">
     <meta name="x5-fullscreen" content="true">
     <title>俄罗斯方块 | violet的博客</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="shortcut icon" href="../../assets/public/favicon.svg"/>
     <style>
         /* 1. 基础样式和布局 - 配色匹配 asorn 暗色主题 */
@@ -171,6 +170,10 @@
             background: rgba(16, 185, 129, 0.6);
             transform: scale(0.92);
         }
+        /* 全屏按钮：按 body 状态切换展开/收起图标（两个内联 SVG） */
+        .fullscreen-btn .icon-compress { display: none; }
+        body.fullscreen-active .fullscreen-btn .icon-expand { display: none; }
+        body.fullscreen-active .fullscreen-btn .icon-compress { display: block; }
 
         /* 3. 移动端虚拟控制 - 游戏手柄风格 */
         .mobile-controls {
@@ -339,6 +342,12 @@
             background: rgba(239, 68, 68, 0.6);
         }
 
+        /* 暂停按钮：按游戏状态切换显示对应图标（state-playing 运行中 / state-paused 暂停 / state-over 结束） */
+        #pauseBtn svg { display: none; }
+        #pauseBtn.state-playing .svg-pause { display: block; }
+        #pauseBtn.state-paused .svg-play { display: block; }
+        #pauseBtn.state-over .svg-redo { display: block; }
+
         /* 返回按钮 */
         .back-btn {
             position: fixed;
@@ -390,7 +399,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: auto;
-            max-width: calc(100vw - 160px);
+            max-width: calc(100vw - 24px);
             z-index: 1500;
             padding: 6px 10px;
             gap: 10px;
@@ -549,22 +558,25 @@
 <body>
     <!-- 左上角控制按钮 -->
     <div class="top-controls">
-        <div class="top-btn pause" id="pauseBtn" title="暂停/继续">
-            <i class="fas fa-pause"></i>
+        <div class="top-btn pause state-playing" id="pauseBtn" title="暂停/继续">
+            <svg class="svg-pause" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            <svg class="svg-play" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="svg-redo" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
         </div>
         <div class="top-btn restart" id="restartBtn" title="重新开始">
-            <i class="fas fa-redo"></i>
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
         </div>
     </div>
     
     <!-- 右上角全屏按钮 -->
     <div class="fullscreen-btn" id="fullscreenBtn" title="全屏">
-        <i class="fas fa-expand"></i>
+        <svg class="icon-expand" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        <svg class="icon-compress" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
     </div>
 
     <!-- 返回按钮 -->
     <a href="index.html" class="back-btn" title="返回游戏列表">
-        <i class="fas fa-arrow-left"></i>
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
     </a>
 
     <div class="wrap" id="gameWrap">
@@ -598,19 +610,19 @@
             <div class="dpad">
                 <!-- 上：旋转 -->
                 <div class="dpad-btn dpad-up" data-action="rotate" title="旋转">
-                    <i class="fas fa-undo"></i>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
                 </div>
                 <!-- 下：快速下落 -->
                 <div class="dpad-btn dpad-down" data-action="hard" title="快速下落">
-                    <i class="fas fa-chevron-down"></i>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
                 </div>
                 <!-- 左：左移 -->
                 <div class="dpad-btn dpad-left" data-action="left" title="左移">
-                    <i class="fas fa-chevron-left"></i>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                 </div>
                 <!-- 右：右移 -->
                 <div class="dpad-btn dpad-right" data-action="right" title="右移">
-                    <i class="fas fa-chevron-right"></i>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
                 </div>
                 <!-- 中心装饰 -->
                 <div class="dpad-center"></div>
@@ -886,181 +898,31 @@
         }
         
         function updatePauseButton(state) {
-            const pauseBtn = document.querySelector('#pauseBtn i');
-            if (pauseBtn) {
-                if (state === 'pause') {
-                    pauseBtn.className = 'fas fa-pause';
-                } else if (state === 'play') {
-                    pauseBtn.className = 'fas fa-play';
-                } else if (state === 'restart') {
-                    pauseBtn.className = 'fas fa-redo';
-                }
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (!pauseBtn) return;
+            // 通过状态类切换按钮内对应的 SVG 图标
+            pauseBtn.classList.remove('state-playing', 'state-paused', 'state-over');
+            if (state === 'pause') {
+                pauseBtn.classList.add('state-playing'); // 运行中：显示暂停图标
+            } else if (state === 'play') {
+                pauseBtn.classList.add('state-paused'); // 已暂停：显示播放图标
+            } else if (state === 'restart') {
+                pauseBtn.classList.add('state-over'); // 游戏结束：显示重开图标
             }
         }
         
-        // 全屏功能 - 强制锁定竖屏
-        let orientationLocked = false;
-        
-        async function toggleFullscreen() {
-            const wrap = document.getElementById('gameWrap');
-            const btn = document.getElementById('fullscreenBtn');
-            const icon = btn ? btn.querySelector('i') : null;
-            
-            const isCurrentlyFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
-            
-            if (!isCurrentlyFullscreen) {
-                // 进入全屏
-                try {
-                    const elem = document.documentElement;
-                    
-                    // 先锁定竖屏方向（在进入全屏之前）
-                    if (screen.orientation && screen.orientation.lock) {
-                        try {
-                            await screen.orientation.lock('portrait-primary');
-                            orientationLocked = true;
-                            console.log('Orientation locked to portrait');
-                        } catch (e) {
-                            console.log('Failed to lock orientation before fullscreen:', e);
-                            // 即使锁定失败也继续进入全屏
-                        }
-                    }
-                    
-                    // 进入全屏
-                    if (elem.requestFullscreen) {
-                        await elem.requestFullscreen({ navigationUI: 'hide' });
-                    } else if (elem.webkitRequestFullscreen) {
-                        await elem.webkitRequestFullscreen();
-                    } else if (elem.mozRequestFullScreen) {
-                        await elem.mozRequestFullScreen();
-                    } else if (elem.msRequestFullscreen) {
-                        await elem.msRequestFullscreen();
-                    }
-                    
-                    // 全屏成功后再次尝试锁定方向
-                    if (!orientationLocked && screen.orientation && screen.orientation.lock) {
-                        try {
-                            await screen.orientation.lock('portrait-primary');
-                            orientationLocked = true;
-                            console.log('Orientation locked after fullscreen');
-                        } catch (e) {
-                            console.log('Failed to lock orientation after fullscreen:', e);
-                        }
-                    }
-                    
-                    wrap.classList.add('fullscreen-mode');
-                    document.body.classList.add('fullscreen-active');
-                    if (icon) icon.className = 'fas fa-compress';
-                    
-                    // 延迟调整画布
-                    setTimeout(() => {
-                        resizeGameCanvas();
-                        draw();
-                    }, 300);
-                    
-                } catch (err) {
-                    console.error('Fullscreen request failed:', err);
-                    alert('全屏功能不可用，请尝试手动旋转屏幕');
-                }
-            } else {
-                // 退出全屏
-                try {
-                    if (document.exitFullscreen) {
-                        await document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        await document.webkitExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        await document.mozCancelFullScreen();
-                    } else if (document.msExitFullscreen) {
-                        await document.msExitFullscreen();
-                    }
-                } catch(e) {
-                    console.error('Exit fullscreen failed:', e);
-                }
-                
-                // 解锁屏幕方向
-                if (orientationLocked && screen.orientation && screen.orientation.unlock) {
-                    try {
-                        screen.orientation.unlock();
-                        orientationLocked = false;
-                        console.log('Orientation unlocked');
-                    } catch(e) {
-                        console.log('Failed to unlock orientation:', e);
-                    }
-                }
-                
-                wrap.classList.remove('fullscreen-mode');
-                document.body.classList.remove('fullscreen-active');
-                if (icon) icon.className = 'fas fa-expand';
-                
-                // 延迟调整画布
-                setTimeout(() => {
-                    resizeGameCanvas();
-                    draw();
-                }, 300);
-            }
-        }
-        
-        // 监听全屏变化事件
-        function handleFullscreenChange() {
-            const wrap = document.getElementById('gameWrap');
-            const icon = document.querySelector('#fullscreenBtn i');
-            
-            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-            
-            if (!isFullscreen) {
-                // 退出全屏时清理
-                wrap.classList.remove('fullscreen-mode');
-                document.body.classList.remove('fullscreen-active');
-                if (icon) icon.className = 'fas fa-expand';
-                
-                // 解锁屏幕方向
-                if (orientationLocked && screen.orientation && screen.orientation.unlock) {
-                    try {
-                        screen.orientation.unlock();
-                        orientationLocked = false;
-                        console.log('Orientation unlocked on fullscreen exit');
-                    } catch(e) {
-                        console.log('Failed to unlock orientation:', e);
-                    }
-                }
-                
-                // 延迟调整画布，确保布局恢复
-                setTimeout(() => {
-                    resizeGameCanvas();
-                    draw();
-                }, 400);
-            } else {
-                // 进入全屏时也尝试锁定方向（双重保险）
-                if (!orientationLocked && screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('portrait-primary').then(() => {
-                        orientationLocked = true;
-                        console.log('Orientation locked in fullscreen change event');
-                    }).catch(e => {
-                        console.log('Could not lock orientation in change event:', e);
-                    });
-                }
-            }
-        }
-        
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('msfullscreenchange', handleFullscreenChange);
-        
-        // 监听方向变化，在全屏模式下强制竖屏
-        window.addEventListener('orientationchange', function() {
-            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
-            if (isFullscreen && screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('portrait-primary').catch(e => {
-                    console.log('Could not re-lock orientation:', e);
-                });
-            }
-            
+        // 全屏功能 - 浏览器内全屏（纯 CSS 切换，不调用原生 Fullscreen API，不锁定屏幕方向）
+        const wrap = document.getElementById('gameWrap');
+
+        function toggleFullscreen() {
+            const active = wrap.classList.toggle('fullscreen-mode');
+            document.body.classList.toggle('fullscreen-active', active);
+            // 延迟调整画布，适配全屏布局
             setTimeout(() => {
                 resizeGameCanvas();
                 draw();
             }, 300);
-        });
+        }
         
         function restart(){
             grid = createMatrix(COLS,ROWS);

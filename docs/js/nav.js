@@ -21,6 +21,15 @@ const navList = [
 
     const level = parseInt(container.getAttribute("data-nav-level") || "1", 10);
 
+    // 路径前缀：0=根目录, 1=html/, 2=games/
+    const rootPrefix = level === 0 ? "" : (level === 1 ? "../" : "../../");
+
+    // 注入左上角 logo（所有页面统一由 JS 生成，替换各页面静态 logo）
+    const logoBox = document.querySelector(".main-left");
+    if (logoBox) {
+        logoBox.innerHTML = `<a href="${rootPrefix}index.html" class="logo"><img src="${rootPrefix}assets/public/logo_text.svg" alt="violet"></a>`;
+    }
+
     // 根据层级生成每个菜单项的最终 URL
     function urlFor(item) {
         // item 可显式指定 dir，否则默认 html/
